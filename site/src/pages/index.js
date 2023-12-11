@@ -18,7 +18,7 @@ export default function Home() {
         className="bg-sui-card-dark rounded-sui w-[350px] h-[350px] p-8 bg-[url(../static/img/index/card-bg.svg)] justify-center flex justify-center items-center"
       >
         <div className="p-4 rounded-full border border-solid border-sui-white/30 w-[249px] h-[51px] text-sui-white bg-sui-card-dark bg-[url(../static/img/index/circle-arrow.svg)] bg-no-repeat bg-[center_right_2px] flex items-center cursor-pointer hover:shadow-sui hover:shadow-sui-blue hover:bg-opacity-50 hover:bg-[url(../static/img/index/circle-arrow-blue.svg)]">
-          Build your first dApp
+          创建你的第一个 dApp
         </div>
       </div>
     );
@@ -82,10 +82,10 @@ export default function Home() {
         <div className="w-full mt-24 mb-12 mx-auto bg-sui-black">
           <div className="text-center">
             <p className="lg:text-8xl md:text-6xl text-4xl text-white">
-              Sui Documentation
+              Sui 文档
             </p>
             <p className="text-lg sm:text-xl lg:text-3xl mb-0 px-8 md:w-1/2 w-auto mx-auto text-sui-blue-lighter inline-block">
-              Discover the power of Sui through examples, guides, and concepts
+              通过示例、指南和概念了解 Sui 的力量
             </p>
           </div>
         </div>
@@ -95,16 +95,16 @@ export default function Home() {
               className={`${cardlinks} text-2xl`}
               to="./concepts/tokenomics"
             >
-              Tokenomics
+              代币经济学
             </Link>
             <Link
               className={`${cardlinks} text-2xl`}
               to="./concepts/cryptography"
             >
-              Cryptography
+              密码学
             </Link>
             <Link className={`${cardlinks} text-2xl`} to="standards">
-              Standards
+              标准
             </Link>
           </HomeCard>
           <HomeCard title="Developers">
@@ -112,19 +112,19 @@ export default function Home() {
               className={`${cardlinks} text-2xl`}
               to="./guides/developer/getting-started"
             >
-              Getting started
+              开始
             </Link>
             <Link
               className={`${cardlinks} text-2xl`}
               to="./guides/developer/sui-101"
             >
-              Sui Developer Basics
+              Sui 开发者基础
             </Link>
             <Link
               className={`${cardlinks} text-2xl`}
               to="./concepts/sui-move-concepts"
             >
-              Move
+              Move 语言
             </Link>
           </HomeCard>
           <HomeCard title="Validators and Node operators">
@@ -132,13 +132,13 @@ export default function Home() {
               className={`${cardlinks} text-2xl`}
               to="./guides/operator/validator-config"
             >
-              Validator configuration
+              验证器配置
             </Link>
             <Link
               className={`${cardlinks} text-2xl`}
               to="./guides/operator/sui-full-node"
             >
-              Run a Sui Full node
+              运行一个 Sui 全节点
               <span className="block bg-auto bg-[url(../static/img/index/right-arrow.svg)]"></span>
             </Link>
           </HomeCard>
@@ -147,7 +147,7 @@ export default function Home() {
               className={`${cardlinks} text-md`}
               to="https://sui-typescript-docs.vercel.app/dapp-kit?ref=blog.sui.io"
             >
-              Sui dApp Kit
+              Su dApp 套件
             </Link>
             <Link className={`${cardlinks} text-md`} to="/references/sui-api">
               Sui API
@@ -156,7 +156,7 @@ export default function Home() {
               className={`${cardlinks} text-md`}
               to="https://github.com/MystenLabs/sui/tree/main/crates/sui-framework/docs"
             >
-              Sui framework (GitHub)
+              Sui 框架 (GitHub)
             </Link>
             <Link
               className={`${cardlinks} text-md`}
@@ -170,16 +170,16 @@ export default function Home() {
               className={`${cardlinks} text-md`}
               to="https://sui.directory/?_project_type=api%2Cdeveloper-tools%2Cinfrastructure%2Csdk"
             >
-              Sui ecosystem directory
+              Sui 生态
             </Link>
             <Link className={`${cardlinks} text-md`} to="https://blog.sui.io/">
-              Sui blog
+              Sui 博客
             </Link>
             <Link
               className={`${cardlinks} text-md`}
               to="guides/developer/dev-cheat-sheet"
             >
-              Sui dev cheat sheet
+              Sui 开发小册
             </Link>
           </HomeCard>
           <div className={`${darkcardclass} w-[350px] h-[350px]`}>
@@ -189,10 +189,10 @@ export default function Home() {
 
         <div className="lg:w-[1066px] w-auto my-8 md:mt-24 text-white mx-auto text-center">
           <h1 className="mb-4 lg:text-8xl md:text-6xl text-4xl font-normal">
-            Why Sui?
+            为何是 Sui?
           </h1>
           <p className="text-lg sm:text-xl lg:text-3xl mb-0 px-8 md:w-1/2 w-auto mx-auto text-sui-blue-lighter inline-block">
-            Sui is the first internet-scale programmable blockchain platform
+            Sui 是首个互联网规模的可编程区块链平台
           </p>
         </div>
         <div className="lg:w-[1066px] width-auto mx-auto flex-none md:flex md:flex-row items-center">
@@ -206,29 +206,28 @@ export default function Home() {
           <div className="lg:w-[676px] mx-8 md:ml-8 md:mr-0 lg:block sm:block md:hidden">
             <p className="text-xl text-sui-blue-lighter border-solid border-0 border-t border-sui-white/50">
               <span className="inline-block mt-7 mb-3 ml-4">
-                Unmatched scalability, instant settlement
+                无与伦比的可扩展性，即时结算
               </span>
             </p>
             <p className="text-xl text-sui-blue-lighter border-solid border-0 border-t border-sui-white/50">
               <span className="inline-block mt-7 mb-3 ml-4">
-                A safe smart contract language accessible to mainstream
-                developers
+                开发者可以使用的安全智能合约语言
               </span>
             </p>
             <p className="text-xl text-sui-blue-lighter border-solid border-0 border-t border-sui-white/50">
               <span className="inline-block mt-7 mb-3 ml-4">
-                Ability to define rich and composable on-chain assets
+                能够定义丰富且可组合的链上资产
               </span>
             </p>
             <p className="text-xl text-sui-blue-lighter border-solid border-0 border-t border-sui-white/50">
               <span className="inline-block mt-7 mb-3 ml-4">
-                Better user experience for web3 apps
+                拥有更好用户体验的 Web3 应用程序
               </span>
             </p>
           </div>
         </div>
         <div className="sm:w-[840] lg:w-[1066px] w-auto my-12 text-white mx-auto md:block hidden">
-          <ContentItem title="Scalability">
+          <ContentItem title="可扩展性">
             Sui scales horizontally to meet the demands of applications. Network
             capacity grows in proportion to the increase in Sui validators'
             processing power by adding workers, resulting in low gas fees even
@@ -243,7 +242,7 @@ export default function Home() {
             from web 2.0 to web3 for developers, without the need to understand
             the intricacies of the underlying infrastructure.
           </ContentItem>
-          <ContentItem title="On-chain assets">
+          <ContentItem title="链上资产">
             Rich on-chain assets enable new applications and economies based on
             utility without relying solely on artificial scarcity. Developers
             can implement dynamic NFTs that you can upgrade, bundle, and group
@@ -253,7 +252,7 @@ export default function Home() {
             on-chain, making NFTs more valuable and delivering more engaging
             feedback loops.
           </ContentItem>
-          <ContentItem title="Built for Web3">
+          <ContentItem title="为 Web3 而生">
             Sui aims to be the most accessible smart contract platform,
             empowering developers to create great user experiences in web3. To
             usher in the next billion users, Sui empowers developers with
