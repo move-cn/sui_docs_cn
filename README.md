@@ -8,7 +8,7 @@
 pnpm install
 ```
 
-在同一目录中，应该在本地构建站点：
+在同一目录中，本地构建站点：
 
 ```shell
 pnpm build

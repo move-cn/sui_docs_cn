@@ -90,7 +90,7 @@ export default function Home() {
           </div>
         </div>
         <div className="flex flex-row flex-wrap justify-center gap-2 max-w-[1066px] mx-auto">
-          <HomeCard title="About Sui">
+          <HomeCard title="关于 Sui">
             <Link
               className={`${cardlinks} text-2xl`}
               to="./concepts/tokenomics"
@@ -107,7 +107,7 @@ export default function Home() {
               标准
             </Link>
           </HomeCard>
-          <HomeCard title="Developers">
+          <HomeCard title="开发者">
             <Link
               className={`${cardlinks} text-2xl`}
               to="./guides/developer/getting-started"
@@ -127,7 +127,7 @@ export default function Home() {
               Move 语言
             </Link>
           </HomeCard>
-          <HomeCard title="Validators and Node operators">
+          <HomeCard title="验证者和运营节点">
             <Link
               className={`${cardlinks} text-2xl`}
               to="./guides/operator/validator-config"
@@ -142,7 +142,7 @@ export default function Home() {
               <span className="block bg-auto bg-[url(../static/img/index/right-arrow.svg)]"></span>
             </Link>
           </HomeCard>
-          <HomeCard title="References" aux>
+          <HomeCard title="资料" aux>
             <Link
               className={`${cardlinks} text-md`}
               to="https://sui-typescript-docs.vercel.app/dapp-kit?ref=blog.sui.io"
@@ -165,7 +165,7 @@ export default function Home() {
               Rust SDK (GitHub)
             </Link>
           </HomeCard>
-          <HomeCard title="Resources" aux>
+          <HomeCard title="资源" aux>
             <Link
               className={`${cardlinks} text-md`}
               to="https://sui.directory/?_project_type=api%2Cdeveloper-tools%2Cinfrastructure%2Csdk"
@@ -228,37 +228,28 @@ export default function Home() {
         </div>
         <div className="sm:w-[840] lg:w-[1066px] w-auto my-12 text-white mx-auto md:block hidden">
           <ContentItem title="可扩展性">
-            Sui scales horizontally to meet the demands of applications. Network
-            capacity grows in proportion to the increase in Sui validators'
-            processing power by adding workers, resulting in low gas fees even
-            during high network traffic. This scalability characteristic is in
-            sharp contrast to other blockchains with rigid bottlenecks.
+            Sui通过横向扩展来满足应用程序的需求。
+            通过增加工作节点，网络容量与Sui验证者处理能力的增加成比例增长，
+            即使在网络高流量时也能实现低 gas 费用。
+            这种可伸缩性特征与其他在关键点上限制严格的区块链形成鲜明对比。
           </ContentItem>
           <ContentItem title="Move">
-            Move design prevents issues such as reentrancy vulnerabilities,
-            poison tokens, and spoofed token approvals that attackers have
-            leveraged to steal millions on other platforms. The emphasis on
-            safety and expressivity provides a more straightforward transition
-            from web 2.0 to web3 for developers, without the need to understand
-            the intricacies of the underlying infrastructure.
+            Move设计防止了诸如重入漏洞、毒令牌和仿冒令牌批准等问题，
+            这些问题曾在其他平台上被用来窃取数百万的资产。
+            强调安全性和表达性为开发者提供了更直接从 Web 2.0 过渡到 Web3 的方式，
+            无需理解底层基础设施的复杂性
           </ContentItem>
           <ContentItem title="链上资产">
-            Rich on-chain assets enable new applications and economies based on
-            utility without relying solely on artificial scarcity. Developers
-            can implement dynamic NFTs that you can upgrade, bundle, and group
-            in an application-specific manner, such as changes in avatars and
-            customizable items based on gameplay. This capability delivers
-            stronger in-game economies as NFT behavior gets fully reflected
-            on-chain, making NFTs more valuable and delivering more engaging
-            feedback loops.
+            丰富的链上资产使基于实用性的新应用和经济体得以发展，而不仅仅依赖人为稀缺性。
+            开发者可以实现动态的非同质化代币(NFTs)，您可以以特定于应用程序的方式升级、捆绑和分组，
+            比如根据游戏玩法的角色形象变化和可定制物品。
+            这种能力使得游戏内经济更为强大，因为NFT的行为完全体现在链上，
+            使NFT更具价值并提供更引人入胜的反馈循环。
           </ContentItem>
-          <ContentItem title="为 Web3 而生">
-            Sui aims to be the most accessible smart contract platform,
-            empowering developers to create great user experiences in web3. To
-            usher in the next billion users, Sui empowers developers with
-            various tools to take advantage of the power of the Sui blockchain.
-            The Sui Development Kit (SDK) will enable developers to build
-            without boundaries.
+          <ContentItem title="为构建 Web3 而生">
+            Sui的目标是成为最易访问的智能合约平台，赋予开发者在Web3中创造出色用户体验的能力。
+            为了引领下一个十亿用户时代，Sui为开发者提供了各种工具，以充分利用Sui区块链的强大功能。
+            Sui开发工具包(SDK)将使开发者能够无拘束地进行构建。
           </ContentItem>
         </div>
       </div>
