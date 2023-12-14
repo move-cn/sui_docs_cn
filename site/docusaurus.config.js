@@ -5,15 +5,19 @@ const lightCodeTheme = require("prism-react-renderer/themes/github");
 const darkCodeTheme = require("prism-react-renderer/themes/nightOwl");
 const math = require("remark-math");
 const katex = require("rehype-katex");
+require("dotenv").config();
 
 /** @type {import('@docusaurus/types').Config} */
 const config = {
-  title: "Sui Documentation",
+  title: "Sui 中文文档",
   tagline:
     "Sui is a next-generation smart contract platform with high throughput, low latency, and an asset-oriented programming model powered by Move",
   favicon: "img/favicon.ico",
   url: "https://docs.sui.io",
   baseUrl: "/",
+  customFields: {
+    amplitudeKey: process.env.AMPLITUDE_KEY,
+  },
   onBrokenLinks: "throw",
   onBrokenMarkdownLinks: "throw",
   /*  i18n: {
@@ -141,26 +145,26 @@ const config = {
         },
       },
       navbar: {
-        title: "Sui Documentation",
+        title: "Sui 中文文档",
         logo: {
           alt: "Sui Docs Logo",
           src: "img/logo.svg",
         },
         items: [
           {
-            label: "Guides",
+            label: "指南",
             to: "guides",
           },
           {
-            label: "Concepts",
+            label: "概念",
             to: "concepts",
           },
           {
-            label: "Standards",
+            label: "标准",
             to: "standards",
           },
           {
-            label: "References",
+            label: "参考",
             to: "references",
           },
 
