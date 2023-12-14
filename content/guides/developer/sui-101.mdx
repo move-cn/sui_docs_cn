@@ -1,29 +1,29 @@
 ---
 title: Sui 101
-description: Collection of core Sui concepts that developers use to create objects and interact with them on the Sui blockchain. 
+description: Sui核心概念的集合，开发人员用于在Sui区块链上创建对象并与之交互。
 ---
 
-In many education systems, 101-level classes are those that teach core competencies to build a foundation for the more advanced topics that are to come. The topics in this section provide the same experience for the Sui blockchain. They examine the core Sui development concepts that you use to build apps on Sui. As you start developing more advanced solutions, knowledge of these topics provides a good base for understanding the more advanced concepts you will employ.
+在许多教育体系中，101级课程是教授核心竞争力的课程，为即将到来的更高级主题打下基础。本节中的主题为Sui区块链提供了相同的体验。它们探讨了您在Sui上构建应用程序时使用的核心Sui开发概念。随着您开始开发更高级的解决方案，对这些主题的了解将为理解您将使用的更高级概念提供良好的基础。
 
-## Creating coins and NFTs on Sui
+## 在Sui上创建货币和NFTs
 
-Everything on the Sui blockchain is an object. These topics use code examples to demonstrate how to create these specific types of objects. 
+Sui区块链上的一切都是对象。这些主题使用代码示例演示如何创建这些特定类型的对象。
 
-- [Create Coins](./sui-101/create-coin.mdx)
-- [Create NFTs](./sui-101/create-nft.mdx)
+- [创建货币](./sui-101/create-coin.mdx)
+- [创建NFTs](./sui-101/create-nft.mdx)
 
-## Building programmable transaction blocks
+## 构建可编程交易块
 
-You can create programmable transaction blocks (PTBs) on Sui to perform multiple commands in a single transaction. The [Building Programmable Transaction Blocks](./sui-101/building-ptb.mdx) topic demonstrates how to build a PTB using the Sui TypeScript SDK.
+您可以在Sui上创建可编程交易块（PTBs），以执行单个交易中的多个命令。[构建可编程交易块](./sui-101/building-ptb.mdx)主题演示了如何使用Sui TypeScript SDK构建PTB。
 
-## Using events
+## 使用事件
 
-You can emit events from your published packages on the Sui network. [Using Events](./sui-101/using-events.mdx) demonstrates how to emit events from your on-chain packages and monitor the activity of other objects emitting events. 
+您可以从Sui网络上的已发布包中发出事件。[使用事件](./sui-101/using-events.mdx)演示了如何从您的链上包中发出事件以及监视发出事件的其他对象的活动。
 
-## Shared versus Owned Objects
+## 共享与拥有对象
 
-Objects on Sui, unlike other blockchains, can be owned as well as shared. You can create transactions that leverage either type or both. [Shared versus Owned Objects](./sui-101/shared-owned.mdx) examines the differences and what considerations you should account for when deciding how to structure your on-chain app. 
+与其他区块链不同，Sui上的对象既可以是拥有的，也可以是共享的。您可以创建利用任一类型或两者的交易。[共享与拥有对象](./sui-101/shared-owned.mdx)检查了差异以及在决定如何构建链上应用程序结构时应考虑的因素。
 
-## Access On-Chain Time
+## 访问链上时间
 
-Sui provides a `Clock` module you can use to get network-based time. [Access On-Chain Time](./sui-101/access-time.mdx) examines the `Clock` module and the behavior of the available methods that affect transaction processing speed and the temporal exactness of the data you receive.
+Sui提供了一个`Clock`模块，您可以使用它获取基于网络的时间。[访问链上时间](./sui-101/access-time.mdx)检查了`Clock`模块以及影响交易处理速度和您接收到的数据的时间准确性的可用方法的行为。

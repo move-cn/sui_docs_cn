@@ -1,44 +1,41 @@
 ---
-title: Sui Environment Setup
-description: Get the background information you need before you start developing on Sui. Learn the layout of the Sui monorepository and the suggested development environment for working with Move.
+title: Sui环境设置
+description: 在开始使用Sui和Move进行开发之前，您应该了解如何贡献给Sui，Sui的结构是如何的，存在哪些工具和SDK，以及您的IDE中有哪些可用的插件。
 ---
 
-Before you start developing with Sui and Move, you should familiarize yourself with how to contribute to Sui, how Sui is structured, what tools and SDKs exist, and what plugins are available to use in your IDE.
+## Fork Sui存储库 {#fork}
 
-## Fork the Sui repository {#fork}
+贡献给Sui存储库的推荐方式是fork项目，在您的fork上进行更改，然后提交pull请求（PR）。Sui存储库在GitHub上可用：https://github.com/MystenLabs/sui。
 
-The recommended way to contribute to the Sui repository is to fork the project, make changes on your fork, then submit a pull request (PR). The Sui repository is available on GitHub: https://github.com/MystenLabs/sui.
+创建本地Sui存储库的步骤如下：
 
-To create a local Sui repository:
-
-1. Go to the [Sui repository](https://github.com/MystenLabs/sui) on GitHub.
-1. Click the **Fork** button to create a copy of the repository in your account.
+1. 前往GitHub上的[Sui存储库](https://github.com/MystenLabs/sui)。
+2. 单击**Fork**按钮，创建存储库的副本到您的账户中。
 
     ![Fork Sui repo](./images/fork.png)
 
-1. In your forked repository on GitHub, click the green `Code <>` button and copy the **HTTPS** URL GitHub provides.
+3. 在GitHub上的您的fork存储库中，点击绿色的`Code <>`按钮，复制GitHub提供的**HTTPS** URL。
 
     ![Copy URL](./images/gh-url.png)
 
-1. Open a terminal or console on your system at the location you want to save the repository locally. Type `git clone ` and paste the URL you copied in the previous step and press `Enter`.
-1. Type `cd sui` to make `sui` the active directory.
+4. 打开系统中您想要保存存储库的位置的终端或控制台。键入`git clone `，粘贴您在上一步中复制的URL，然后按`Enter`。
+5. 键入`cd sui`，将`sui`设置为活动目录。
 
-You can use any [branching strategy](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/creating-and-deleting-branches-within-your-repository) you prefer on your Sui fork. Make your changes locally and push to your repository, submitting PRs to the official Sui repository from your fork as needed.
+您可以在Sui fork上使用任何[分支策略](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/creating-and-deleting-branches-within-your-repository)。在本地进行更改并推送到您的存储库，根据需要从您的fork向官方Sui存储库提交PR。
 
 :::tip
 
-Be sure to synchronize your fork frequently to keep it up-to-date with active development.
+确保频繁同步您的fork，以保持其与活跃开发的同步。
 
 :::
 
+## 通过命令行使用Sui
 
-## Using Sui from command line
+您可以通过两个官方SDK（TypeScript SDK和Rust SDK）以及使用Sui CLI与Sui网络交互。有关使用Sui CLI的更多详细信息，请参阅[安装Sui](./sui-install.mdx)和[Sui CLI](/references/cli.mdx)参考。
 
-You can interact with the Sui network through two official SDKs (TypeScript SDK and Rust SDK), and by using the Sui CLI. For more details about using the Sui CLI, see [Install Sui](./sui-install.mdx) and the [Sui CLI](/references/cli.mdx) reference.
+## Move IDE和插件
 
-## Move IDEs and plugins
-
-The recommended IDE for Move development is Visual Studio Code with the `move-analyzer` extension. Follow the Visual Studio Marketplace instructions to install the move-analyzer extension, then install the `move-analyzer` language server passing `address32` using the `--features` flag and passing `sui-move` to the branch flag:
+Move开发的推荐IDE是带有`move-analyzer`扩展的Visual Studio Code。按照Visual Studio Marketplace的说明安装`move-analyzer`扩展，然后使用`--features`标志传递`address32`并使用分支标志传递`sui-move`来安装`move-analyzer`语言服务器：
 
 ```shell
 cargo install --git https://github.com/move-language/move move-analyzer --branch sui-move --features "address32"
@@ -100,3 +97,23 @@ The `testnet` branch includes the code running on the Sui Testnet network.
 The `mainnet` branch includes the code running on the Sui Mainnet network.
 
 The `main` branch includes the most recent changes and updates. Use the `main` branch if you want to contribute to the Sui project or to experiment with cutting-edge functionality. The `main` branch might include unreleased changes and experimental features, so use it at your own risk.
+
+在Awesome Move文档中查看更多IDE选项。
+
+安装VS Code和move-analyzer扩展后，查看Move代码示例。
+
+要在Sui上测试或运行Move示例，使用Sui CLI中的sui move命令。
+
+Sui存储库和贡献方式
+Sui存储库是一个单体库，包含用于构建和运行Sui网络以及本文档的所有源代码。
+
+Sui单体库的根文件夹具有以下顶级文件夹：
+
+apps: 包含Mysten Labs运行的主要Web应用程序的源代码，如suiexplorer.com或Sui Wallet。
+crates: 包含Sui系统的所有Rust包。
+dapps: 包含构建在Sui之上的一些分散应用程序的示例，如Kiosk或Sponsored Transactions。
+dashboards: 目前为空。
+doc: 包含与Move和Sui相关的弃用文档。
+docker: 包含启动节点、索引器、全节点或其他服务所需的docker文件。
+docs: 包含本文档和本站点源代码。
+examples: 包含为Sui编写的应用程序和Move中的智能合约的示例。
