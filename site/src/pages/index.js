@@ -233,45 +233,18 @@ export default function Home() {
           这种可扩展性特征与其他具有刚性瓶颈的区块链形成鲜明对比。
           </ContentItem>
           <ContentItem title="Move">
-            Move design prevents issues such as reentrancy vulnerabilities,
-            poison tokens, and spoofed token approvals that attackers have
-            leveraged to steal millions on other platforms. The emphasis on
-            safety and expressivity provides a more straightforward transition
-            from web 2.0 to web3 for developers, without the need to understand
-            the intricacies of the underlying infrastructure.
-            Move 设计可防止重入漏洞、有毒代币和欺骗性代币批准等问题，攻击者可利用这些问题在其他平台上窃取数百万美元。强调安全性和表现力提供了更直接的过渡开发者从web 2.0到web3，无需了解底层基础设施的复杂性。
+            Move 设计防止了诸如可重入攻击、毒令牌和仿冒令牌批准等问题，这些是攻击者在其他平台上利用的手段，用以窃取数百万资产。
+            对安全性和表现力的强调使开发人员更容易从 Web2.0 过渡到 Web3 ，无需理解基础基础设施的复杂性。
           </ContentItem>
           <ContentItem title="链上资产">
-            Rich on-chain assets enable new applications and economies based on
-            utility without relying solely on artificial scarcity. Developers
-            can implement dynamic NFTs that you can upgrade, bundle, and group
-            in an application-specific manner, such as changes in avatars and
-            customizable items based on gameplay. This capability delivers
-            stronger in-game economies as NFT behavior gets fully reflected
-            on-chain, making NFTs more valuable and delivering more engaging
-            feedback loops.
-            丰富的链上资产使新的应用和经济基于
-             效用而不仅仅依赖于人为的稀缺性。 开发商
-             可以实现可升级、捆绑和分组的动态 NFT
-             以特定于应用程序的方式，例如头像的更改和
-             根据游戏玩法可定制的项目。 此功能提供
-             随着 NFT 行为得到充分体现，游戏内经济更加强大
-             链上，使 NFT 更有价值并更具吸引力
-             反馈回路。
+            丰富的链上资产使得基于效用的新应用和经济体能够脱离对人为稀缺性的过度依赖。
+            开发人员可以实现动态NFT，可以在应用程序特定的方式中升级、打包和分组，例如根据游戏玩法的变化进行头像和可定制物品的更改。
+            这种能力使 NFT 的行为完全反映在链上，从而增强了游戏内经济，使 NFT 更有价值，提供更引人入胜的反馈循环。
           </ContentItem>
           <ContentItem title="专为 Web3 打造">
-            Sui aims to be the most accessible smart contract platform,
-            empowering developers to create great user experiences in web3. To
-            usher in the next billion users, Sui empowers developers with
-            various tools to take advantage of the power of the Sui blockchain.
-            The Sui Development Kit (SDK) will enable developers to build
-            without boundaries.
-            Sui旨在成为最容易访问的智能合约平台，
-             使开发人员能够在 web3 中创造出色的用户体验。 到
-             迎来下一个十亿用户，Sui 为开发者赋能
-             各种工具来利用 Sui 区块链的力量。
-             Sui 开发套件 (SDK) 将使开发人员能够构建
-             无界限。
+            Sui的目标是成为最易访问的智能合约平台，赋予开发人员在 Web3 中创建出色用户体验的能力。
+            为了引领下一个十亿用户，Sui为开发人员提供各种工具，以充分利用Sui区块链的威力。
+            Sui开发工具包 (SDK) 将使开发人员能够无拘无束地构建。
           </ContentItem>
         </div>
       </div>
