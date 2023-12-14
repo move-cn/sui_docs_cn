@@ -1,4 +1,5 @@
 # build spec
+
 open-spec
 
 # Dependencies
@@ -23,3 +24,4 @@ yarn-debug.log*
 yarn-error.log*
 package-lock.json
 .vercel
+.env*.local

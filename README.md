@@ -8,7 +8,7 @@
 pnpm install
 ```
 
-在同一目录中，应该在本地构建站点：
+在同一目录中，本地构建站点：
 
 ```shell
 pnpm build
@@ -41,7 +41,7 @@ Sui使用Vercel来托管其文档站点。Vercel为每个提交到Sui仓库的�
 Sui是为社区而设。为了所有人的利益做出贡献。
 
 - [文档贡献指南](https://docs.sui.io/references/contribute/contribution-process)
-- [仓库贡献指南]((https://docs.sui.io/contribute-to-sui-repos))
+- [仓库贡献指南](https://docs.sui.io/contribute-to-sui-repos)
 - [样式指南](https://docs.sui.io/style-guide)
 - [本地化](https://docs.sui.io/localize-sui-docs)
 - [行为准则](https://docs.sui.io/contribute/code-of-conduct)
