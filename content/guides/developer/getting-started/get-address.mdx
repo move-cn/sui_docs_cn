@@ -20,14 +20,14 @@ Sui 提供多种获取 Sui 地址的方式。以下是两种最常见的方法�
 对于首次使用者而言，通过 [Sui 钱包 Chrome 浏览器扩展](https://chrome.google.com/webstore/detail/sui-wallet/opcgpfmipidbgpenhmajoajpbobppdil) 是获取 Sui 地址的一种直接方式。安装扩展后，有几种方法可以创建地址。
 
 打开 Chrome 中的 Sui 钱包浏览器扩展，然后：
-- 使用您的 gmail/twitch/facebook 账户（ZkLogin）并按照屏幕上的说明操作
+- 使用您的 gmail/twitch/facebook 账户 (ZkLogin) 并按照屏幕上的说明操作
 - 单击 **More Options** → **Create a new passphrase account**。然后按照屏幕上的说明操作。
 
 有关 Sui 钱包及如何确保其安全性的更多信息，请参阅 [Sui 钱包文档](https://mysten-docs-site.vercel.app/wallet)。
 
 ### 命令行界面
 
-如果您使用 Sui 命令行界面（CLI）与 Sui 网络交互，可以使用 `sui client` 命令生成新地址。默认情况下，当 Sui CLI 首次运行时，它将提示您设置本地钱包，然后生成一个 Sui 地址和关联的秘密恢复短语。确保您记下秘密恢复短语并将其存放在安全的地方。
+如果您使用 Sui 命令行界面 (CLI) 与 Sui 网络交互，可以使用 `sui client` 命令生成新地址。默认情况下，当 Sui CLI 首次运行时，它将提示您设置本地钱包，然后生成一个 Sui 地址和关联的秘密恢复短语。确保您记下秘密恢复短语并将其存放在安全的地方。
 
 要生成新的 Sui 地址，请使用 `sui client new-address ed25519`，其中指定了 keypair scheme 标志的类型为 `ed25519`。
 

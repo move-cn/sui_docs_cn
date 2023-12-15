@@ -1,104 +1,104 @@
 ---
-title: Install Sui
-description: Install the Sui framework and required prerequisites on your system, including the Sui command line interface to interact with the Sui network.
+title: 安装 Sui
+description: 在您的系统上安装 Sui 框架及其所需的先决条件，包括 Sui 命令行界面，以便与 Sui 网络进行交互。
 ---
 
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
-The quickest way to install Sui is using the binaries delivered with every release. If you require more control over the install process, you can install from source. To take advantage of containerization, you can utilize the Docker images in the `docker` folder of the sui repository.
+安装 Sui 的最快方式是使用每个版本附带的二进制文件。如果您需要更多对安装过程的控制，可以从源代码进行安装。为了充分利用容器化，您可以使用 sui 存储库的 `docker` 文件夹中的 Docker 镜像。
 
-## Supported operating systems {#supported-operating-systems}
+## 支持的操作系统 {#supported-operating-systems}
 
-Sui supports the following operating systems:
+Sui 支持以下操作系统：
 
-- Linux - Ubuntu version 20.04 (Bionic Beaver)
+- Linux - Ubuntu 版本 20.04(Bionic Beaver)
 - macOS - macOS Monterey
-- Microsoft Windows - Windows 10 and 11
+- Microsoft Windows - Windows 10 和 11
 
-## Install using Homebrew {#install-homebrew}
+## 使用 Homebrew 安装 {#install-homebrew}
 
-If you use [Homebrew](https://brew.sh/), you can install Sui with the following commands:
+如果您使用 [Homebrew](https://brew.sh/)，您可以使用以下命令安装 Sui：
 
 ```bash
 brew tap mystenlabs/tap
 brew install mystenlabs/tap/sui
 ```
 
-## Install from binaries {#install-binaries}
+## 从二进制文件安装 {#install-binaries}
 
-Each Sui release provides a set of binaries for several operating systems. You can download these binaries from GitHub and use them to install Sui.
+每个 Sui 版本都提供了一组适用于多个操作系统的二进制文件。您可以从 GitHub 下载这些二进制文件并使用它们安装 Sui。
 
-1. Go to https://github.com/MystenLabs/sui.
-1. In the right pane, find the **Releases** section.
+1. 转到 https://github.com/MystenLabs/sui。
+1. 在右侧窗格中，找到 **Releases** 部分。
 
-    ![Sui releases in GitHub](./images/releases.png)
-1. Click the release tagged **Latest** to open the release's page.
-1. In the **Assets** section of the release, select the .tgz compressed file that corresponds to your operating system.
-1. Double-click the downloaded file. If the file doesn't automatically expand, manually unzip the file.
-1. Open the expanded folder and double-click the appropriate binary to install, beginning with sui-`<OS>`-`<ARCHITECTURE>`:
+    ![GitHub 中的 Sui 发行版](./images/releases.png)
+1. 单击标记为 **Latest** 的发行版，打开发行版的页面。
+1. 在发行版的 **Assets** 部分，选择与您的操作系统相对应的 .tgz 压缩文件。
+1. 双击下载的文件。如果文件没有自动展开，请手动解压文件。
+1. 打开展开的文件夹，双击适当的二进制文件进行安装，以 sui-`<OS>`-`<ARCHITECTURE>` 开头：
 
-    - sui-faucet-`<OS>`-`<ARCHITECTURE>`: Local faucet to mint coins on local network.
-    - sui-indexer-`<OS>`-`<ARCHITECTURE>`: An indexer for a local Sui network.
-    - sui-`<OS>`-`<ARCHITECTURE>`: Main Sui binary.
-    - sui-node-`<OS>`-`<ARCHITECTURE>`: Run a local node.
-    - sui-test-validator-`<OS>`-`<ARCHITECTURE>`: Run test validators on a local network for development.
-    - sui-tool-`<OS>`-`<ARCHITECTURE>`: Provides utilities for Sui.
+    - sui-faucet-`<OS>`-`<ARCHITECTURE>`: 本地龙头，用于在本地网络上铸币。
+    - sui-indexer-`<OS>`-`<ARCHITECTURE>`: 用于本地 Sui 网络的索引器。
+    - sui-`<OS>`-`<ARCHITECTURE>`: 主 Sui 二进制文件。
+    - sui-node-`<OS>`-`<ARCHITECTURE>`: 运行本地节点。
+    - sui-test-validator-`<OS>`-`<ARCHITECTURE>`: 在本地网络上运行开发的测试验证器。
+    - sui-tool-`<OS>`-`<ARCHITECTURE>`: 为 Sui 提供实用工具。
 
-    The Sui binary takes several minutes to download and install files, so make sure you allocate enough time for it to complete. Actual time to complete depends on your network connection and computer specifications.
+    Sui 二进制文件需要一些时间来下载和安装文件，因此请确保您为其完成分配足够的时间。实际完成时间取决于您的网络连接和计算机规格。
 
+### 确认安装 {#confirm-the-installation}
 
-### Confirm the installation {#confirm-the-installation}
+要确认 Sui 安装正确，请键入 `sui` 并按 Enter 键。您应该看到有关已安装的 Sui 版本的消息以及有关使用 Sui 命令的帮助信息。
 
-To confirm that Sui installed correctly, type `sui` and press Enter. You should see a message about the Sui version installed and help for using Sui commands.
+## 从源代码安装
 
-## Install from source
+按照本主题中的说明安装与 Sui 网络交互所需的 Rust crates（包），包括 Sui CLI。
 
-Follow the instructions in this topic to install the Rust crates (packages) required to interact with Sui networks, including the Sui CLI.
+要从源代码安装 Sui，首先需要为您的操作系统安装其[先决条件](#prerequisites)。在安装支持技术之后，您可以从[源代码安装 Sui 二进制文件](#install-sui-binaries-from-source)。
 
-To install Sui from source, you first need to install its [prerequisites](#prerequisites) for your operating system. After installing the supporting technologies, you can install [Sui binaries from source](#install-sui-binaries-from-source).
+您还可以下载[源代码](./sui-environment)以本地访问文件。
 
-You can also download the [source code](./sui-environment) to have local access to files.
+## 先决条件 {#prerequisites}
 
-## Prerequisites {#prerequisites}
+您的系统需要以下先决条件才能成功安装 Sui。
 
-Your system needs the following prerequisites available to successfully install Sui.
+### Rust 和 Cargo {#rust-and-cargo}
 
-### Rust and Cargo {#rust-and-cargo}
+Sui 在所有支持的操作系统上都需要 Rust 和 Cargo（Rust 的包管理器）。安装 Rust 的建议方法是使用 `rustup` 并使用 cURL。
 
-Sui requires Rust and Cargo (Rust's package manager) on all supported operating systems. The suggested method to install Rust is with `rustup` using cURL.
+安装说明中的一些其他命令还需要运行 cURL。如果无法运行 cURL 命令来安装 Rust，请在安装 Rust 之前查看以下部分中有关为您的操作系统安装 cURL 的说明。
 
-Some other commands in the installation instructions also require cURL to run. If you can't run the cURL command to install Rust, see the instructions to install cURL for your operating system in the following section before you install Rust.
-
-Use the following command to install Rust and Cargo on macOS or Linux:
+在 macOS 或 Linux 上使用以下命令安装 Rust 和 Cargo：
 
 ```bash
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 ```
 
-If you use Windows 11, see information about using the [Rust installer](https://www.rust-lang.org/tools/install) on the Rust website. The installer checks for C++ build tools and prompts you to install them if necessary. Select the option that best defines your environment and follow the instructions in the install wizard.
+如果您使用的是 Windows 11，请查看[Rust安装程序](https://www.rust-lang.org/tools/install)上 Rust 网站的相关信息。安装程序会检查是否存在 C++ 构建工具，并在必要时提示您安装它们。选择最符合您环境的选项，并按照安装向导中的说明操作。
 
-For additional installation options, see [Install Rust](https://www.rust-lang.org/tools/install).
+有关其他安装选项，请参阅[安装 Rust](https://www.rust-lang.org/tools/install)。
 
-Sui uses the latest version of Cargo to build and manage dependencies. See the [Cargo installation](https://doc.rust-lang.org/cargo/getting-started/installation.html) page on the Rust website for more information.
+Sui 使用最新版本的 Cargo 来构建和管理依赖关系。有关更多信息，请参阅 Rust 网站上的[Cargo安装](https://doc.rust-lang.org/cargo/getting-started/installation.html)页面。
 
-Use the following command to update Rust with `rustup`:
+使用以下命令使用 `rustup` 更新 Rust：
 
 ```bash
 rustup update stable
 ```
-### Additional prerequisites by operating system
 
-Select the appropriate tab to view the requirements for your system.
+### 操作系统的额外先决条件
+
+选择适当的选项卡以查看您系统的要求。
 
 <Tabs groupId="operating-systems">
 
 <TabItem value="linux" label="Linux">
 
-The prerequisites needed for the Linux operating system include:
+Linux 操作系统所需的先决条件包括：
 
 - cURL
-- Rust and Cargo
+- Rust 和 Cargo
 - Git CLI
 - CMake
 - GCC
@@ -109,19 +109,19 @@ The prerequisites needed for the Linux operating system include:
 
 :::info
 
-The Linux instructions assume a distribution that uses the APT package manager. You might need to adjust the instructions to use other package managers.
+Linux 指南假定使用 APT 软件包管理器的发行版。您可能需要调整说明以使用其他软件包管理器。
 
 :::
 
-Install the prerequisites listed in this section. Use the following command to update `apt-get`:
+安装此部分列出的先决条件。使用以下命令更新 `apt-get`：
 
 ```bash
 sudo apt-get update
 ```
 
-#### All Linux prerequisites
+#### 所有 Linux 先决条件
 
-Reference the relevant sections that follow to install each prerequisite individually, or run the following to install them all at once:
+参考以下相关部分，逐个安装每个先决条件，或者运行以下命令一次性安装它们全部：
 
 ```bash
 sudo apt-get install curl git-all cmake gcc libssl-dev pkg-config libclang-dev libpq-dev build-essential
@@ -129,41 +129,40 @@ sudo apt-get install curl git-all cmake gcc libssl-dev pkg-config libclang-dev l
 
 #### cURL {#curl}
 
-Install cURL with the following command:
+使用以下命令安装 cURL：
 
 ```bash
 sudo apt-get install curl
 ```
 
-Verify that cURL installed correctly with the following command:
+使用以下命令验证 cURL 是否正确安装：
 
 ```bash
 curl --version
 ```
 
-#### Git CLI {#git-cli}
-
-Run the following command to install Git, including the [Git CLI](https://cli.github.com/):
+Git CLI {#git-cli}
+运行以下命令安装 Git，包括 [Git CLI](https://cli.github.com/)：
 
 ```bash
 sudo apt-get install git-all
 ```
 
-For more information, see [Install Git on Linux](https://github.com/git-guides/install-git#install-git-on-linux) on the GitHub website.
+有关更多信息，请参阅 GitHub 网站上的在 [Linux 上安装 Git](https://github.com/git-guides/install-git#install-git-on-linux)。
 
 #### CMake {#cmake}
 
-Use the following command to install CMake.
+使用以下命令安装 CMake。
 
 ```bash
 sudo apt-get install cmake
 ```
 
-To customize the installation, see [Installing CMake](https://cmake.org/install/) on the CMake website.
+要自定义安装，请参阅 CMake 网站上的[安装 CMake](https://cmake.org/install/)。
 
 #### GCC {#gcc}
 
-Use the following command to install the GNU Compiler Collection, `gcc`:
+使用以下命令安装 GNU Compiler Collection，`gcc`：
 
 ```bash
 sudo apt-get install gcc
@@ -171,15 +170,15 @@ sudo apt-get install gcc
 
 #### libssl-dev {#libssl-dev}
 
-Use the following command to install `libssl-dev`:
+使用以下命令安装 `libclang-dev`：
 
 ```bash
 sudo apt-get install libssl-dev
 ```
 
-If the version of Linux you use doesn't support `libssl-dev`, find an equivalent package for it on the [ROS Index](https://index.ros.org/d/libssl-dev/).
+如果您使用的 Linux 版本不支持 `libssl-dev`, 请在 [ROS Index](https://index.ros.org/d/libssl-dev/) 上找到一个等效的包。
 
-(Optional) If you have OpenSSL you might also need to also install `pkg-config`:
+（可选）如果您安装了 OpenSSL，还可能需要安装 `pkg-config`：
 
 ```bash
 sudo apt-get install pkg-config
@@ -187,27 +186,27 @@ sudo apt-get install pkg-config
 
 #### libclang-dev {#libclang-dev}
 
-Use the following command to install `libclang-dev`:
+使用以下命令安装 `libclang-dev`：
 
 ```bash
 sudo apt-get install libclang-dev
 ```
 
-If the version of Linux you use doesn't support `libclang-dev`, find an equivalent package for it on the [ROS Index](https://index.ros.org/d/libclang-dev/).
+如果您使用的 Linux 版本不支持 `libclang-dev`, 请在 [ROS Index](https://index.ros.org/d/libclang-dev/) 上找到一个等效的包。
 
 #### libpq-dev {#libpq-dev}
 
-Use the following command to install `libpq-dev`:
+使用以下命令安装 `libpq-dev`:
 
 ```bash
 sudo apt-get install libpq-dev
 ```
 
-If the version of Linux you use doesn't support `libpq-dev`, find an equivalent package for it on the [ROS Index](https://index.ros.org/d/libpq-dev/).
+如果您使用的 Linux 版本不支持 `libpq-dev`, 请在 [ROS Index](https://index.ros.org/d/libclang-dev/) 上找到一个等效的包。
 
 #### build-essential {#build-essential}
 
-Use the following command to install `build-essential`:
+使用以下命令安装 `build-essential`:
 
 ```bash
 sudo apt-get install build-essential

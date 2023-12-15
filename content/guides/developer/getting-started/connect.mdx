@@ -106,17 +106,17 @@ localnet => http://0.0.0.0:9000 (active)
 devnet => https://fullnode.devnet.sui.io:443
 ```
 
-To add a new alias for a custom RPC endpoint, run the following command. Replace values in `<` `>` with values for your installation:
+要添加一个自定义RPC端点的新别名，请运行以下命令。使用您安装的值替换 `<` `>` 中的值
 
 ```shell
 sui client new-env --alias <ALIAS> --rpc <RPC-SERVER-URL>
 ```
 
-To switch the active network, run the following command:
+要切换活动网络，请运行以下命令：
 
 ```shell
 sui client switch --env <ALIAS>
 ```
 
-If you encounter an issue, delete the Sui configuration directory (`~/.sui/sui_config`) and reinstall the latest [Sui binaries](./sui-install.mdx#install-sui-binaries).
+如果遇到问题，请删除Sui配置目录 (~/.sui/sui_config) 并重新安装最新的 [Sui二进制文件](./sui-install.mdx#install-sui-binaries)。
 
