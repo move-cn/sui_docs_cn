@@ -1,53 +1,53 @@
 ---
-title: Sui Developer Cheat Sheet
-sidebar_label: Dev Cheat Sheet
+title: Sui开发者速查表
+sidebar_label: 开发速查表
 ---
 
-Quick reference on best practices for Sui Network developers.
+Sui网络开发人员的最佳实践快速参考。
 
 ## Move
 
-### General
+### 通用
 
-- Read about package upgrades and write upgrade-friendly code:
-  - Packages are immutable, so buggy package code can be called forever. Add protections at the object level instead.
-  - If you upgrade a package `P` to `P'`, other packages and clients that depend on `P` will continue using `P`, not auto-update to `P'`. Both dependent packages and client code must be explicitly updated to point at `P'`.
-  - Packages that expect to be extended by dependent packages can avoid breaking their extensions with each upgrade by providing a standard (unchanging) interface that all versions conform to. See this example for [message sending](https://github.com/wormhole-foundation/wormhole/blob/74dea3bf22f0e27628b432c3e9eac05c85786a99/sui/wormhole/sources/publish_message.move) across a bridge from Wormhole. Extension packages that produce messages to send can use [`prepare_message`](https://github.com/wormhole-foundation/wormhole/blob/74dea3bf22f0e27628b432c3e9eac05c85786a99/sui/wormhole/sources/publish_message.move#L68-L90) from any version of the Wormhole package to produce a [`MessageTicket`](https://github.com/wormhole-foundation/wormhole/blob/74dea3bf22f0e27628b432c3e9eac05c85786a99/sui/wormhole/sources/publish_message.move#L52-L66) while client code to send the message must pass that `MessageTicket` into [`publish_message`](https://github.com/wormhole-foundation/wormhole/blob/74dea3bf22f0e27628b432c3e9eac05c85786a99/sui/wormhole/sources/publish_message.move#L92-L152) in the latest version of the package.
-  - `public` function signatures cannot be deleted or changed, but `public(friend)` functions can. Use `public(friend)` or private visibility liberally unless you are exposing library functions that will live forever.
-  - It is not possible to delete `struct` types, add new fields (though you can add dynamic fields), or add new [abilities](https://move-language.github.io/move/abilities.html) via an upgrade. Introduce new types carefully—they will live forever!
-- Use `vector`-backed collections (`vector`, `VecSet`, `VecMap`, `PriorityQueue`) with a **known** maximum size of ≤ 1000 items.
-  - Use dynamic field-backed collections (`Table`, `Bag`, `ObjectBag`, `ObjectTable`, `LinkedTable`) for any collection that allows third-party addition, larger collections, and collections of unknown size.
-  - Move objects have a maximum size of 250KB—any attempt to create a larger object leads to an aborted transaction. Ensure that your objects do not have an ever-growing `vector`-backed collection.
-- If your function `f` needs a payment in (e.g.) SUI from the caller, use `fun f(payment: Coin<SUI>)` not `fun f(payment: &mut Coin<SUI>, amount: u64)`. This is safer for callers—they know exactly how much they are paying, and do not need to trust `f` to extract the right amount.
-- Don't micro-optimize gas usage. Sui computation costs are rounded up to the closest _bucket_, so only very drastic changes will make a difference. In particular, if your transaction is already in the lowest cost bucket, it can't get any cheaper.
-- Follow the [Move coding conventions](https://move-language.github.io/move/coding-conventions.html) for consistent style.
+- 阅读关于包升级的文章并编写友好于升级的代码：
+  - 包是不可变的，因此有错误的包代码可以永远调用。在对象级别添加保护，而不是在包级别。
+  - 如果将包`P`升级到`P'`，依赖于`P`的其他包和客户端将继续使用`P`，而不会自动更新为`P'`。必须显式更新依赖包和客户端代码以指向`P'`。
+  - 期望被依赖包扩展的包可以通过提供所有版本都符合的标准（不变）接口来避免在每次升级时破坏其扩展。查看Wormhole的[消息发送示例](https://github.com/wormhole-foundation/wormhole/blob/74dea3bf22f0e27628b432c3e9eac05c85786a99/sui/wormhole/sources/publish_message.move)，通过Wormhole从桥接发送消息。生成消息以发送的扩展包可以使用任何版本的Wormhole包中的[`prepare_message`](https://github.com/wormhole-foundation/wormhole/blob/74dea3bf22f0e27628b432c3e9eac05c85786a99/sui/wormhole/sources/publish_message.move#L68-L90)生成[`MessageTicket`](https://github.com/wormhole-foundation/wormhole/blob/74dea3bf22f0e27628b432c3e9eac05c85786a99/sui/wormhole/sources/publish_message.move#L52-L66)，而用于发送消息的客户端代码必须将该`MessageTicket`传递给包的最新版本中的[`publish_message`](https://github.com/wormhole-foundation/wormhole/blob/74dea3bf22f0e27628b432c3e9eac05c85786a99/sui/wormhole/sources/publish_message.move#L92-L152)。
+  - 无法删除`public`函数签名，但可以删除或更改`public(friend)`函数签名。除非暴露将永远存在的库函数，否则请自由使用`public(friend)`或私有可见性。
+  - 无法删除`struct`类型，添加新字段（尽管可以添加动态字段）或通过升级添加新的[abilities](https://move-language.github.io/move/abilities.html)。谨慎引入新类型——它们将永远存在！
+- 使用`vector`支持的集合（`vector`、`VecSet`、`VecMap`、`PriorityQueue`）时要考虑**已知**的最大大小≤ 1000项。
+  - 对于允许第三方添加、更大的集合以及未知大小的集合，请使用基于动态字段的集合（`Table`、`Bag`、`ObjectBag`、`ObjectTable`、`LinkedTable`）。
+  - Move对象的最大大小为250KB——任何尝试创建更大的对象都将导致中止的交易。确保您的对象没有一个不断增长的`vector`支持的集合。
+- 如果您的函数`f`需要来自调用者的（例如）SUI的支付，请使用`fun f(payment: Coin<SUI>)`而不是`fun f(payment: &mut Coin<SUI>, amount: u64)`。这对于调用者更安全——他们知道自己支付了多少，无需信任`f`来提取正确的金额。
+- 不要过度优化气体使用。Sui计算成本将四舍五入到最接近的_gas bucket_，因此只有非常 drastica的变化才会有所不同。特别是，如果您的交易已经在最低成本桶中，它将无法更便宜。
+- 遵循[Move编码约定](https://move-language.github.io/move/coding-conventions.html)以保持一致的风格。
 
-### Composability
+### 可组合性
 
-- Use the `display` standard to customize how your objects show up in wallets, apps, and explorers
-- Avoid “self-transfers”—whenever possible, instead of writing `transfer::transfer(obj, tx_context::sender(ctx))`, return `obj` from the current function. This allows a caller or programmable transaction block to use `obj`.
+- 使用`display`标准自定义对象在钱包、应用程序和资源管理器中的显示方式。
+- 避免“自我转账”——在可能的情况下，而不是编写`transfer::transfer(obj, tx_context::sender(ctx))`，从当前函数返回`obj`。这允许调用者或可编程交易块使用`obj`。
 
-### Testing
+### 测试
 
-- Use [`sui::test_scenario`](https://github.com/MystenLabs/sui/blob/main/crates/sui-framework/packages/sui-framework/sources/test/test_scenario.move) to mimic multi-transaction, multi-sender test scenarios.
-- Use the [`sui::test_utils`](https://github.com/MystenLabs/sui/blob/main/crates/sui-framework/packages/sui-framework/sources/test/test_utils.move#L5) module for better test error messages via `assert_eq`, debug printing via `print`, and test-only destruction via `destroy`.
-- Use `sui move test --coverage` to compute code coverage information for your tests, and `sui move coverage source --module <name>` to see uncovered lines highlighted in red. Push coverage all the way to 100% if feasible.
+- 使用[`sui::test_scenario`](https://github.com/MystenLabs/sui/blob/main/crates/sui-framework/packages/sui-framework/sources/test/test_scenario.move)来模拟多交易、多发送方的测试场景。
+- 使用[`sui::test_utils`](https://github.com/MystenLabs/sui/blob/main/crates/sui-framework/packages/sui-framework/sources/test/test_utils.move#L5)模块以通过`assert_eq`获得更好的测试错误消息，通过`print`进行调试打印，通过`destroy`进行仅用于测试的销毁。
+- 使用`sui move test --coverage`来计算测试的代码覆盖信息，使用`sui move coverage source --module <name>`来查看未覆盖的行高亮显示为红色。如果可行，将覆盖率推到100%。
 
-## Apps
+## 应用
 
-- For optimal performance and data consistency, apps should submit writes and reads for the same full node. In the TS SDK, this means that apps should use the wallet's [`signTransactionBlock`](https://sdk.mystenlabs.com/dapp-kit) API, then submit the transaction via a call to [`execute_transactionBlock`](/sui-api-ref#sui_executetransactionblock) on the app's full node, _not_ use the wallet's `signAndExecuteTransactionBlock` API. This ensures read-after-write-consistency--reads from the app's full node will reflect writes from the transaction right away instead of waiting for a checkpoint.
-- For lower latency, use [`executeTransactionBlock`](/sui-api-ref#sui_executetransactionblock) with `"showEffects": false` and `"showEvents": false` if your app needs to know that a transaction was confirmed, but does not immediately need to see the transaction effects or read the objects/events written by the transaction.
-- Apps should implement a local cache for frequently read data rather than over-fetching from the full node.
-- Whenever possible, use programmable transaction blocks to compose existing on-chain functionality rather than publishing new smart contract code. Programmable transaction blocks allow large-scale batching and heterogenous composition, driving already-low gas fees down even further.
-- Apps should leave gas budget, gas price, and coin selection to the wallet. This gives wallets more flexibility, and it's the wallet's responsibility to dry run a transaction to ensure it doesn't fail.
+- 为了最佳性能和数据一致性，应用程序应该将写入和读取提交到同一个全节点。在TS SDK中，这意味着应用程序应该使用钱包的[`signTransactionBlock`](https://sdk.mystenlabs.com/dapp-kit) API，然后通过对应用程序的全节点调用[`execute_transactionBlock`](/sui-api-ref#sui_executetransactionblock)来提交事务，而不是使用钱包的`signAndExecuteTransactionBlock` API。这确保读取-写入一致性——来自应用程序的全节点的读取将立即反映事务的写入，而不需要等待检查点。
+- 为了更低的延迟，如果应用程序需要知道事务已确认但不立即需要看到事务效果或读取事务写入的对象/事件，请使用[`executeTransactionBlock`](/sui-api-ref#sui_executetransactionblock)与`"showEffects": false`和`"showEvents": false`。
+- 应用程序应该为频繁读取的数据实现本地缓存，而不是从全节点过度获取。
+- 在可能的情况下，使用可编程交易块来组合现有的链上功能，而不是发布新的智能合约代码。可编程交易块允许大规模批处理和异构组合，将已经很低的燃气费用进一步降低。
+- 应用程序应该将燃气预算、燃气价格和币选择留给钱包。这使得钱包更具灵活性，同时确保钱包对事务进行干预以确保其不会失败。
 
-## Signing
+## 签名
 
-- **Never** sign two concurrent transactions that are touching the same owned object. Either use independent owned objects, or wait for one transaction to conclude before sending the next one. Violating this rule might lead to client [equivocation](/references/sui-glossary.mdx#equivocation), which locks up the owned objects involved in the two transactions until the end of the current epoch.
-- Any `sui client` command that crafts a transaction (e.g., `sui client publish`, `sui client call`) can accept the `--serialize-output` flag to output a base64 transaction to be signed.
-- Sui supports several signature schemes for transaction signing, including native multisig.
+- **永远不要**为同时触及相同拥有对象的两个并发事务签名。要么使用独立的拥有对象，要么在发送下一个事务之前等待一个事务结束。违反此规则可能导致客户端[equivocation](/references/sui-glossary.mdx#equivocation)，将牵涉到两个事务中的拥有对象锁定直到当前时期结束。
+- 任何`sui client`命令（例如`sui client publish`、`sui client call`）都可以接受`--serialize-output`标志，以输出要签名的Base64事务。
+- Sui支持多种用于事务签名的签名方案，包括本地多重签名。
 
 ## zkLogin
 
-- Call the proving service as sparingly as possible. Design your app flows such that you call the proving service only when the user is about to perform a real transaction.
-- Beware of how you cache the ephemeral private key. Treat the private key akin to a piece of highly sensitive data, e.g., password. If an (unexpired) ephemeral private key and its corresponding ZK proof are leaked, then an attacker can steal user's assets.
+- 尽可能地少调用证明服务。设计您的应用程序流程，以便只有在用户即将执行真实交易时才调用证明服务。
+- 注意如何缓存临时私钥。将私钥视为高度敏感数据，例如密码。如果（未过期的）临时私钥及其对应的ZK证明泄漏，则攻击者可以窃取用户资产。

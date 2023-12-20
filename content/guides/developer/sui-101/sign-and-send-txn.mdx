@@ -1,46 +1,46 @@
 ---
-title: Signing and Sending Transactions
+title: 签名和发送交易
 ---
 
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
-Transactions in Sui represent calls to specific functionality (like calling a smart contract function) that execute on inputs to define the result of the transaction.
+Sui 中的交易代表对特定功能的调用（比如调用智能合约函数），该调用会对输入进行执行，从而定义交易的结果。
 
-Inputs can either be an object reference (either to an owned object, an immutable object, or a shared object), or an encoded value (for example, a vector of bytes used as an argument to a Move call). After a transaction is constructed, usually through using [programmable transaction blocks](./building-ptb) (PTBs), the user signs the transaction and submits it to be executed on chain.
+输入可以是对象引用（可能是一个拥有对象、一个不可变对象或共享对象的引用），也可以是编码值（例如，用作 Move 调用参数的字节向量）。构建交易通常通过使用[可编程交易块](./building-ptb)（PTB）完成，用户对交易进行签名，然后提交执行。
 
-The signature is provided with the private key owned by the wallet, and its public key must be consistent with the transaction sender's Sui address. 
+签名是使用钱包拥有的私钥提供的，其公钥必须与交易发送方的 Sui 地址一致。
 
-Sui uses a `SuiKeyPair` to produce the signature, which commits to the Blake2b hash digest of the intent message (`intent || bcs bytes of tx_data`). The signature schemes currently supported are `Ed25519 Pure`, `ECDSA Secp256k1`, `ECDSA Secp256r1`, `Multisig`, and `zkLogin`. 
+Sui 使用 `SuiKeyPair` 生成签名，该签名与意图消息（`intent || tx_data 的 bcs 字节的 Blake2b 哈希摘要`）的 Blake2b 哈希摘要相对应。目前支持的签名方案有 `Ed25519 Pure`、`ECDSA Secp256k1`、`ECDSA Secp256r1`、`Multisig` 和 `zkLogin`。
 
-You can instantiate `Ed25519 Pure`, `ECDSA Secp256k1`, and `ECDSA Secp256r1` using `SuiKeyPair` and use it to sign transactions. Note that this guide does not apply to `Multisig` and `zkLogin`, please refer to their own pages ([Multisig](/concepts/cryptography/transaction-auth/multisig) and [zkLogin](https://docs.sui.io/concepts/cryptography/zklogin) respectively) for instructions. 
+可以使用 `SuiKeyPair` 实例化 `Ed25519 Pure`、`ECDSA Secp256k1` 和 `ECDSA Secp256r1` 并用其对交易进行签名。请注意，本指南不适用于 `Multisig` 和 `zkLogin`，有关说明，请参阅它们各自的页面（[Multisig](/concepts/cryptography/transaction-auth/multisig) 和 [zkLogin](https://docs.sui.io/concepts/cryptography/zklogin)）。
 
-With a signature and the transaction bytes, a transaction can be submitted to be executed.
+有了签名和交易字节，就可以提交交易以执行。
 
-## Workflow
+## 工作流程
 
-The following high-level process describes the overall workflow for constructing, signing and executing an on-chain transaction:
+以下高级过程描述了构建、签名和执行链上交易的整体工作流程：
 
-* Construct the transaction data by creating a `TransactionBlock` where multiple transactions are chained. See [Building Programmable Transaction Blocks](./building-ptb.mdx) for more information. 
-* The SDK's built-in gas estimation and coin selection picks the gas coin.
-* Sign the transaction to generate a [signature](/concepts/cryptography/transaction-auth/signatures#user-signature).
-* Submit the `TransactionBlock` and its signature for on-chain execution.
+* 通过创建 `TransactionBlock` 来构建交易数据，其中包含多个交易链接。有关更多信息，请参见[构建可编程交易块](./building-ptb.mdx)。
+* SDK 的内置燃气估算和币选择选择燃气币。
+* 对交易进行签名以生成[签名](/concepts/cryptography/transaction-auth/signatures#user-signature)。
+* 提交 `TransactionBlock` 及其签名以进行链上执行。
 
 :::info
 
-If you want to use a specific gas coin, first find the gas coin object ID to be used to pay for gas, and explicitly use that in the PTB. If there is no gas coin object, use the [splitCoin](./building-ptb#available-transactions) transaction to create a gas coin object. The split coin transaction should be the first transaction call in the PTB.
+如果要使用特定的燃气币，请首先找到要用于支付燃气的燃气币对象 ID，并在 PTB 中明确使用它。如果没有燃气币对象，请使用 [splitCoin](./building-ptb#available-transactions) 交易创建一个燃气币对象。拆分燃气币交易应该是 PTB 中的第一个交易调用。
 
 :::
 
-## Examples
+## 示例
 
-The following examples demonstrate how to sign and execute transactions using Rust, TypeScript, or the Sui CLI.
+以下示例演示如何使用 Rust、TypeScript 或 Sui CLI 签署和执行交易。
 
 <Tabs groupId="code-language">
 
 <TabItem value="ts-sdk" label="TypeScript">
 
-There are various ways to instantiate a key pair and to derive its public key and Sui address using the Sui TypeScript SDK.
+使用 Sui TypeScript SDK 实例化密钥对以及通过 Sui TypeScript SDK 推导其公钥和 Sui 地址有多种方法。
 
 ```tsx
     import { SuiClient, getFullnodeUrl } from '@mysten/sui.js/client';
@@ -97,9 +97,9 @@ There are various ways to instantiate a key pair and to derive its public key an
 
 <TabItem value="rust" label="Rust">
 
-The full code example below can be found under [crates/sui-sdk](https://github.com/MystenLabs/sui/blob/main/crates/sui-sdk/examples/sign_tx_guide.rs). 
+下面的完整代码示例可以在 [crates/sui-sdk](https://github.com/MystenLabs/sui/blob/main/crates/sui-sdk/examples/sign_tx_guide.rs) 中找到。
 
-There are various ways to instantiate a `SuiKeyPair` and to derive its public key and Sui address using the Sui Rust SDK.
+使用 Sui Rust SDK 实例化 `SuiKeyPair` 并通过 Sui Rust SDK 推导其公钥和 Sui 地址有多种方法。
 
 ```rust
     // deterministically generate a keypair, testing only, do not use for mainnet, use the next section to randomly generate a keypair instead.
@@ -145,7 +145,7 @@ There are various ways to instantiate a `SuiKeyPair` and to derive its public ke
     let sender = SuiAddress::from(&pk);
 ```
 
-Next, sign transaction data constructed using an example programmable transaction block with default gas coin, gas budget, and gas price. See [Building Programmable Transaction Blocks](./building-ptb.mdx) for more information. 
+接下来，使用带有默认燃气币、燃气预算和燃气价格的示例可编程交易块构建的交易数据进行签名。有关更多信息，请参阅 [构建可编程交易块](./building-ptb.mdx)。
 
 ```rust
     // construct an example programmable transaction.
@@ -168,7 +168,7 @@ Next, sign transaction data constructed using an example programmable transactio
     );
 ```
 
-Commit a signature to the Blake2b hash digest of the intent message (`intent || bcs bytes of tx_data`). 
+将签名提交到意图消息的 Blake2b 散列摘要 (`intent || tx_data 的 bcs 字节`)。
 
 ```rust
     // derive the digest that the keypair should sign on, i.e. the blake2b hash of `intent || tx_data`.
@@ -190,7 +190,7 @@ Commit a signature to the Blake2b hash digest of the intent message (`intent || 
     assert!(res.is_ok());
 ```
 
-Finally, submit the transaction with the signature. 
+最后，提交带有签名的交易。
 
 ```rust
     let transaction_response = sui_client
@@ -211,9 +211,9 @@ Finally, submit the transaction with the signature.
 
 <TabItem value="cli" label="Sui CLI">
 
-When using the [Sui CLI](/references/cli.mdx) for the first time, it creates a local file in `~/.sui/keystore` on your machine with a list of private keys (encoded as Base64 encoded `flag || 32-byte-private-key`). You can use any key to sign transactions by specifying its address. Use `sui keytool list` to see a list of addresses.
+当首次使用[Sui CLI](/references/cli.mdx)时，它会在您的机器上的 `~/.sui/keystore` 目录下创建一个本地文件，其中包含私钥列表（编码为 Base64 编码的 `flag || 32-byte-private-key`）。您可以通过指定其地址使用任何密钥来签署交易。使用 `sui keytool list` 查看地址列表。
 
-There are three ways to initialize a key:
+有三种初始化密钥的方法：
 
 ```shell
 # generate randomly. 
@@ -234,7 +234,7 @@ sui keytool import "$MNEMONICS" secp256k1
 sui keytool import "$MNEMONICS" secp256r1
 ```
 
-Create a transfer transaction in CLI. Set the $SUI_ADDRESS to the one corresponding to the keypair used to sign. $GAS_COIN_ID refers to the object ID that is owned by the sender to be used as gas. $GAS_BUDGET refers to the budget used to execute transaction. Then sign with the private key corresponding to the sender address. $MNEMONICS refers to 12/15/18/21/24 words from the wordlist, e.g. "retire skin goose will hurry this field stadium drastic label husband venture cruel toe wire". Refer to [Keys and Addresses](/concepts/cryptography/transaction-auth/keys-addresses.mdx) for more.
+在 CLI 中创建转账交易。将 `$SUI_ADDRESS` 设置为用于签署的密钥对应的地址。`$GAS_COIN_ID` 是发送方拥有的用于支付 gas 的对象 ID。`$GAS_BUDGET` 是用于执行交易的预算。然后使用与发送方地址对应的私钥进行签名。`$MNEMONICS` 是从助记词表中选择的 12/15/18/21/24 个单词，例如 "retire skin goose will hurry this field stadium drastic label husband venture cruel toe wire"。有关更多信息，请参阅[密钥和地址](/concepts/cryptography/transaction-auth/keys-addresses.mdx)。
 
 ```shell
 sui client gas
@@ -246,9 +246,10 @@ sui client execute-signed-tx --tx-bytes $TX_BYTES --signatures $SERIALIZED_SIGNA
 </TabItem>
 </Tabs>
 
-### Notes
-1. This guide demonstrates how to sign with a single private key. Refer to [Multisig](/concepts/cryptography/transaction-auth/multisig.mdx) when it is preferred to set up more complex signing policies.
-2. Similarly, native zkLogin does not follow the above steps, see [the docs](/concepts/cryptography/zklogin.mdx) to understand how to derive a zkLogin address, and produce a zkLogin signature with an ephemeral key pair. 
-3. If you decide to implement your own signing mechanisms instead of using the previous tools, see the [Signatures](/concepts/cryptography/transaction-auth/signatures.mdx) doc on the accepted signature specifications for each scheme. 
-4. Flag is one byte that differentiates signature schemes. See supported schemes and its flag in [Signatures](/concepts/cryptography/transaction-auth/signatures.mdx).
-5. The `execute_transaction_block` endpoint takes a list of signatures, so it should contain exactly one user signature, unless you are using sponsored transaction that a second signature for the gas object can be provided. See [Sponsored Transactions](/concepts/transactions/sponsored-transactions.mdx) for more information. 
+### 注意事项
+1. 本指南演示了如何使用单个私钥进行签名。在设置更复杂的签名策略时，请参阅[多重签名](/concepts/cryptography/transaction-auth/multisig.mdx)。
+2. 类似地，本机 zkLogin 不遵循上述步骤，请参阅[文档](/concepts/cryptography/zklogin.mdx)以了解如何推导 zkLogin 地址，并使用临时密钥对生成 zkLogin 签名。
+3. 如果决定实施自己的签名机制而不使用先前的工具，请参阅[签名](/concepts/cryptography/transaction-auth/signatures.mdx)文档，了解每个方案的接受签名规范。
+4. Flag 是一个字节，用于区分签名方案。在[签名](/concepts/cryptography/transaction-auth/signatures.mdx)文档中查看支持的方案及其标志。
+5. `execute_transaction_block` 端点接受一系列签名，因此应该包含正好一个用户签名，除非使用的是赞助交易，其中可以提供用于 gas 对象的第二个签名。有关更多信息，请参阅[赞助交易](/concepts/transactions/sponsored-transactions.mdx)。
+

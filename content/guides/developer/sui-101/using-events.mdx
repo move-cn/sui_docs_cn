@@ -1,42 +1,43 @@
 ---
-title: Using Events
-description: Monitor Sui on-chain activity by subscribing to events that Move packages published on Sui emit.
+title: 使用事件
+description: 通过订阅在 Sui 上发布的 Move 包发出的事件来监控 Sui 链上活动。
 ---
 
-The Sui network stores countless objects on chain where Move code can perform actions using those objects. Tracking this activity is often desired, for example, to discover how many times a module mints an NFT or to tally the amount of SUI in transactions that a smart contract generates.
+Sui 网络在链上存储了无数对象，在这些对象上，Move 代码可以执行各种操作。通常希望跟踪这些活动，例如发现模块铸造 NFT 的次数或计算智能合约生成的交易中的 SUI 数量。
 
-To support activity monitoring, Move provides a structure to emit events on the Sui network. When you establish a connection with the Sui network, you create a two-way interactive communication session between your client and a Sui network node. With an open session, you can subscribe to specific events that the Sui network adds to the stream to create real-time monitoring of events.
+为了支持活动监控，Move 在 Sui 网络上提供了一个发出事件的结构。当您与 Sui 网络建立连接时，实际上是在您的客户端和 Sui 网络节点之间创建了一个双向的交互式通信会话。有了这个打开的会话，您可以订阅 Sui 网络添加到事件流中的特定事件，以实现对事件的实时监控。
 
-## Move event structure
+## Move 事件结构
 
-An event object in Sui consists of the following attributes:
+Sui 中的事件对象包括以下属性：
 
-- `id`: JSON object containing the transaction digest ID and event sequence.
-- `packageId`: The object ID of the package that emits the event.
-- `transactionModule`: The module that performs the transaction.
-- `sender`: The Sui network address that triggered the event.
-- `type`: The type of event being emitted.
-- `parsedJson`: JSON object describing the event.
-- `bcs`: Binary canonical serialization value.
-- `timestampMs`: Unix epoch timestamp in milliseconds.
+- `id`: 包含交易摘要 ID 和事件序列的 JSON 对象。
+- `packageId`: 发出事件的包的对象 ID。
+- `transactionModule`: 执行交易的模块。
+- `sender`: 触发事件的 Sui 网络地址。
+- `type`: 正在发出的事件类型。
+- `parsedJson`: 描述事件的 JSON 对象。
+- `bcs`: 二进制规范化序列化值。
+- `timestampMs`: 以毫秒为单位的 Unix 纪元时间戳。
 
-## Discovering events
+## 发现事件
 
-If you want to subscribe to events on chain, you first need to know what events are available. You typically know or can discover the events your own code emits, but it's not as straightforward when you need to subscribe to on-chain events from packages you don't own. The Sui RPC provides a [queryEvents](/sui-api-ref#suix_queryEvents) method to query on-chain packages and return available events that you can subscribe to.
+如果要订阅链上的事件，首先需要知道有哪些事件可用。通常您可能已经知道或者可以发现您自己的代码发出的事件，但当您需要订阅您不拥有的包的链上事件时，情况就变得不那么直观了。Sui RPC 提供了一个 [queryEvents](/sui-api-ref#suix_queryEvents) 方法，用于查询链上的包并返回可以订阅的可用事件。
 
-## Filter events
+## 过滤事件
 
-You can filter the events your code targets for either querying or subscribing. Both filter options are similar but have some differences.
+您可以过滤您的代码用于查询或订阅的事件。这两种过滤选项相似，但也有一些差异。
 
-## Emit events in Move
+## 在 Move 中发出事件
 
-To create an event in your Move modules, add the `sui::event` dependency.
+要在 Move 模块中创建事件，请添加 `sui::event` 依赖。
 
 ```move
 use sui::event;
 ```
 
-With the dependency added, you can use the `emit` function to fire an event whenever the action you want to monitor fires. For example, the following code is part of an example application using digital donuts. The `collect_profits` function handles the collection of SUI and emits an event whenever the function is called. To act on that event, you need to subscribe to it.
+
+在添加了依赖之后，您可以使用 emit 函数在您想要监视的动作发生时触发事件。例如，以下代码是一个使用数字甜甜圈的示例应用程序的一部分。collect_profits 函数负责收集 SUI，并在每次调用该函数时触发一个事件。要对该事件采取行动，您需要订阅它。
 
 ```move
 /// Take coin from `DonutShop` and transfer it to tx sender.
@@ -47,11 +48,11 @@ let profits = coin::take(&mut shop.balance, amount, ctx);
 // simply create new type instance and emit it event::emit(ProfitsCollected { amount }); transfer::public_transfer(profits, tx_context::sender(ctx)) }
 ```
 
-## Subscribe to events in Move
+## 在 Move 中订阅事件
 
-Firing events is not very useful in a vacuum. You also need the ability to listen for those events so that you can act on them. In Sui, you subscribe to those events and provide logic that triggers when the event fires.
+在真空中触发事件并不是非常有用。您还需要有能力监听这些事件，以便可以对其进行操作。在 Sui 中，您订阅这些事件并提供在事件触发时触发的逻辑。
 
-Sui Full nodes support subscribe functionality using JSON-RPC notifications transmitted through the WebSocket API. You can interact with the RPC directly ([suix_subscribeEvent](/sui-api-ref#suix_subscribeEvent), [suix_subscribeTransaction](/sui-api-ref#suix_subscribeTransaction) or you can use an SDK like the Sui TypeScript SDK. The following excerpt from one of the examples uses the TypeScript SDK to create an asynchronous subscription to the filter identified in the filter.
+Sui 完整节点支持使用通过 WebSocket API 传输的 JSON-RPC 通知进行订阅功能。您可以直接与 RPC 进行交互 [suix_subscribeEvent](/sui-api-ref#suix_subscribeEvent), [suix_subscribeTransaction](/sui-api-ref#suix_subscribeTransaction)，或者您可以使用像 Sui TypeScript SDK 这样的 SDK。以下是来自其中一个示例的摘录，该示例使用 TypeScript SDK 对在筛选器中标识的内容创建了一个异步订阅。
 
 ```move
 let unsubscribe = await provider.subscribeEvent({
@@ -62,7 +63,7 @@ let unsubscribe = await provider.subscribeEvent({
 });
 ```
 
-Move smart contracts can call other smart contracts that emit events. For example, `Deepbook_utils` can call the `dee9` smart contract and emit this event. Note that using package, transaction module to query for `dee9/clob_v2` misses the following event even though it is actually an event the `dee9` package emits. The current workaround for this issue is to know all the `packageId`s you care about and search those in the `queryEvent` call.
+Move 智能合约可以调用其他发出事件的智能合约。例如，Deepbook_utils 可以调用 dee9 智能合约并发出此事件。请注意，使用包、事务模块来查询 dee9/clob_v2 会漏掉以下事件，即使这实际上是 dee9 包发出的事件。当前对这个问题的解决方法是了解您关心的所有 packageId，并在 queryEvent 调用中搜索这些内容。
 
 ```json
 {
@@ -91,7 +92,7 @@ Move smart contracts can call other smart contracts that emit events. For exampl
 
 https://suiexplorer.com/txblock/bZnc1E7k1fJYLxWihfre5xCw1tX1CyAN6579zypJeiU
 
-Here's an example of a transaction that is using the original `dee9` package.
+以下是一个使用原始 `dee9` 包的交易示例。
 https://suiexplorer.com/txblock/896CKHod5GQ4kzhF7EwTAGyhQBdaTb9rQS41dcL76gj8
 
 ```json
@@ -119,15 +120,15 @@ https://suiexplorer.com/txblock/896CKHod5GQ4kzhF7EwTAGyhQBdaTb9rQS41dcL76gj8
 }
 ```
 
-## Examples
+## 示例
 
-## Subscribe to event
+## 订阅事件
 
-This example leverages the Sui TypeScript SDK to subscribe to events the package with ID `<PACKAGE_ID>` emits. Each time the event fires, the code displays the response to the console.
+这个例子利用了 Sui TypeScript SDK 来订阅具有 ID `<PACKAGE_ID>` 的包发出的事件。每次事件触发时，代码都会将响应显示在控制台上。
 
 ### TypeScript
 
-To create the event subscription, you can use a basic Node.js app. You need the Sui TypeScript SDK, so install the module using `npm install @mysten/sui.js` at the root of your project. In your TypeScript code, import `JsonRpcProvider` and a connection from the library.
+要创建事件订阅，您可以使用一个基本的 Node.js 应用程序。您需要 Sui TypeScript SDK，因此在项目的根目录中使用 `npm install @mysten/sui.js` 安装模块。在您的 TypeScript 代码中，从库中导入 `JsonRpcProvider` 和一个连接。
 
 ```ts
 import { JsonRpcProvider, testnetConnection } from '@mysten/sui.js';
@@ -161,9 +162,9 @@ process.on('SIGINT', async () => {
 });
 ```
 
-### Response
+### 响应
 
-When the subscribed to event fires, the example displays the following JSON representation of the event.
+当订阅的事件触发时，示例将显示以下事件的 JSON 表示形式。
 
 ```json
 subscribeEvent {

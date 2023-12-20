@@ -1,44 +1,42 @@
 ---
-title: Get Sui Address
-description: You need an address on the Sui network before you can start trading NFTs, purchase SUI tokens, or perform other transactions.
+title: 获取 Sui 地址
+description: 在开始交易 NFT、购买 SUI 代币或执行其他交易之前，您需要在 Sui 网络上拥有一个地址。
 ---
 
-An address is a way to uniquely and anonymously identify an account that exists on the Sui blockchain network. In other words, an address is a way for a user to store and use tokens on the Sui network, without providing any personally identifying information (such as email address, phone number, and so on). For example, if you want to purchase a number of SUI tokens to play a game, you must specify an address where these tokens are to be deposited.
+地址是在 Sui 区块链网络上唯一且匿名标识帐户的方式。换句话说，地址是用户在 Sui 网络上存储和使用代币的一种方式，而无需提供任何个人身份信息（例如电子邮件地址、电话号码等）。例如，如果您想购买一些 SUI 代币来玩游戏，您必须指定一个地址，这些代币将被存入该地址。
 
-The Sui address is unique, similarly to the way a social security number or a personal identification number is unique to one person. However, in Sui you can create and own multiple addresses, all of which are unique. 
+Sui 地址是唯一的，类似于社会安全号码或个人身份号码对一个人的唯一性。然而，在 Sui 中，您可以创建和拥有多个地址，所有这些地址都是唯一的。
 
-In Sui, an address is 32 bytes and is often encoded in base58 with `0x` prefix. For example, this is a valid Sui address: `0x02a212de6a9dfa3a69e22387acfbafbb1a9e591bd9d636e7895dcfc8de05f331`. You can use the [Sui Explorer](https://suiexplorer.com/) website to find more information about [this address](https://suiexplorer.com/address/0x02a212de6a9dfa3a69e22387acfbafbb1a9e591bd9d636e7895dcfc8de05f331) and the objects it owns.
+在 Sui 中，一个地址是 32 字节，通常以带有 `0x` 前缀的 base58 编码。例如，这是一个有效的 Sui 地址：`0x02a212de6a9dfa3a69e22387acfbafbb1a9e591bd9d636e7895dcfc8de05f331`。您可以使用 [Sui Explorer](https://suiexplorer.com/) 网站查找有关[此地址](https://suiexplorer.com/address/0x02a212de6a9dfa3a69e22387acfbafbb1a9e591bd9d636e7895dcfc8de05f331)及其拥有的对象的更多信息。
 
-If you'd like to understand how a Sui address is derived from private keys and other cryptography related topics, see the [Keys and Addresses](/concepts/cryptography/transaction-auth/keys-addresses.mdx) topic.
+如果您想了解 Sui 地址是如何从私钥派生出来的以及其他与密码学相关的主题，请参阅 [Keys and Addresses](/concepts/cryptography/transaction-auth/keys-addresses.mdx) 主题。
 
+## 如何获取 Sui 地址
 
-## How to obtain a Sui address
+Sui 提供多种获取 Sui 地址的方式。以下是两种最常见的方法。
 
-Sui provides multiple ways to obtain a Sui address. The following are the two most common. 
+### Sui 钱包
 
-### Sui Wallet
+对于首次使用者而言，通过 [Sui 钱包 Chrome 浏览器扩展](https://chrome.google.com/webstore/detail/sui-wallet/opcgpfmipidbgpenhmajoajpbobppdil) 是获取 Sui 地址的一种直接方式。安装扩展后，有几种方法可以创建地址。
 
-One of the most straightforward ways to obtain a Sui address for first-time users is through the [Sui Wallet Chrome browser extension](https://chrome.google.com/webstore/detail/sui-wallet/opcgpfmipidbgpenhmajoajpbobppdil). After you install the extension, there are several ways to create an address. 
+打开 Chrome 中的 Sui 钱包浏览器扩展，然后：
+- 使用您的 gmail/twitch/facebook 账户 (ZkLogin) 并按照屏幕上的说明操作
+- 单击 **More Options** → **Create a new passphrase account**。然后按照屏幕上的说明操作。
 
-Open the Chrome Sui Wallet browser extension and then:
-- Use your gmail/twitch/facebook account (ZkLogin) and follow the on-screen instructions
-- Click **More Options** → **Create a new passphrase account**. Then follow the on-screen instructions. 
+有关 Sui 钱包及如何确保其安全性的更多信息，请参阅 [Sui 钱包文档](https://mysten-docs-site.vercel.app/wallet)。
 
-For more information on the Sui Wallet and how to keep it secure, see the [Sui Wallet documentation](https://mysten-docs-site.vercel.app/wallet). 
+### 命令行界面
 
-### Command line interface
+如果您使用 Sui 命令行界面 (CLI) 与 Sui 网络交互，可以使用 `sui client` 命令生成新地址。默认情况下，当 Sui CLI 首次运行时，它将提示您设置本地钱包，然后生成一个 Sui 地址和关联的秘密恢复短语。确保您记下秘密恢复短语并将其存放在安全的地方。
 
-If you are using the Sui command line interface (CLI) to interact with the Sui network, you can use the `sui client` command to generate a new address. By default, when the Sui CLI runs for the first time it will prompt you to set up your local wallet, and then it generates one Sui address and the associated secret recovery phrase. Make sure you write down the secret recovery phrase and store it in a safe place. 
+要生成新的 Sui 地址，请使用 `sui client new-address ed25519`，其中指定了 keypair scheme 标志的类型为 `ed25519`。
 
+有关更多信息，请参阅 [Sui Client CLI](../../../references/cli/client.mdx) 文档。
 
-To generate a new Sui address use `sui client new-address ed25519`, which specifies the keypair scheme flag to be of type `ed25519`.
-
-For more information, see the [Sui Client CLI](../../../references/cli/client.mdx) documentation.
-
-To see all the generated addresses in the local wallet on your machine, run `sui keytool list`. For more information about the keytool options, see the [Sui Keytool CLI](../../../references/cli/keytool.mdx) documentation.
+要查看本地计算机上本地钱包中生成的所有地址，请运行 `sui keytool list`。有关 keytool 选项的更多信息，请参阅 [Sui Keytool CLI](../../../references/cli/keytool.mdx) 文档。
 
 :::danger
 
-The private keys associated with the Sui addresses are stored locally on the machine where the CLI is installed, in the `~/.sui/sui_config/sui.keystore` file. Make sure you do not expose this to anyone, as they can use it to get access to your account.
+与 Sui 地址关联的私钥存储在 CLI 安装的计算机上的本地位置，即 `~/.sui/sui_config/sui.keystore` 文件中。确保不要将其暴露给任何人，因为他们可以使用它来访问您的帐户。
 
 :::

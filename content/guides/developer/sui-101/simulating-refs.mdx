@@ -1,25 +1,25 @@
 ---
-title: Simulating References
-description: Use the borrow module in the Sui framework to include objects by reference in your programmable transaction blocks.
+title: 模拟引用
+description: 使用 Sui 框架中的 borrow 模块，在可编程事务块中通过引用包含对象。
 ---
 
-Everything on the Sui blockchain is an object. When you develop Move packages for the Sui network, you're typically manipulating or using on-chain objects in some way through functionality available in the Sui API. For most API functions, you provide an object by reference.     
+在 Sui 区块链上，一切都是对象。当您为 Sui 网络开发 Move 包时，通常通过 Sui API 中可用的功能以某种方式操纵或使用链上对象。对于大多数 API 函数，您提供一个对象的引用。
 
-References are a key construct when programming in Move and on Sui. Most of the functionality available in the Sui API takes objects by reference.
+引用是在 Move 和 Sui 中编程时的关键构造。Sui API 中可用的大多数功能都使用对象的引用。
 
-There are two ways to use an object:
-- **by value:** When you use an object by value, you have full control over that object. You can destroy it (if the functionality is available), wrap it (if it has the `store` ability), or transfer it to an address.
-- **by reference:** When you use an object by reference, operations over that object are determined by the logic the module that defines the object provides because you are using a reference to its data rather than having ownership of the object itself. The restrictions of references allow you to develop smart contracts with a high level of security and safety around assets. There are two types of references:
-    - Mutable reference (`&mut`): You can alter the object (according to the API) but you can't destroy or transfer it. 
-    - Immutable reference (`&`): Further restricts the set of operations and the guarantees/invariants over the referenced object. You have read-only access to the object's data.
+有两种使用对象的方式：
+- **按值使用：** 当您按值使用对象时，您对该对象拥有完全控制权。您可以销毁它（如果功能可用），包装它（如果它具有 `store` 能力）或将其传输到地址。
+- **按引用使用：** 当您按引用使用对象时，对该对象的操作由定义对象的模块提供的逻辑确定，因为您是使用对其数据的引用，而不是拥有对象本身。引用的限制使您能够在资产周围开发具有高安全性和安全性水平的智能合约。有两种引用类型：
+    - 可变引用（`&mut`）：您可以更改对象（根据 API），但不能销毁或转移它。
+    - 不可变引用（`&`）：进一步限制了对引用对象的操作和对引用对象的数据的保证/不变性。您只能对对象的数据进行只读访问。
 
-Programmable transaction blocks (PTBs) do not currently allow the use of object references returned from one of its transaction commands. You can use input objects to the PTB, objects created by the PTB (like `MakeMoveVec`), or returned from a transaction command by value as references in subsequent transaction commands. If a transaction command returns a reference, however, you can't use that reference in any call, significantly limiting certain common patterns in Move.
+可编程事务块（PTB）目前不允许使用从其事务命令之一返回的对象引用。您可以将输入对象用于 PTB、由 PTB 创建的对象（例如 `MakeMoveVec`）或者从事务命令中按值返回的对象作为后续事务命令中的引用。然而，如果事务命令返回引用，则无法在任何调用中使用该引用，从而显著限制了 Move 中某些常见模式的使用。
 
-## The borrow module
+## borrow 模块
 
-The Sui framework includes a [borrow](https://github.com/MystenLabs/sui/blob/main/crates/sui-framework/docs/borrow.md) module that offers a solution to the reference problem. The module provides access to an object by value but builds a model that makes it impossible to destroy, transfer, or wrap the object retrieved. The borrow module exposes a `Referent` object that wraps another object (the object you want to reference). The module uses the [hot potato pattern](/concepts/sui-move-concepts/patterns/hot-potato.mdx) (via a `Borrow` instance) to allow retrieval of the wrapped object by value. Within the same PTB, the module then forces the object to be returned to the `Referent`. The `Borrow` instance guarantees that the object returned is the same that was retrieved.
+Sui 框架包含一个 [borrow](https://github.com/MystenLabs/sui/blob/main/crates/sui-framework/docs/borrow.md) 模块，提供了对引用问题的解决方案。该模块通过值提供对对象的访问，但构建了一个模型，使其不可能销毁、转移或包装检索到的对象。borrow 模块公开了一个 `Referent` 对象，该对象包装另一个对象（您想要引用的对象）。该模块使用 [热土豆模式](/concepts/sui-move-concepts/patterns/hot-potato.mdx)（通过 `Borrow` 实例）允许以值的形式检索包装的对象。在同一 PTB 中，该模块然后强制对象被返回给 `Referent`。`Borrow` 实例保证返回的对象与检索到的对象相同。
 
-As an example, consider the following module stub that exposes an object (`Asset`) and a function (`use_asset`) to use that object.
+例如，请考虑以下模块存根，该模块公开一个对象（`Asset`）和一个函数（`use_asset`）来使用该对象。
 
 ```rust
 module a_module {
@@ -33,9 +33,9 @@ module a_module {
 }
 ```
 
-The function `use_asset` takes an immutable reference to the asset (`&Asset`), which is a common pattern in a an API definition. 
+函数 `use_asset` 接受对资产的不可变引用 (`&Asset`)，这是 API 定义中的一种常见模式。
 
-Now consider another module that uses this asset.
+现在考虑另一个使用该资产的模块。
 
 ```rust
 module another_module {
@@ -49,9 +49,9 @@ module another_module {
 }
 ```
 
-This module creates an object (`AssetManager`) that references the object (`Asset`) created in the previous module (`a_module`).
+该模块创建了一个对象 (`AssetManager`)，它引用了前一个模块 (`a_module`) 中创建的对象 (`Asset`)。
 
-You could then write a Move function that retrieves an object by reference and passes it to the `use_asset` function.  
+然后，您可以编写一个 Move 函数，通过引用检索对象并将其传递给 `use_asset` 函数。
 
 ```rust
 fun do_something(manager: &AssetManager) {
@@ -60,9 +60,9 @@ fun do_something(manager: &AssetManager) {
 }
 ```
 
-The two functions in `do_something` are not valid within a PTB, however, because PTBs do not support a reference returned by a function and passed to another function.
+`do_something` 中的两个函数在 PTB 中是无效的，因为 PTB 不支持从函数返回的引用并传递给另一个函数。
 
-To make this operation valid within a PTB, you would need to include functionality from the borrow module. Consequently, you could change the `another_module` code to the following:
+为了使这个操作在 PTB 中有效，你需要包含来自 borrow 模块的功能。因此，你可以将 `another_module` 的代码更改如下：
 
 ```rust
 module another_module {
@@ -84,29 +84,29 @@ module another_module {
 }
 ```
 
-Now the PTB can retrieve the asset, use it in a call to `use_asset`, and return the asset.
+现在 PTB 可以检索资产，将其用于调用 `use_asset`，然后返回资产。
 
-## Considerations
+## 注意事项
 
-The `Borrow` object is the key to the guarantees the borrow module offers. The definition of `Borrow` is
+`Borrow` 对象是 borrow 模块提供的保证的关键。`Borrow` 的定义是
 `struct Borrow { ref: address, obj: ID }`
-which makes it such that you cannot drop or save its instance anywhere, so it must be consumed in the same transaction that retrieves it (hot potato). Moreover, fields in the `Borrow` struct make sure that the object returned is for the same `Referent` and the object that was originally held by the `Referent` instance. In other words, there is no way to either keep the object retrieved or to swap it with another object in a different `Referent`.
+这使得你无法在任何地方丢弃或保存它的实例，因此它必须在检索它的同一交易中被使用（烫手山芋）。此外，`Borrow` 结构中的字段确保返回的对象是同一个 `Referent`，并且与最初由 `Referent` 实例持有的对象相同。换句话说，无法保留检索到的对象，也无法将其与位于不同 `Referent` 中的另一个对象交换。
 
 :::caution
 
-Using a `Referent` is a very explicit and intrusive change. That has to be taken into consideration when designing a solution. 
+使用 `Referent` 是一个非常显式和侵入性的更改。在设计解决方案时必须考虑到这一点。
 
 :::
 
-Support for references in a PTB is planned, which is a much more natural and proper pattern for APIs.
+计划在 PTB 中支持引用，这是 API 的一种更自然和适当的模式。
 
-You must consider the implications of using the borrow module and whether you have a mechanism to later move to a more natural, reference pattern.
+你必须考虑使用 borrow 模块的影响，以及是否有机制可以后续转移到更自然的引用模式。
 
-Finally, the `Referent` model forces the usage of a mutable reference and returns an object by value. Both have significant implications when designing an API. You must be careful in what logic your modules provide and how objects are exposed.
+最后，`Referent` 模型强制使用可变引用并返回一个对象。在设计 API 时，这两者都有重要的影响。你必须小心模块提供的逻辑以及对象的暴露方式。
 
-## Example
+## 示例
 
-Extending the previous example, a PTB that calls `use_asset` is written as follows:
+扩展前面的示例，调用 `use_asset` 的 PTB 如下所示：
 
 ```rust
 // initialize the PTB

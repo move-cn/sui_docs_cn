@@ -1,121 +1,122 @@
 ---
-title: Connect to a Sui Network
-description: Besides Mainnet, Sui offers Testnet, Devnet, and local networks that you can connect to for development. You can also configure a custom RPC endpoint. 
+title: 连接到 Sui 网络
+description: 除了 Mainnet 外，Sui 还提供了 Testnet、Devnet 和本地网络供您进行开发。您还可以配置自定义的 RPC 端点。
 ---
 
-Sui has Mainnet, Devnet, and Testnet networks available. You can use one of the test networks, Devnet or Testnet, to experiment with the version of Sui running on that network. You can also spin up a [local Sui network](./local-network.mdx) for local development. 
+Sui 提供 Mainnet、Devnet 和 Testnet 网络。您可以使用其中一个测试网络，Devnet 或 Testnet，来尝试在该网络上运行的 Sui 版本。您还可以启动一个[本地 Sui 网络](./local-network.mdx)进行本地开发。
 
-The Sui Testnet and Devnet networks consist of:
+Sui Testnet 和 Devnet 网络包括：
 
- * Four validator nodes operated by Mysten Labs. Clients send transactions and read requests via this endpoint: `https://fullnode.<SUI-NETWORK-VERSION>.sui.io:443` using [JSON-RPC](/references/sui-api/json-rpc-format.mdx).
- * A public network [Sui Explorer](https://suiexplorer.com/) for browsing transaction history.
+- 由 Mysten Labs 操作的四个验证节点。客户端通过此端点发送交易和读取请求：`https://fullnode.<SUI-NETWORK-VERSION>.sui.io:443`，使用 [JSON-RPC](/references/sui-api/json-rpc-format.mdx)。
+- 用于浏览交易历史的公共网络 [Sui Explorer](https://suiexplorer.com/)。
 
-You can [request test SUI tokens](#request-test-tokens) through the Sui [devnet-faucet](https://discordapp.com/channels/916379725201563759/971488439931392130) and [testnet-faucet](https://discord.com/channels/916379725201563759/1037811694564560966) Discord channels, depending on which version of the network you use. If connected to Localnet, use cURL to request tokens from your [local faucet](./local-network.mdx#use-the-local-faucet). The coins on these networks have no financial value. There is no faucet service for Mainnet.
+您可以通过 Sui [devnet-faucet](https://discordapp.com/channels/916379725201563759/971488439931392130) 和 [testnet-faucet](https://discord.com/channels/916379725201563759/1037811694564560966) Discord 频道申请测试 SUI 代币，具体取决于您使用的网络版本。如果连接到 Localnet，请使用 cURL 从您的 [本地 faucet](./local-network.mdx#use-the-local-faucet) 请求代币。这些网络上的代币没有财务价值。Mainnet 没有 faucet 服务。
 
-See announcements about Sui in the [#announcements](https://discord.com/channels/916379725201563759/925109817834631189) Discord channel.
+在 Discord 频道 [#announcements](https://discord.com/channels/916379725201563759/925109817834631189) 中查看有关 Sui 的公告。
 
-See the [terms of service](https://sui.io/terms/) for using Sui networks.
+查看使用 Sui 网络的[服务条款](https://sui.io/terms/)。
 
-## Tools
+## 工具
 
-Sui provides the following tools to interact with Sui networks:
+Sui 提供以下工具与 Sui 网络进行交互：
 
- * [Sui command line interface (CLI)](/references/cli/client.mdx)
-     * Create and manage your private keys
-     * Create example NFTs
-     * Call and publish Move modules
- * [Sui Explorer](https://github.com/MystenLabs/sui/blob/main/apps/explorer/README.md) to view transactions and objects on the network
+- [Sui 命令行界面 (CLI)](/references/cli/client.mdx)
+  - 创建和管理您的私钥
+  - 创建示例 NFT
+  - 调用和发布 Move 模块
+- [Sui Explorer](https://github.com/MystenLabs/sui/blob/main/apps/explorer/README.md) 用于查看网络上的交易和对象
 
-## Environment set up
+## 环境设置
 
-First, [Install Sui](./sui-install.mdx#install-binaries). After you install Sui, [request SUI test tokens](#request-gas-tokens) through Discord for the network you are using: [Devnet](https://discordapp.com/channels/916379725201563759/971488439931392130) or [Testnet](https://discord.com/channels/916379725201563759/1037811694564560966). If connected to Localnet, use cURL to request tokens from your [local faucet](./local-network.mdx#use-the-local-faucet).
+首先，[安装 Sui](./sui-install.mdx#install-binaries)。安装 Sui 后，通过 Discord 请求您正在使用的网络的 [SUI 测试代币](#request-gas-tokens)：[Devnet](https://discordapp.com/channels/916379725201563759/971488439931392130) 或 [Testnet](https://discord.com/channels/916379725201563759/1037811694564560966)。如果连接到 Localnet，请使用 cURL 从 [本地 faucet](./local-network.mdx#use-the-local-faucet) 请求代币。
 
-To check whether Sui is already installed, run the following command:
+要检查 Sui 是否已安装，请运行以下命令：
 
 ```shell
 which sui
 ```
 
-If Sui is installed, the command returns the path to the Sui binary. If Sui is not installed, it returns `sui not found`.
+如果 Sui 已安装，该命令将返回 Sui 二进制文件的路径。如果 Sui 未安装，它将返回 `sui not found`。
 
-See the [Sui Releases](https://github.com/MystenLabs/sui/releases) page to view the changes in each Sui release.
+查看 [Sui Releases](https://github.com/MystenLabs/sui/releases) 页面，以查看每个 Sui 发布版本的更改。
 
-## Configure Sui client
+## 配置 Sui 客户端
 
-If you previously ran `sui genesis` to create a local network, it created a Sui client configuration file (client.yaml) that connects to `localhost` at `http://0.0.0.0:9000`. See [Connect to a custom RPC endpoint](#connect-to-a-custom-rpc-endpoint) to update the client.yaml file.
+如果之前运行过 `sui genesis` 来创建本地网络，它会创建一个 Sui 客户端配置文件（client.yaml），该文件连接到 `localhost` 的 `http://0.0.0.0:9000`。请参阅 [连接到自定义 RPC 端点](#connect-to-a-custom-rpc-endpoint) 以更新 client.yaml 文件。
 
-To connect the Sui client to a network, run the following command:
+要将 Sui 客户端连接到网络，请运行以下命令：
 
 ```shell
 sui client
 ```
 
-If you receive the `sui-client` help output in the console, you already have a client.yaml file. See [Connect to a custom RPC endpoint](#connect-to-a-custom-rpc-endpoint) to add a new environment alias or to switch the currently active network.
+如果在控制台中收到 `sui-client` 的帮助输出，说明您已经有了一个 client.yaml 文件。请参阅 [连接到自定义 RPC 端点](#connect-to-a-custom-rpc-endpoint) 以添加新的环境别名或切换当前活动的网络。
 
-The first time you start Sui client without having a client.yaml file, the console displays the following message:
+第一次启动 Sui 客户端时，如果没有 client.yaml 文件，控制台会显示以下消息：
 
 ```
 Config file ["<PATH-TO-FILE>/client.yaml"] doesn't exist, do you want to connect to a Sui Full node server [y/N]?
 ```
 
-Press **y** and then press **Enter**. The process then requests the RPC server URL: 
+按下 y 然后按 Enter 键。然后，进程会请求 RPC 服务器的 URL：
 
 ```
 Sui Full node server URL (Defaults to Sui Devnet if not specified) :
 ```
 
-Press **Enter** to connect to Sui Devnet. To use a custom RPC server, Sui Testnet, or Sui Mainnet, enter the URL to the correct RPC endpoint and then press **Enter**.
+按下 Enter 连接到 Sui Devnet。要使用自定义的 RPC 服务器、Sui Testnet 或 Sui Mainnet，请输入正确的 RPC 端点 URL 然后按下 Enter。
 
-If you enter a URL, the process prompts for an alias for the environment:
+如果输入了 URL，则进程会提示输入环境的别名：
 
 ```
 Environment alias for [<URL-ENTERED>] :
 ```
-Type an alias name and press **Enter**.
+
+输入别名并按下 Enter。
 
 ```
 Select key scheme to generate keypair (0 for ed25519, 1 for secp256k1, 2 for secp256r1):
 ```
 
-Press **0**, **1**, or **2** to select a key scheme and the press **Enter**.
+按下 0，1 或 2 选择密钥方案，然后按下 Enter。
 
-Sui returns a message similar to the following (depending on the key scheme you selected) that includes the address and 12-word recovery phrase for the address:
+Sui 将返回类似以下的消息（取决于您选择的密钥方案），其中包含地址和地址的 12 个单词的恢复短语：
 
 ```
 Generated new keypair for address with scheme "ed25519" [0xb9c83a8b40d3263c9ba40d551514fbac1f8c12e98a4005a0dac072d3549c2442]
 Secret Recovery Phrase : [cap wheat many line human lazy few solid bored proud speed grocery]
 ```
 
-### Connect to a custom RPC endpoint
+### 连接到自定义的 RPC 端点
 
-If you previously used `sui genesis` with the force option (`-f` or `--force`), your client.yaml file already includes two RPC endpoints: `localnet` at `http://0.0.0.0:9000` and `devnet` at `https://fullnode.devnet.sui.io:443`. You can view the defined environments with the `sui client envs` command, and switch between them with the `sui client switch` command.
+如果之前使用 `sui genesis` 命令并使用强制选项 (`-f` 或 `--force`)，则你的 client.yaml 文件已经包含两个 RPC 端点：`localnet` 对应 `http://0.0.0.0:9000`，`devnet` 对应 `https://fullnode.devnet.sui.io:443`。你可以使用 `sui client envs` 命令查看已定义的环境，并使用 `sui client switch` 命令在它们之间切换。
 
-If you previously installed a Sui client that connected to a Sui network, or created a local network, you can modify your existing client.yaml file to change the configured RPC endpoint. The `sui client` commands that relate to environments read from and write to the client.yaml file.
+如果之前安装了连接到 Sui 网络的 Sui 客户端，或者创建了本地网络，你可以修改现有的 client.yaml 文件以更改配置的 RPC 端点。与环境相关的 `sui client` 命令从和写入 client.yaml 文件。
 
-To check currently available environment aliases, run the following command: 
+要检查当前可用的环境别名，请运行以下命令：
 
 ```sh
 sui client envs
 ```
 
-The command outputs the available environment aliases, with `(active)` denoting the currently active network.
+该命令输出可用的环境别名，其中 (active) 表示当前活动的网络。
+
 ```sh
 localnet => http://0.0.0.0:9000 (active)
 devnet => https://fullnode.devnet.sui.io:443
 ```
 
-To add a new alias for a custom RPC endpoint, run the following command. Replace values in `<` `>` with values for your installation:
+要添加一个自定义RPC端点的新别名，请运行以下命令。使用您安装的值替换 `<` `>` 中的值
 
 ```shell
 sui client new-env --alias <ALIAS> --rpc <RPC-SERVER-URL>
 ```
 
-To switch the active network, run the following command:
+要切换活动网络，请运行以下命令：
 
 ```shell
 sui client switch --env <ALIAS>
 ```
 
-If you encounter an issue, delete the Sui configuration directory (`~/.sui/sui_config`) and reinstall the latest [Sui binaries](./sui-install.mdx#install-sui-binaries).
-
+如果遇到问题，请删除Sui配置目录 (~/.sui/sui_config) 并重新安装最新的 [Sui二进制文件](./sui-install.mdx#install-sui-binaries)。
 
