@@ -1,9 +1,9 @@
 ---
-title: Events
-description: Events are the main way to track actions on chain.
+title: 事件
+description: 事件是跟踪链上操作的主要方式。
 ---
 
-Events are the main way to track actions on chain. The following example includes comments to document the logic of the code. The example extends the donut example used elsewhere in the documentation to include events that are emitted when someone purchases a donut and when the `DonutShop` collects coins from that sale. You could then set up subscriptions to listen for these events, then trigger logic when those events fire. To learn more about events, see [Using Events](/guides/developer/sui-101/using-events.mdx).
+事件是跟踪链上操作的主要方式。以下示例包含注释，以记录代码的逻辑。该示例扩展了文档中其他地方使用的甜甜圈示例，包括在有人购买甜甜圈时发出的事件以及`DonutShop`在该销售中收取硬币时发出的事件。然后，您可以设置订阅来监听这些事件，然后在触发这些事件时触发逻辑。要了解更多有关事件的信息，请参阅 [使用事件](/guides/developer/sui-101/using-events.mdx)。
 
 ```move
 /// Extended example of a shared object. Now with addition of events!

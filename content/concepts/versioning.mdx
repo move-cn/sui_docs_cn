@@ -1,9 +1,9 @@
 ---
-title: Object and Package Versioning
-description: Versioning provides the ability to upgrade packages and objects on the Sui network.
+title: 对象和包版本控制
+description: 版本控制提供了在 Sui 网络上升级包和对象的能力。
 ---
 
-You reference every object stored on chain by an ID and version. When a transaction modifies an object, it writes the new contents to an on-chain reference with the same ID but a later version. This means that a single object (with ID `I`) might appear in multiple entries in the distributed store:
+您通过 ID 和版本引用链上存储的每个对象。当交易修改对象时，它将新内容写入具有相同 ID 但更高版本的链上引用。这意味着单个对象（具有 ID `I`）可能会出现在分布式存储中的多个条目中：
 
 ```
 (I, v0) => ...
@@ -11,41 +11,41 @@ You reference every object stored on chain by an ID and version. When a transact
 (I, v2) => ...  # v1 < v2
 ```
 
-Despite appearing multiple times in the store, only one version of the object is available to transactions - the latest version (v2 in the previous example). Moreover, only one transaction can modify the object at that version to create a new version, guaranteeing a linear history (`v1` was created in a state where `I` was at `v0`, and `v2` was created in a state where `I` was at `v1`).
+尽管在存储中出现多次，但交易只能访问对象的一个版本 - 最新版本（在前面的示例中是 v2）。而且，只有一个交易可以修改该版本的对象以创建新版本，从而保证了线性历史（`v1` 是在 `I` 处于 `v0` 状态创建的，而 `v2` 是在 `I` 处于 `v1` 状态创建的）。
 
-Versions are strictly increasing and (ID, version) pairs are never re-used. This structure allows node operators to prune their stores of old object versions that are now inaccessible, if they choose. This is not a requirement, though, as node operators might keep prior object versions around to serve requests for an object's history, either from other nodes that are catching up, or from RPC requests.
+版本是严格递增的，且 (ID, version) 对永不重复使用。此结构允许节点运营者清理其存储中现在无法访问的旧对象版本，如果他们选择这样做。然而，这并不是必需的，因为节点运营者可能会保留先前的对象版本，以响应对对象历史的请求，无论是来自其他正在追赶的节点还是来自 RPC 请求。
 
-## Move objects
+## Move 对象
 
-Sui uses [Lamport timestamps](https://en.wikipedia.org/wiki/Lamport_timestamp) in its versioning algorithm for objects. The use of Lamport timestamps guarantees that versions never get re-used as the new version for objects touched by a transaction is one greater than the latest version among all input objects to the transaction. For example, a transaction transferring an object `O` at version 5 using a gas object `G` at version 3 updates both `O` and `G` versions to `1 + max(5, 3) = 6` (version 6).
+Sui 在其对象版本控制算法中使用 [Lamport 时间戳](https://en.wikipedia.org/wiki/Lamport_timestamp)。使用 Lamport 时间戳可以保证版本永远不会被重复使用，因为事务触及的对象的新版本是事务所有输入对象的最新版本加一。例如，使用版本 5 的 gas 对象 `G` 进行转移的事务将更新 `O` 和 `G` 的版本至 `1 + max(5, 3) = 6`（版本 6）。
 
-The following sections detail the relevance of Lamport versions for maintaining the "no (ID, version) re-use" invariant or for accessing an object as a transaction input changes depending on that object's ownership.
+以下部分详细说明了 Lamport 版本的相关性，以维持“不重复使用 (ID, version)” 不变性或在访问对象的事务输入发生变化的情况下访问对象，具体取决于该对象的所有权。
 
-### Address-owned objects
+### 地址所有的对象
 
-You must reference address-owned transaction inputs at a specific ID and version. When a validator signs a transaction with an owned object input at a specific version, that version of the object is locked to that transaction. Validators reject requests to sign other transactions that require the same input (same ID and version).
+您必须引用特定 ID 和版本的地址所有的事务输入。当验证者使用特定版本的所有权对象输入签署事务时，该对象的那个版本将锁定到该事务。验证者会拒绝签署需要相同输入（相同 ID 和版本）的其他事务的请求。
 
-If `F + 1` validators sign one transaction that takes an object as input, and a different `F + 1` validators sign a different transaction that takes the same object as input, that object (and all the other inputs to both transactions) is equivocated, meaning they cannot be used for any further transactions in that epoch. This is because neither transaction can form a quorum without relying on a signature from a validator that has already committed the object to a different transaction, which it cannot get. All locks are reset at the end of the epoch, which frees the objects again.
+如果有 `F + 1` 个验证者签署一个以某个对象为输入的事务，另外有 `F + 1` 个验证者签署另一个以相同对象为输入的事务，该对象（以及两个事务的所有其他输入）将被认为是矛盾的，这意味着它们不能用于该纪元的任何进一步的事务。这是因为两个事务都无法形成共识，而无需依赖已经将对象提交给不同事务的验证者的签名，这是它无法获取的。所有锁在纪元结束时重置，这会再次释放对象。
 
 :::info
 
-Only an object's owner can equivocate it, but this is not a desirable thing to do. You can avoid equivocation by carefully managing the versions of address-owned input objects: never attempt to execute two different transactions that use the same object. If you don't get a definite success or failure response from the network for a transaction, assume that the transaction might have gone through, and do not re-use any of its objects for different transactions.
+只有对象的所有者才能使其出现矛盾，但这并不是一个理想的做法。您可以通过仔细管理地址所有的输入对象的版本来避免矛盾：永远不要尝试执行两个使用相同对象的不同事务。如果没有从网络为事务获取确切的成功或失败响应，请假设该事务可能已成功，不要将其对象用于不同的事务。
 
 :::
 
-### Immutable objects
+### 不可变对象
 
-Like address-owned objects, you reference immutable objects at an ID and version, but they do not need to be locked as their contents and versions do not change. Their version is relevant because they could have started life as an address-owned object before being frozen. The given version identifies the point at which they became immutable.
+与地址所有的对象类似，您引用不可变对象的 ID 和版本，但它们不需要被锁定，因为它们的内容和版本不会更改。它们的版本是相关的，因为它们可能在冻结之前作为地址所有的对象开始生活。给定的版本标识了它们变为不可变的时刻。
 
-### Shared objects
+### 共享对象
 
-Specifying a shared transaction input is slightly more complex. You reference it by its ID, the version it was shared at, and a flag indicating whether it is accessed mutably. You don't specify the precise version the transaction accesses because consensus decides that during transaction scheduling. When scheduling multiple transactions that touch the same shared object, validators agree the order of those transactions, and pick each transaction's input versions for the shared object accordingly (one transaction's output version becomes the next transaction's input version, and so on).
+指定共享事务输入略微复杂。您通过其 ID、它在哪个版本共享的以及一个指示是否可变访问的标志引用它。您不指定事务访问对象的确切版本，因为共识在事务调度期间决定了这一点。在调度多个涉及相同共享对象的事务时，验证者同意这些事务的顺序，并相应地选择每个事务的输入版本（一个事务的输出版本变为下一个事务的输入版本，依此类推）。
 
-Shared transaction inputs that you reference immutably participate in scheduling, but don't modify the object or increment its version.
+您引用的不可变共享事务输入参与调度，但不会修改对象或增加其版本。
 
-### Wrapped objects
+### 封装的对象
 
-You can't access wrapped objects by their ID in the object store, you must access them by the object that wraps them. Consider the following example that creates a `make_wrapped` function with an `Inner` object, wrapped in an `Outer` object, which is returned to the transaction sender.
+您无法通过对象存储中的 ID 访问封装的对象，您必须通过封装它们的对象进行访问。考虑以下示例，其中创建了一个 `make_wrapped` 函数，该函数包含一个包装在 `Outer` 对象中并返回给事务发送方的 `Inner` 对象。
 
 ```move
 module example::wrapped {
@@ -79,9 +79,9 @@ module example::wrapped {
 }
 ```
 
-The owner of `Outer` in this example must specify it as the transaction input and then access its `inner` field to read the instance of `Inner`. Validators refuse to sign transactions that directly specify wrapped objects (like the `inner` of an `Outer`) as inputs. As a result, you don't need to specify a wrapped object's version in a transaction that reads that object.
+在此示例中，`Outer` 的所有者必须将其指定为事务输入，然后访问其 `inner` 字段以读取 `Inner` 的实例。验证者会拒绝直接将封装对象（如 `Outer` 的 `inner`）指定为输入的事务。因此，在读取该对象的事务中，您无需指定封装对象的版本。
 
-Wrapped objects can eventually become "unwrapped", meaning that they are once again accessible at their ID:
+封装对象最终可以变为“解封”，这意味着它们再次可以通过其 ID 访问：
 
 ```move
 module example::wrapped {
@@ -95,55 +95,55 @@ module example::wrapped {
 }
 ```
 
-The `unwrap` function in the previous code takes an instance of `Outer`, destroys it, and sends the `Inner` back to the sender. After calling this function, the previous owner of `Outer` can access `Inner` directly by its ID because it is now unwrapped. Wrapping and unwrapping of an object can happen multiple times across its lifespan, and the object retains its ID across all those events.
+在先前的代码中，`unwrap` 函数接受一个 `Outer` 实例，销毁它，并将 `Inner` 发送回发送方。调用此函数后，`Outer` 的先前所有者可以通过其 ID 直接访问 `Inner`，因为它现在已解封。包装和解封对象可以在其生命周期内多次发生，并且对象在所有这些事件中都保留其 ID。
 
-The Lamport timestamp-based versioning scheme ensures that the version that an object is unwrapped at is always greater than the version it was wrapped at, to prevent version re-use.
+基于 Lamport 时间戳的版本控制方案确保对象解封时的版本始终大于包装时的版本，以防止版本重用。
 
-- After a transaction, `W`, where object `I` is wrapped by object `O`, the `O` version is greater than or equal to the `I` version. This means one of the following conditions is true:
-    - `I` is an input so has a strictly lower version.
-    - `I` is new and has an equal version.
-- After a later transaction unwrapping `I` out of `O`, the following must be true:
-    - The `O` input version is greater than or equal to its version after `W` because it is a later transaction, so the version can only have increased.
-    - The `I` version in the output must be strictly greater than the `O` input version.
+- 在一个包装对象 `I` 的对象 `O` 的事务 `W` 之后，`O` 的版本大于或等于 `I` 的版本。这意味着以下条件之一为真：
+    - `I` 是输入，因此版本严格较低。
+    - `I` 是新的，并且版本相等。
+- 在稍后解封 `I` 以将其从 `O` 中取出的事务之后，以下必须为真：
+    - `O` 的输入版本大于或等于 `W` 之后的版本，因为这是一笔较晚的交易，因此版本只能增加。
+    - 输出中的 `I` 版本必须严格大于 `O` 的输入版本。
 
-This leads to the following chain of inequalities for I's version before wrapping:
+这导致以下不等式链对于包装前的 `I` 版本：
 
-- less than or equal to O's version after wrapping
-- less than or equal to O's version before unwrapping
-- less than I's version after unwrapping
+- 小于或等于包装后的 `O` 版本
+- 小于或等于包装前的 `O` 版本
+- 小于解封后的 `I` 版本
 
-So the `I` version before wrapping is less than the `I` version after unwrapping.
+因此，包装前的 `I` 版本小于解封后的 `I` 版本。
 
-### Dynamic fields
+### 动态字段
 
-From a versioning perspective, values held in dynamic fields behave like wrapped objects:
+从版本控制的角度来看，存储在动态字段中的值的行为类似于封装的对象：
 
-- They are only accessible via the field's parent object, not as direct transaction inputs.
-- Based on the previous point, you do not need to supply their IDs or versions with the transaction inputs.
-- Lamport timestamp-based versioning makes sure that when a field contains an object and a transaction removes that field, its value becomes accessible by its ID and the value's version has been incremented to a previously unused version.
+- 它们只能通过字段的父对象访问，而不能作为直接事务输入访问。
+- 基于前一点，您无需在事务输入中提供它们的 ID 或版本。
+- 基于 Lamport 时间戳的版本控制确保，当字段包含一个对象并且事务删除该字段时，其值变得可通过其 ID 访问，并且该值的版本已递增到以前未使用的版本。
 
 :::info
 
-One distinction dynamic fields have to wrapped objects is that if a transaction modifies a dynamic object field, its version is incremented in that transaction, where a wrapped object's version would not be.
+与封装的对象相比，动态字段的一个区别是，如果事务修改动态对象字段，则该字段的版本将在该事务中递增，而封装对象的版本不会递增。
 
 :::
 
-Adding a new dynamic field to a parent object also creates a `Field` object, responsible for associating the field name and value with that parent. Unlike other newly created objects, the ID for the resulting instance of `Field` is not created using `sui::object::new`. Instead, it is computed as a hash of the parent object ID and the type and value of the field name, so that you can use it to look-up the `Field` via its parent and name.
+向父对象添加新的动态字段还会创建一个 `Field` 对象，负责将字段名称和值与该父对象关联起来。与其他新创建的对象不同，通过 `sui::object::new` 创建 `Field` 实例的 ID 不是使用。相反，它被计算为父对象 ID 和字段名称的类型和值的哈希，以便您可以使用它通过其父对象和名称查找 `Field`。
 
-When you remove a field, Sui deletes its associated `Field`, and if you add a new field with the same name, Sui creates a new instance with the same ID. Versioning using Lamport timestamps, coupled with dynamic fields being only accessible through their parent object, ensures that (ID, version) pairs are not reused in the process:
+当您删除一个字段时，Sui 将删除其关联的 `Field`，如果您使用相同的名称添加一个新字段，Sui 将创建一个具有相同 ID 的新实例。基于 Lamport 时间戳的版本控制，再加上动态字段仅通过其父对象访问，确保了在此过程中不会重用（ID，版本）对：
 
-- The transaction that deletes the original field increments the parent's version to be greater than the deleted field's version.
-- The transaction that creates the new version of the same field creates the field with a version that is greater than the parent's version.
+- 删除原始字段的事务将父对象的版本递增到大于已删除字段的版本。
+- 创建相同字段的新版本的事务将以大于父对象版本的版本创建该字段。
 
-So the version of the new `Field` instance is greater than the version of the deleted `Field`.
+因此，新 `Field` 实例的版本大于已删除 `Field` 的版本。
 
-## Packages
+## 包
 
-Move packages are also versioned and stored on chain, but follow a different versioning scheme to objects because they are immutable from their inception. This means that you refer to package transaction inputs (for example, the package that a function is from for a Move call transaction) by just their ID, and are always loaded at their latest version.
+Move 包也具有版本，并存储在链上，但其遵循与对象不同的版本控制方案，因为它们从一开始就是不可变的。这意味着您只需通过它们的 ID 引用包事务输入（例如，对于 Move 调用事务的函数所在的包），并且始终以其最新版本加载。
 
-### User packages
+### 用户包
 
-Every time you publish or upgrade a package, Sui generates a new ID. A newly published package has its version set to 1, whereas an upgraded package's version is one greater than the package it is upgrading. Unlike objects, older versions of a package remain accessible even after being upgraded. For example, imagine a package `P` that is published and upgraded twice. It might be represented in the store as:
+每次发布或升级包时，Sui 会生成一个新的 ID。新发布的包的版本设置为 1，而升级包的版本比其升级的包的版本大 1。与对象不同，包的旧版本在升级后仍然可以访问。例如，想象一个包 `P`，它被发布并升级了两次。它可能在存储中表示为：
 
 ```
 (0x17fb7f87e48622257725f584949beac81539a3f4ff864317ad90357c37d82605, 1) => P v1
@@ -151,11 +151,11 @@ Every time you publish or upgrade a package, Sui generates a new ID. A newly pub
 (0xd24cc3ec3e2877f085bc756337bf73ae6976c38c3d93a0dbaf8004505de980ef, 3) => P v3
 ```
 
-In this example, all three versions of the same package are at different IDs. The packages have increasing versions but it is possible to call into `v1`, even though `v2` and `v3` exist on chain.
+在此示例中，相同包的所有三个版本都具有不同的 ID。这些包具有递增的版本，但仍然可以调用 `v1`，即使 `v2` 和 `v3` 已存在于链上。
 
-### Framework packages
+### 框架包
 
-Framework packages (such as the Move standard library at `0x1`,the Sui Framework at `0x2`, Sui System at `0x3` and Deepbook at `0xdee9`) are a special-case because their IDs must remain stable across upgrades. The network can upgrade framework packages while preserving their IDs via a system transaction, but can only perform this operation on epoch boundaries because they are considered immutable like other packages. New versions of framework packages retain the same ID as their predecessor, but increment their version by one:
+框架包（例如 Move 标准库位于 `0x1`，Sui 框架位于 `0x2`，Sui 系统位于 `0x3`，Deepbook 位于 `0xdee9`）是一种特殊情况，因为它们的 ID 在升级过程中必须保持稳定。网络可以通过系统事务在纪元边界上升级框架包，同时保留它们的 ID，但只能对它们进行一次此操作，因为它们被视为像其他包一样不可变。框架包的新版本保留与其前身相同的 ID，但将其版本递增一：
 
 ```
 (0x1, 1) => MoveStdlib v1
@@ -163,13 +163,13 @@ Framework packages (such as the Move standard library at `0x1`,the Sui Framework
 (0x1, 3) => MoveStdlib v3
 ```
 
-The prior example shows the on-chain representation of the first three versions of the Move standard library.
+在先前的示例中，展示了 Move 标准库的前三个版本的链上表示。
 
-### Package versions
+### 包版本
 
-Sui smart contracts are organized into upgradeable packages and, as a result, multiple versions of any given package can exist on chain. Before someone can use an on-chain package, you must publish its first, original version. When you upgrade a package, you create a new version of that package. Each upgrade of a package is based on the immediately preceding version of that package in the versions history. In other words, you can upgrade the `nth` version of a package from only the `nth - 1` version. For example, you can upgrade a package from version 1 to 2, but afterwards you can upgrade that package only from version 2 to 3; you're not allowed to upgrade from version 1 to 3.
+Sui 智能合约被组织成可升级的包，因此，任何给定包的多个版本可以存在于链上。在可以使用链上包之前，必须发布其第一个原始版本。当升级包时，将创建该包的新版本。每次升级包都基于该包在版本历史中的上一个版本。换句话说，您只能从第 `n - 1` 版本升级第 `n` 版本的包。例如，您可以将包从版本 1 升级到 2，但之后您只能将该包从版本 2 升级到 3；不允许从版本 1 直接升级到版本 3。
 
-There is a notion of versioning in package manifest files, existing in both the package section and in the dependencies section. For example, consider the manifest code that follows:
+包清单文件中存在版本控制的概念，分别存在于包部分和依赖项部分。例如，考虑以下清单代码：
 
 ```toml
 [package]
@@ -180,4 +180,4 @@ version = "1.0.0"
 another_pkg = { git = "https://github.com/another_pkg/another_pkg.git" , version = "2.0.0"}
 ```
 
-At this point, the version references in the manifest are used only for user-level documentation as the `publish` and `upgrade` commands do not leverage this information. If you publish a package with a certain package version in the manifest file and then modify and re-publish the same package with a different version (using `publish` command rather than `upgrade` command), the two are considered different packages, rather than on-chain versions of the same package. You cannot use any of these packages as a dependency override to stand in for the other one. While you can specify this type of override when building a package, it results in an error when publishing or upgrading on chain.
+在此时，清单中的版本引用仅用于用户级文档，因为 `publish` 和 `upgrade` 命令不利用此信息。如果您使用清单文件中的某个包版本发布包，然后修改并使用不同版本（使用 `publish` 命令而不是 `upgrade` 命令）重新发布相同的包，那么这两个包被视为不同的包，而不是同一包的链上版本。您不能将其中任何一个用作依赖项覆盖以替代另一个。虽然在构建包时可以指定此类型的覆盖，但在链上发布或升级时会导致错误。

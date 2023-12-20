@@ -1,35 +1,35 @@
 ---
-title: Object Ownership
+title: 对象所有权
 ---
 
-Every object has an owner field that dictates how you can use it in transactions. Objects can have the following types of ownership:
+每个对象都有一个所有者字段，规定了您在事务中如何使用它。对象可以具有以下类型的所有权：
 
 ## Address-owned
 
-An address-owned object is owned by a specific 32-byte address that is either an account address (derived from a particular signature scheme) or an object ID. An address-owned object is accessible only to its owner and no others. 
+一个地址拥有的对象是由一个特定的32字节地址拥有的，该地址可以是账户地址（从特定签名方案派生）或对象ID。地址拥有的对象仅对其所有者可访问，其他人无法访问。
 
-See [Address-Owned Objects](./object-ownership/address-owned.mdx) to learn more.
+详细了解请参见 [地址拥有的对象](./object-ownership/address-owned.mdx)。
 
-## Dynamic fields
+## 动态字段
 
-Dynamic fields and dynamic object fields on Sui are added and removed dynamically, affect gas only when accessed, and store heterogeneous values.
+在Sui上，动态字段和动态对象字段是动态添加和删除的，仅在访问时影响gas，并存储异构值。
 
-See [Dynamic (Object) Fields](./dynamic-fields.mdx) to learn more.
+详细了解请参见 [动态（对象）字段](./dynamic-fields.mdx)。
 
-## Immutable
+## 不可变的
 
-An immutable object is an object that can't be mutated, transferred, or deleted. Immutable objects have no owner, so anyone can use them.
+不可变对象是一种无法变异、转移或删除的对象。不可变对象没有所有者，因此任何人都可以使用它们。
 
-See [Immutable Objects](./object-ownership/immutable.mdx) to learn more.
+详细了解请参见 [不可变的对象](./object-ownership/immutable.mdx)。
 
-## Shared
+## 共享的
 
-A shared object is an object that is shared using the `0x2::transfer::share_object` function and is accessible to everyone. Unlike owned objects, anyone can access shared ones on the network.
+共享对象是使用 `0x2::transfer::share_object` 函数共享的对象，对所有人都是可访问的。与拥有的对象不同，任何人都可以在网络上访问共享对象。
 
-See [Shared Objects](./object-ownership/shared.mdx) to learn more.
+详细了解请参见 [共享对象](./object-ownership/shared.mdx)。
 
-## Wrapped
+## 封装的
 
-In Move, you can organize data structures by putting a field of `struct` type in another.
+在Move中，您可以通过将 `struct` 类型的字段放入另一个结构中来组织数据结构。
 
-See [Wrapped Objects](./object-ownership/wrapped.mdx) to learn more.
+详细了解请参见 [封装的对象](./object-ownership/wrapped.mdx)。
