@@ -14,7 +14,7 @@ public native fun public_freeze_object<T: key>(obj: T);
 
 此调用使指定的对象变为不可变。这是一种不可逆转的操作。只有在确信不需要对对象进行修改时，才应该将其冻结。
 
-您可以在 [color_object 示例模块](https://github.com/MystenLabs/sui/blob/main/examples/move/color_object/sources/example.move) 的测试中看到此函数的使用。该测试创建一个新的（拥有的）`ColorObject`，然后调用 `public_freeze_object` 将其转换为不可变对象。
+你可以在 [color_object 示例模块](https://github.com/MystenLabs/sui/blob/main/examples/move/color_object/sources/example.move) 的测试中看到此函数的使用。该测试创建一个新的（拥有的）`ColorObject`，然后调用 `public_freeze_object` 将其转换为不可变对象。
 
 ```move
 {
@@ -26,11 +26,11 @@ public native fun public_freeze_object<T: key>(obj: T);
 };
 ```
 
-在前面的测试中，您必须已经拥有一个 `ColorObject` 才能传递它。在此调用结束时，此对象将被冻结，并且永远无法被修改。它也不再属于任何人。
+在前面的测试中，你必须已经拥有一个 `ColorObject` 才能传递它。在此调用结束时，此对象将被冻结，并且永远无法被修改。它也不再属于任何人。
 
-`transfer::public_freeze_object` 函数要求您通过值传递对象。如果允许通过可变引用传递对象，则仍然可以在 `public_freeze_object` 调用后修改对象。这与其应该已变为不可变的事实相矛盾。
+`transfer::public_freeze_object` 函数要求你通过值传递对象。如果允许通过可变引用传递对象，则仍然可以在 `public_freeze_object` 调用后修改对象。这与其应该已变为不可变的事实相矛盾。
 
-或者，您还可以提供一个在创建时创建不可变对象的 API：
+或者，你还可以提供一个在创建时创建不可变对象的 API：
 
 ```move
 public fun create_immutable(red: u8, green: u8, blue: u8, ctx: &mut TxContext) {
@@ -55,13 +55,13 @@ public fun copy_into(from: &ColorObject, into: &mut ColorObject);
 ```
 
 在此函数中，任何人都可以将不可变对象作为第一个参数 `from` 进行传递，但不能作为第二个参数进行传递。
-因为您永远无法修改不可变对象，所以即使多个事务同时使用相同的不可变对象，也不会发生数据竞争。因此，不可变对象的存在不对共识提出任何要求。
+因为你永远无法修改不可变对象，所以即使多个事务同时使用相同的不可变对象，也不会发生数据竞争。因此，不可变对象的存在不对共识提出任何要求。
 
 ## 测试不可变对象
 
-您可以使用 `test_scenario::take_immutable<T>` 在单元测试中与不可变对象交互，以从全局存储中获取一个不可变对象包装器，以及使用 `test_scenario::return_immutable` 将包装器返回到全局存储。
+你可以使用 `test_scenario::take_immutable<T>` 在单元测试中与不可变对象交互，以从全局存储中获取一个不可变对象包装器，以及使用 `test_scenario::return_immutable` 将包装器返回到全局存储。
 
-`test_scenario::take_immutable<T>` 函数是必需的，因为您只能通过只读引用来访问不可变对象。`test_scenario` 运行时会跟踪对此不可变对象的使用情况。如果编译器在下一次事务开始之前未通过 `test_scenario::return_immutable` 返回对象，则测试将停止。
+`test_scenario::take_immutable<T>` 函数是必需的，因为你只能通过只读引用来访问不可变对象。`test_scenario` 运行时会跟踪对此不可变对象的使用情况。如果编译器在下一次事务开始之前未通过 `test_scenario::return_immutable` 返回对象，则测试将停止。
 
 要看到其实际工作：
 
@@ -111,11 +111,11 @@ public fun update(
 }
 ```
 
-正如您所了解的，当 `ColorObject` 是不可变时，该函数将失败。
+正如你所了解的，当 `ColorObject` 是不可变时，该函数将失败。
 
 ## 在链上进行交互
 
-首先，查看您拥有的对象：
+首先，查看你拥有的对象：
 
 ```shell
 export ADDR=`sui client active-address`
@@ -141,7 +141,7 @@ sui client call --gas-budget <GAS-AMOUNT> --package $PACKAGE --module "color_obj
 sui client objects $ADDR
 ```
 
-您应该看到一个具有您在 `$OBJECT` 中使用的 ID 的对象。要将其变为不可变对象：
+你应该看到一个具有你在 `$OBJECT` 中使用的 ID 的对象。要将其变为不可变对象：
 
 ```shell
 sui client call --gas-budget <GAS-AMOUNT> --package $PACKAGE --module "color_object" --function "freeze_object" --args \"$OBJECT\"
@@ -153,7 +153,7 @@ sui client call --gas-budget <GAS-AMOUNT> --package $PACKAGE --module "color_obj
 sui client objects $ADDR
 ```
 
-`$OBJECT` 不再列出。它不再被任何人拥有。您可以通过查询对象信息来查看它现在是不可变的：
+`$OBJECT` 不再列出。它不再被任何人拥有。你可以通过查询对象信息来查看它现在是不可变的：
 
 ```shell
 sui client object $OBJECT
@@ -171,5 +171,5 @@ Owner: Immutable
 sui client call --gas-budget <GAS-AMOUNT> --package $PACKAGE --module "color_object" --function "update" --args \"$OBJECT\" 0 0 0
 ```
 
-响应表示您不能将不可变对象传递给可变参数。
+响应表示你不能将不可变对象传递给可变参数。
 

@@ -5,12 +5,12 @@ title: 离线签名
 Sui支持离线签名，即使用未连接到Sui网络的设备签署交易，或者在不依赖Sui密钥存储的情况下使用其他编程语言实现的钱包签署。实现离线签名的步骤包括：
 
 1. 对要签署的数据进行序列化。
-2. 对序列化的数据进行签名。将序列化的数据放在要签名的位置（例如您选择的钱包，或其他编程语言中的工具）并生成与相应公钥对应的签名。
+2. 对序列化的数据进行签名。将序列化的数据放在要签名的位置（例如你选择的钱包，或其他编程语言中的工具）并生成与相应公钥对应的签名。
 3. 执行已签名的交易。
 
 ## 为转账序列化数据 {#serialize}
 
-您必须按照 [Binary Canonical Serialization](https://crates.io/crates/bcs) (BCS) 对交易数据进行序列化。它在其他语言中也受支持。
+你必须按照 [Binary Canonical Serialization](https://crates.io/crates/bcs) (BCS) 对交易数据进行序列化。它在其他语言中也受支持。
 
 以下示例演示了如何使用 [Sui CLI](/references/cli.mdx) 对转账数据进行序列化。这将返回以Base64编码的序列化交易数据。提交原始交易以执行，作为 `tx_bytes`。
 
@@ -29,12 +29,12 @@ sui client transfer-sui --to <SUI-ADDRESS> --sui-coin-object-id <COIN-OBJECT-ID>
 
 ## 对序列化数据进行签名 {#sign}
 
-您可以使用所选择的设备和编程语言对数据进行签名。Sui接受纯Ed25519、ECDSA secp256k1、ECDSA secp256r1和本地多签的签名。要了解有关签名要求的更多信息，请参阅[Sui签名](./signatures.mdx)。
+你可以使用所选择的设备和编程语言对数据进行签名。Sui接受纯Ed25519、ECDSA secp256k1、ECDSA secp256r1和本地多签的签名。要了解有关签名要求的更多信息，请参阅[Sui签名](./signatures.mdx)。
 
 此示例使用 `sui keytool` 命令进行签名，使用存储在 `sui.keystore` 中的提供地址对应的Ed25519密钥。此命令输出签名、公钥和以Base64编码的标志。此命令由fastcrypto支持。
 `sui keytool sign --address <SUI-ADDRESS> --data <TX_BYTES>`
 
-您将收到以下响应：
+你将收到以下响应：
 
 ```shell
 Signer address: <SUI-ADDRESS>
@@ -45,13 +45,13 @@ Digest to sign: <DIGEST>
 Serialized signature (`flag || sig || pk` in Base64): <SERIALIZED-SIGNATURE>
 ```
 
-为了确保离线生成的签名符合Sui的测试目的的有效性规则，您可以使用 `sui keytool import` 将助记词导入到 `sui.keystore` 中。然后，您可以使用 `sui keytool sign` 对其进行签名，然后比较签名结果。此外，您可以在 `~/sui/sdk/typescript/test/e2e/raw-signer.test.ts` 中找到测试向量。
+为了确保离线生成的签名符合Sui的测试目的的有效性规则，你可以使用 `sui keytool import` 将助记词导入到 `sui.keystore` 中。然后，你可以使用 `sui keytool sign` 对其进行签名，然后比较签名结果。此外，你可以在 `~/sui/sdk/typescript/test/e2e/raw-signer.test.ts` 中找到测试向量。
 
 在调试时，要针对支持Sui的密码库验证签名，请参阅 [sigs-cli](https://github.com/MystenLabs/fastcrypto/blob/4cf71bd8b3a373495beeb77ce81c27827516c218/fastcrypto-cli/src/sigs_cli.rs)。
 
 ## 执行已签名的交易 {#execute}
 
-在获得序列化签名之后，您可以使用执行交易命令提交它。此命令以 `--tx-bytes` 作为要执行的原始交易字节（请参见先前 `sui client transfer` 命令的输出）和序列化签名（Base64编码的 `flag || sig || pk`，请参见 `sui keytool sign` 命令的输出）。这将执行已签名的交易，如果成功，则返回证书和交易效果。
+在获得序列化签名之后，你可以使用执行交易命令提交它。此命令以 `--tx-bytes` 作为要执行的原始交易字节（请参见先前 `sui client transfer` 命令的输出）和序列化签名（Base64编码的 `flag || sig || pk`，请参见 `sui keytool sign` 命令的输出）。这将执行已签名的交易，如果成功，则返回证书和交易效果。
 
 ```shell
 sui client execute-signed-tx --tx-bytes <TX_BYTES> --signatures <SERIALIZED-SIGNATURE>

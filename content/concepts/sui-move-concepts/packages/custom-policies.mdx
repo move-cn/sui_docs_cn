@@ -21,9 +21,9 @@ Sui 自带一组内置的包兼容性策略，按照从最严格到最宽松的�
 
 每个列出的策略，按照列出的顺序，都是在升级包中允许的更改类型上一种的超集。
 
-当您发布一个包时，默认情况下它采用最宽松的兼容性策略。您可以将包发布为一个事务块的一部分，该事务块在成功完成之前可以更改策略，使包在链上首次可用时具有所需的策略级别，而不是默认级别。
+当你发布一个包时，默认情况下它采用最宽松的兼容性策略。你可以将包发布为一个事务块的一部分，该事务块在成功完成之前可以更改策略，使包在链上首次可用时具有所需的策略级别，而不是默认级别。
 
-您可以通过在包的 `UpgradeCap` 上调用 `sui::package` 中的一个函数 (`only_additive_upgrades`、`only_dep_upgrades`、`make_immutable`) 来更改当前策略，并且策略只能变得更加严格。例如，在调用 `sui::package::only_dep_upgrades` 将策略限制为可添加之后，对同一包的 `UpgradeCap` 调用 `sui::package::only_additive_upgrades` 将导致错误。
+你可以通过在包的 `UpgradeCap` 上调用 `sui::package` 中的一个函数 (`only_additive_upgrades`、`only_dep_upgrades`、`make_immutable`) 来更改当前策略，并且策略只能变得更加严格。例如，在调用 `sui::package::only_dep_upgrades` 将策略限制为可添加之后，对同一包的 `UpgradeCap` 调用 `sui::package::only_additive_upgrades` 将导致错误。
 
 ## 升级概述 {#upgrade-overview}
 
@@ -101,9 +101,9 @@ module sui::package {
 - 特定的 `policy: u8`，表示升级期望遵循的兼容性保证类型。
 - 特定的 `digest: vector<u8>`，用于标识升级后包的内容。
 
-当您尝试运行升级时，验证器会检查即将执行的升级是否符合所有这些方面的授权升级，并且如果不满足其中任何一个条件，则不执行升级。
+当你尝试运行升级时，验证器会检查即将执行的升级是否符合所有这些方面的授权升级，并且如果不满足其中任何一个条件，则不执行升级。
 
-创建了 `UpgradeTicket` 后，您必须在该事务块内使用它（不能将其存储以供以后使用，也不能丢弃或销毁它），否则事务将失败。
+创建了 `UpgradeTicket` 后，你必须在该事务块内使用它（不能将其存储以供以后使用，也不能丢弃或销毁它），否则事务将失败。
 
 ### 包摘要 {#package-digest}
 
@@ -116,7 +116,7 @@ module sui::package {
 - 将排序后的列表中的每个元素按顺序输入到 `Blake2B` 哈希器中。
 - 从该哈希状态计算摘要。
 
-有关更多信息，请参阅 [摘要计算的实现](https://github.com/MystenLabs/sui/blob/d8cb153d886d54752763fbdab631b062da7d894b/crates/sui-types/src/move_package.rs#L232-L251)，但在大多数情况下，您可以依赖 Move 工具链在构建时输出摘要，当传递 `--dump-bytecode-as-base64` 标志时：
+有关更多信息，请参阅 [摘要计算的实现](https://github.com/MystenLabs/sui/blob/d8cb153d886d54752763fbdab631b062da7d894b/crates/sui-types/src/move_package.rs#L232-L251)，但在大多数情况下，你可以依赖 Move 工具链在构建时输出摘要，当传递 `--dump-bytecode-as-base64` 标志时：
 
 ```bash
 sui move build --dump-bytecode-as-base64
@@ -140,7 +140,7 @@ module sui::package {
 
 `UpgradeReceipt` 是 `Upgrade` 命令成功运行的证明，Sui 将新包添加到事务的已创建对象集中。它用于使用其家族中最新包的 ID (`package: ID`) 更新其 `UpgradeCap`（由 `cap: ID` 标识）。
 
-在 Sui 创建了 `UpgradeReceipt` 后，您必须在同一事务块内使用它来更新其 `UpgradeCap`（不能将其存储以供以后使用，也不能丢弃或销毁它），否则事务将失败。
+在 Sui 创建了 `UpgradeReceipt` 后，你必须在同一事务块内使用它来更新其 `UpgradeCap`（不能将其存储以供以后使用，也不能丢弃或销毁它），否则事务将失败。
 
 ## 隔离策略 {#isolating-policies}
 
@@ -196,7 +196,7 @@ module policy::day_of_week {
 
 该代码包含一个构造函数，并定义了自定义升级策略的对象类型。
 
-接下来，您需要添加一个函数来授权升级，如果在一周的正确日期。首先，定义两个常量，一个用于标识在策略不允许的日期尝试升级的错误代码，另一个用于定义一天中的毫秒数（稍后将用到）。将这些定义直接添加到当前的 `ENotWeekDay` 下方。
+接下来，你需要添加一个函数来授权升级，如果在一周的正确日期。首先，定义两个常量，一个用于标识在策略不允许的日期尝试升级的错误代码，另一个用于定义一天中的毫秒数（稍后将用到）。将这些定义直接添加到当前的 `ENotWeekDay` 下方。
 
 ```move
 // Request to authorize upgrade on the wrong day of the week.
@@ -205,7 +205,7 @@ const ENotAllowedDay: u64 = 2;
 const MS_IN_DAY: u64 = 24 * 60 * 60 * 1000;
 ```
 
-接下来，再 `new_policy` 函数后，添加一个 `week_day` 函数来获取当前星期几。正如前面所承诺的，该函数使用您之前定义的 `MS_IN_DAY` 常量。
+接下来，再 `new_policy` 函数后，添加一个 `week_day` 函数来获取当前星期几。正如前面所承诺的，该函数使用你之前定义的 `MS_IN_DAY` 常量。
 
 ```move
 fun week_day(ctx: &TxContext): u8 {
@@ -491,9 +491,9 @@ Array [
 
 ### 创建用于测试的包 {#creating-testing-package}
 
-现在，已经在链上准备好一个策略，您需要一个要升级的包。本主题创建一个基本的包并在后续场景中引用它，但您可以使用任何可用的包，而不是创建新的包。
+现在，已经在链上准备好一个策略，你需要一个要升级的包。本主题创建一个基本的包并在后续场景中引用它，但你可以使用任何可用的包，而不是创建新的包。
 
-如果您没有可用的包，请使用 `sui move new` 命令创建名为 `example` 的新包的模板。
+如果你没有可用的包，请使用 `sui move new` 命令创建名为 `example` 的新包的模板。
 
 ```bash
 sui move new example
@@ -514,14 +514,14 @@ module example::example {
 
 ### 使用 TypeScript SDK {#using-typeccript-sdk}
 
-创建一个新目录来存储 Node.js 项目。您可以使用 `npm init` 函数创建 `package.json`，或手动创建该文件。根据创建 `package.json` 的方法，填充或添加以下 JSON：
+创建一个新目录来存储 Node.js 项目。你可以使用 `npm init` 函数创建 `package.json`，或手动创建该文件。根据创建 `package.json` 的方法，填充或添加以下 JSON：
 
 ```JSON
 { "type": "module" }
 
 ```
 
-打开终端或控制台到您的 Node.js 项目的根目录。运行以下命令将 Sui TypeScript SDK 添加为依赖项：
+打开终端或控制台到你的 Node.js 项目的根目录。运行以下命令将 Sui TypeScript SDK 添加为依赖项：
 
 ```bash
 npm install @mysten/sui.js

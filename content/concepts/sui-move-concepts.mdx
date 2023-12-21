@@ -5,7 +5,7 @@ description: Move 是一种用于编写安全包以操纵链上对象的开源�
 
 {@include: ../snippets/move-summary.mdx}
 
-您可以使用 Move 定义、创建和管理可编程的 Sui 对象，代表用户级别的资产。Sui 的对象系统通过在 Move 中添加新功能的同时施加额外的限制来实现。有关更多详细信息，请参阅 [Object Model](./object-model.mdx)。
+你可以使用 Move 定义、创建和管理可编程的 Sui 对象，代表用户级别的资产。Sui 的对象系统通过在 Move 中添加新功能的同时施加额外的限制来实现。有关更多详细信息，请参阅 [Object Model](./object-model.mdx)。
 
 ## 在 Sui 上的 Move
 
@@ -29,7 +29,7 @@ Move 在 Sui 上的关键区别包括：
 - Sui 使用自己的[以对象为中心的全局存储](#global-storage)
 - 地址表示[对象标识](#object-ids)
 - Sui 对象具有[全局唯一标识符](#global-unique)
-- Sui 具有[模块初始化程序](#module-initializers)（init）
+- Sui 具有[模块初始化程序](#module-initializers) (init)
 - Sui [入口点](#entry-points)以对象引用作为输入
 
 ### 以对象为中心的全局存储 {#global-storage}
@@ -54,13 +54,13 @@ Sui 没有全局存储，因此 `address` 被重新用作用于对象和帐户�
 
 ### 模块初始化程序 {#module-initializers}
 
-如 [以对象为中心的全局存储](#global-storage) 中所述，您将 Move 模块发布到 Sui 存储中。Sui 运行时执行您在模块中可选定义的特殊 [初始化函数](./sui-move-concepts/init.mdx) 仅在模块发布时执行，以预初始化模块特定数据（例如创建单例对象）。
+如 [以对象为中心的全局存储](#global-storage) 中所述，你将 Move 模块发布到 Sui 存储中。Sui 运行时执行你在模块中可选定义的特殊 [初始化函数](./sui-move-concepts/init.mdx) 仅在模块发布时执行，以预初始化模块特定数据（例如创建单例对象）。
 
 ### 入口点以对象引用作为输入 {#entry-points}
 
-您可以从 Sui 事务（称为可编程事务块）调用公共函数。这些函数可以按值、按不可变引用或按可变引用获取对象。如果按值获取，可以销毁对象、包装它（在另一个对象中）或将其传输（到由地址指定的 Sui ID）。如果按可变引用获取，则修改后的对象版本保存到存储中，所有权不发生变化。在任何情况下，Sui 网络都会验证对象并声明它作为事务的一部分的使用。
+你可以从 Sui 事务（称为可编程事务块）调用公共函数。这些函数可以按值、按不可变引用或按可变引用获取对象。如果按值获取，可以销毁对象、包装它（在另一个对象中）或将其传输（到由地址指定的 Sui ID）。如果按可变引用获取，则修改后的对象版本保存到存储中，所有权不发生变化。在任何情况下，Sui 网络都会验证对象并声明它作为事务的一部分的使用。
 
-除了调用公共函数外，您还可以调用一个被标记为 [入口](./sui-move-concepts/entry-functions.mdx) 的函数，即使它是私有的，只要其他非`entry`函数尚未使用其输入。
+除了调用公共函数外，你还可以调用一个被标记为 [入口](./sui-move-concepts/entry-functions.mdx) 的函数，即使它是私有的，只要其他非`entry`函数尚未使用其输入。
 
 ## 探索概念
 
@@ -84,4 +84,4 @@ Move 没有本机字符串类型，但它有一个有用的包装器。详细信
 
 ### 模式
 
-Move 编码模式或技术解决您在为 Sui 区块链开发 Move 包时遇到的逻辑问题。请参阅 [Patterns](./sui-move-concepts/patterns.mdx) 部分，了解已记录的编码模式的列表。
+Move 编码模式或技术解决你在为 Sui 区块链开发 Move 包时遇到的逻辑问题。请参阅 [Patterns](./sui-move-concepts/patterns.mdx) 部分，了解已记录的编码模式的列表。

@@ -1,6 +1,6 @@
 ---
 title: 模式
-description: Move 编程模式或技巧，解决您在为 Sui 区块链开发 Move 包时遇到的逻辑问题。这包括 capabilities、witness 和 transferrable witness、hot potato 以及 ID 指针等。
+description: Move 编程模式或技巧，解决你在为 Sui 区块链开发 Move 包时遇到的逻辑问题。这包括 capabilities、witness 和 transferrable witness、hot potato 以及 ID 指针等。
 ---
 
 本节的主题介绍了解决包开发中各种逻辑需求的 Move 编程模式。
@@ -11,14 +11,14 @@ Capability 是一种允许使用对象授权操作的模式。请参阅[Capabili
 
 ## Witness 和 transferrable witness
 
-Witness 是一种具有 `drop` 的类型，用于证明其所有者在某些特权操作的时间点出现，例如，访问模块的一次性见证（OTW）证明了代码正在模块首次发布时运行。有关详细信息，请参阅以下主题。
+Witness 是一种具有 `drop` 的类型，用于证明其所有者在某些特权操作的时间点出现，例如，访问模块的一次性见证 (OTW)证明了代码正在模块首次发布时运行。有关详细信息，请参阅以下主题。
 
 - [Witness](./patterns/witness)
 - [Transferrable Witness](./patterns/transferrable-witness)
 
 ## Hot Potato
 
-Hot Potato 是一种没有 capabilities 的结构体，因此您只能在其模块中打包和解包它。
+Hot Potato 是一种没有 capabilities 的结构体，因此你只能在其模块中打包和解包它。
 
 - [Hot Potato](./patterns/hot-potato)
 

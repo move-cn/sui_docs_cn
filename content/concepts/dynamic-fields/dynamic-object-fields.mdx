@@ -83,11 +83,11 @@ public fun add_child(parent: &mut Parent, child: Child) {
 1. 发件人地址（仍然）拥有 `Parent` 对象。
 2. `Parent` 对象拥有 `Child` 对象，并且可以通过名称 `b"child"` 引用它。
 
-尝试覆盖字段（尝试添加具有已定义的相同 `<Name>` 类型和值的字段）会导致错误，并且事务将失败。您可以通过可变引用对其进行原地修改，也可以通过首先删除旧值来安全地覆盖它们（例如更改其值类型）。
+尝试覆盖字段（尝试添加具有已定义的相同 `<Name>` 类型和值的字段）会导致错误，并且事务将失败。你可以通过可变引用对其进行原地修改，也可以通过首先删除旧值来安全地覆盖它们（例如更改其值类型）。
 
 ### 访问动态字段
 
-您可以使用以下 API 通过引用引用动态字段：
+你可以使用以下 API 通过引用引用动态字段：
 
 ```move
 module sui::dynamic_field {
@@ -130,7 +130,7 @@ public fun mutate_child_via_parent(parent: &mut Parent) {
 }
 ```
 
-第一个函数直接接受对 `Child` 对象的可变引用，您可以使用尚未添加为 `Parent` 对象字段的 `Child` 对象调用它。
+第一个函数直接接受对 `Child` 对象的可变引用，你可以使用尚未添加为 `Parent` 对象字段的 `Child` 对象调用它。
 
 第二个函数接受对 `Parent` 对象的可变引用，并使用 `borrow_mut` 访问其动态字段，然后传递给 `mutate_child`。这只能在已定义 `b"child"` 字段的 `Parent` 对象上调用。已添加到 `Parent` 的 `Child` 对象必须通过其动态字段访问，因此只能使用 `mutate_child_via_parent` 而不能使用 `mutate_child` 进行修改，即使其 ID 已知。
 
@@ -146,7 +146,7 @@ public fun mutate_child_via_parent(parent: &mut Parent) {
 
 ### 移除动态字段
 
-类似于解包常规字段中保存的对象，您可以删除动态字段，暴露其值：
+类似于解包常规字段中保存的对象，你可以删除动态字段，暴露其值：
 
 ```move
 module sui::dynamic_field {

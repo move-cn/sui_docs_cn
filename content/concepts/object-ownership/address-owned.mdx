@@ -5,28 +5,28 @@ description: Address-owned objects are owned by a Sui 32-byte address, which can
 
 地址拥有的对象是由特定的 32 字节地址拥有的，这个地址可以是一个账户地址（由特定的签名方案衍生）或一个对象 ID。地址拥有的对象只能被它的所有者访问，其他人无法访问。
 
-作为地址拥有者（拥有地址的人）可以将对象转移到不同的地址。由于只有单个所有者可以访问这些对象，您可以执行仅使用拥有的对象的事务，而不需要与不共享任何对象的其他事务进行共识。
+作为地址拥有者（拥有地址的人）可以将对象转移到不同的地址。由于只有单个所有者可以访问这些对象，你可以执行仅使用拥有的对象的事务，而不需要与不共享任何对象的其他事务进行共识。
 
 ## 创建地址拥有的对象
 
-您可以使用以下函数之一（定义在[传输模块](https://github.com/MystenLabs/sui/blob/main/crates/sui-framework/packages/sui-framework/sources/transfer.move)中）来创建地址拥有的对象。
+你可以使用以下函数之一（定义在[传输模块](https://github.com/MystenLabs/sui/blob/main/crates/sui-framework/packages/sui-framework/sources/transfer.move)中）来创建地址拥有的对象。
 
 ```move
 public fun transfer<T: key>(obj: T, recipient: address)
 public fun public_transfer<T: key + store>(obj: T, recipient: address)
 ```
 
-您应该使用 `sui::transfer::transfer` 函数来定义对象的[自定义转移策略](../dynamic-fields/transfers/custom-rules.mdx)。如果对象具有 `store` 能力，则使用 `sui::transfer::public_transfer` 函数来创建地址拥有的对象。
+你应该使用 `sui::transfer::transfer` 函数来定义对象的[自定义转移策略](../dynamic-fields/transfers/custom-rules.mdx)。如果对象具有 `store` 能力，则使用 `sui::transfer::public_transfer` 函数来创建地址拥有的对象。
 
 在将对象声明为地址拥有之后，对象的所有权可以在其生命周期内发生变化 - 通过将其添加为动态对象字段、将其转移到不同的地址或使其不可变。但重要的是，在创建对象并设置其所有权后，它不能被共享。
 
 ## 访问地址拥有的对象
 
-您可以以两种不同的方式访问地址拥有的对象，这取决于对象的地址所有者是否对应于对象 ID。
+你可以以两种不同的方式访问地址拥有的对象，这取决于对象的地址所有者是否对应于对象 ID。
 
-如果对象的地址所有者对应于对象 ID，则在事务执行期间，您必须使用 [传输到对象](../dynamic-fields/transfers/transfer-to-object.mdx) 中定义的机制访问并动态验证它。
+如果对象的地址所有者对应于对象 ID，则在事务执行期间，你必须使用 [传输到对象](../dynamic-fields/transfers/transfer-to-object.mdx) 中定义的机制访问并动态验证它。
 
-如果对象的地址所有者是一个由签名衍生的地址（账户地址），则在事务执行期间，您可以直接将其用作拥有的对象，该地址进行签名。其他地址无法以任何方式在事务中访问拥有的对象 - 即使只是读取对象。
+如果对象的地址所有者是一个由签名衍生的地址（账户地址），则在事务执行期间，你可以直接将其用作拥有的对象，该地址进行签名。其他地址无法以任何方式在事务中访问拥有的对象 - 即使只是读取对象。
 
 ## 何时使用地址拥有的对象
 
