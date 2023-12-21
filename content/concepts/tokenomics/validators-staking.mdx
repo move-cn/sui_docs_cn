@@ -1,20 +1,20 @@
 ---
-title: Validators and Staking Pools
+title: 验证者和质押池
 ---
 
-Each Sui validator maintains its own staking pool to track the amount of stake and to compound staking rewards. Validator pools operate together with a time series of exchange rates that are computed at each epoch boundary. These exchange rates determine the amount of SUI tokens that each past SUI staker can withdraw in the future. Importantly, the exchange rates increase as more rewards are deposited into a staking pool and the longer an amount of SUI is deposited in a staking pool, the more rewards it will accrue.
+每个Sui验证者都维护自己的质押池，以跟踪质押金额并累积质押奖励。验证者池与在每个纪元边界计算的一系列汇率一起运作。这些汇率确定了每个过去的SUI质押者在将来可以提取的SUI代币数量。重要的是，随着越来越多的奖励存入质押池，汇率会增加，而且SUI存入质押池的时间越长，将会累积更多奖励。
 
-When SUI is deposited to the staking pool in epoch `E`, those SUI are converted into liquidity tokens at the epoch `E` exchange rate. As the staking pool earns rewards, the exchange rate appreciates. At epoch `E'`, those liquidity tokens are worth more and translate into more SUI.
-The only difference between Sui staking pools and typical liquidity pools is that in Sui the liquidity tokens do not exist. Rather, the global exchange rate table is used to track the accounting. Because all SUI tokens in the staking pool are treated the same, regardless of whether they were originally deposited as new stake or as stake rewards, all SUI tokens immediately count as stake and thus compound rewards immediately.
+当SUI在纪元`E`存入质押池时，这些SUI会按照纪元`E`的汇率转换为流动性代币。随着质押池获得奖励，汇率会升值。在纪元`E'`，这些流动性代币价值更高，可以转化为更多的SUI。
+Sui质押池与典型的流动性池之间唯一的区别在于，在Sui中，流动性代币不存在。相反，全局汇率表用于跟踪会计。因为质押池中的所有SUI代币都被视为相同，无论它们最初是作为新的质押还是质押奖励存入，所有SUI代币立即被视为质押，因此立即累积奖励。
 
-The staking pool is implemented in a system-level smart contract ([staking_pool.move](https://github.com/MystenLabs/sui/blob/main/crates/sui-framework/packages/sui-system/sources/staking_pool.move)) and is part of the Sui framework.
+质押池是在系统级别的智能合约中实现的（[staking_pool.move](https://github.com/MystenLabs/sui/blob/main/crates/sui-framework/packages/sui-system/sources/staking_pool.move)），并且是Sui框架的一部分。
 
-## Validator pool exchange rate 
+## 验证者池汇率
 
-The exchange rate for each validator pool is calculated at each epoch boundary as follows:
+每个验证者池的汇率在每个纪元边界计算如下：
 
-Exchange Rate at E+1 = ( 1 + ( Third-Party Staker Rewards at E / Third-Party Stake at E )) ( Exchange Rate at E )
+E+1的汇率 = ( 1 + ( E时第三方质押者奖励 / E时第三方质押 )) ( E时的汇率 )
 
-The distinction between third-party owned vs validator-owned rewards and stake is relevant in that validators earn commissions on the staking pool's tokens but third-party stakers do not. This accounting enables Sui to keep track of the rewards accrued by both validators and third-party token holders using a single global exchange rate table.
+第三方拥有的奖励和质押与验证者拥有的奖励和质押之间的区别在于，验证者赚取质押池的代币上的佣金，而第三方质押者不会。这种会计方法使Sui能够使用单一的全局汇率表跟踪验证者和第三方代币持有者累积的奖励。
 
 {@include: ../../snippets/staking-pool-reqs.mdx}

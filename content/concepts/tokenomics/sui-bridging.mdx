@@ -1,36 +1,36 @@
 ---
-title: SUI Bridging
+title: SUI桥接
 ---
 
-Bridging is the process of moving tokens from one blockchain to another. When you use a bridge to move tokens between blockchains that are incompatible, the tokens are "wrapped" by the bridge, which means that they get converted to a derivative token for the target blockchain. You can transfer tokens in from other blockchains to SUI, or transfer SUI tokens out to other blockchains.
+桥接是将代币从一个区块链移动到另一个区块链的过程。当你使用桥接在不兼容的区块链之间移动代币时，桥接会将代币“包裹”起来，这意味着它们会转换为目标区块链的衍生代币。你可以将其他区块链的代币转移到SUI，也可以将SUI代币转移到其他区块链。
 
-Sui supports bridging through [Wormhole Connect](#wormhole-connect) and [Wormhole Portal Bridge](#wormhole-portal-bridge).
+Sui通过[Wormhole Connect](#wormhole-connect)和[Wormhole Portal Bridge](#wormhole-portal-bridge)支持桥接。
 
 ## Wormhole Connect {#wormhole-connect}
 
-Use to bridge tokens from any Wormhole supported chain into Sui and get dropped off with extra Sui to pay gas fees. Developers can also embed the Connect Token Bridge directly into their own websites and dApps.
+用于将来自任何Wormhole支持链的代币桥接到Sui，并附带额外的Sui支付气费。开发人员还可以将Connect Token Bridge直接嵌入到其自己的网站和dApps中。
 
-### Wormhole Connect asset support {#asset-support}
+### Wormhole Connect资产支持 {#asset-support}
 
-Initially, Wormhole Connect supports only lock-and-mint bridging for ETH, WETH, USDC, MATIC, WMATIC, BNB, WBNB, AVAX, WAVAX, FTM, WFTM, CELO, GLMR, WGLRM, AND SOL across Ethereum, Polygon, BSC, Avalanche, Celo, Moonbeam, Solana and Sui. This means that any native token bridged through Wormhole Connect and the underlying Wormhole Token Bridge are received as a Wormhole-minted token on the destination chain. In some cases, Wormhole-minted tokens are the canonical representation on the chain. See the [Wormhole token list](https://github.com/wormhole-foundation/wormhole-token-list) on GitHub. Some Wormhole-minted tokens support swapping on the destination chain's DEX(s) for whichever assets you need.
+最初，Wormhole Connect仅支持ETH、WETH、USDC、MATIC、WMATIC、BNB、WBNB、AVAX、WAVAX、FTM、WFTM、CELO、GLMR、WGLRM和SOL在Ethereum、Polygon、BSC、Avalanche、Celo、Moonbeam、Solana和Sui之间的锁定和铸造桥接。这意味着通过Wormhole Connect和底层Wormhole Token Bridge桥接的任何原生代币都将作为Wormhole铸造的代币接收到目标链上。在某些情况下，Wormhole铸造的代币是链上的规范表示。请参阅GitHub上的[Wormhole token list](https://github.com/wormhole-foundation/wormhole-token-list)。一些Wormhole铸造的代币支持在目标链的DEX上交换，以获取你需要的任何资产。
 
-### Wormhole Connect automatic relay {#automatic-relay}
+### Wormhole Connect自动中继 {#automatic-relay}
 
-On EVM-based chains and Sui, Wormhole Connect lets you bridge assets while having to pay gas only on the source chain. The automatic relaying feature pays gas on behalf of users on the destination chain.
+在基于EVM的链和Sui上，Wormhole Connect允许你在只在源链上支付气费的情况下桥接资产。自动中继功能代表用户在目标链上支付气费。
 
-### Wormhole Connect gas drop-off {#gas-drop-off}
+### Wormhole Connect气费降落 {#gas-drop-off}
 
-The gas drop-off feature enables users to pay an additional fee on the source chain to request a small amount of native gas on the destination chain. For example, a user bridging USDC from Ethereum to Sui can pay a fee denominated in USDC from their sending wallet to receive some native SUI in their receiving wallet. This is in addition to the USDC they are bridging over. Gas drop-off is currently supported on EVM-based chains and Sui.
+气费降落功能使用户能够在源链上支付额外的费用，以请求在目标链上获得少量的本地气体。例如，从以太坊桥接USDC到Sui的用户可以从其发送钱包支付以USDC计价的费用，以在其接收钱包中收到一些本地的SUI。这是除去他们正在桥接的USDC之外的额外费用。目前，气费降落仅在基于EVM的链和Sui上受支持。
 
-To learn more about Wormhole Connect, see their [FAQ](https://docs.wormhole.com/wormhole/faqs) page.
+要了解有关Wormhole Connect的更多信息，请参阅他们的[FAQ](https://docs.wormhole.com/wormhole/faqs)页面。
 
 ## Wormhole Portal Bridge {#bridge}
 
-The Wormhole powered [Portal Bridge](https://www.portalbridge.com/sui) supports bridging any asset from any of the [22 supported Wormhole chains](https://www.wormhole.com/network).
+由Wormhole提供动力的[Portal Bridge](https://www.portalbridge.com/sui)支持从[22个支持的Wormhole链](https://www.wormhole.com/network)中的任何一个桥接任何资产。
 
-## Token address list {#token-address-list}
+## 代币地址列表 {#token-address-list}
 
-The following table lists the address associated with each token type. You can confirm the legitimacy of tokens when you bridge them by confirming that the address used matches the address for the token type.
+以下表格列出了与每种代币类型相关联的地址。在桥接代币时，你可以通过确认使用的地址与代币类型的地址匹配来确认代币的合法性。
 
 | Token   | Address                                                            |
 | ------- | ------------------------------------------------------------------ |

@@ -1,31 +1,31 @@
 ---
 title: zkLogin
-description: zkLogin is a Sui primitive that enables you to send transactions from a Sui address using an OAuth credential, without publicly linking the two.
+description: zkLogin是Sui的一种基元，使你能够使用OAuth凭证从Sui地址发送交易，而无需公开将两者关联起来。
 ---
 
-zkLogin is a Sui primitive that provides the ability for you to send transactions from a Sui address using an OAuth credential, without publicly linking the two.
+zkLogin是Sui的一种基元，它使你能够使用OAuth凭证从Sui地址发送交易，而无需公开将两者关联起来。
 
-zkLogin is designed with the following goals in mind:
+zkLogin设计时考虑了以下目标：
 
-- **Streamlined onboarding:** zkLogin enables you to transact on Sui using the familiar OAuth login flow, eliminating the friction of handling cryptographic keys or remembering mnemonics.
-- **Self-custody:** A zkLogin transaction requires user approval via the standard OAuth login process--the OAuth provider cannot transact on the user's behalf.
-- **Security:** zkLogin is a two-factor authentication scheme: sending a transaction requires both a credential from a recent OAuth login and a salt not managed by the OAuth provider. An attacker who compromises an OAuth account cannot transact from the user's corresponding Sui address unless they separately compromise the salt.
-- **Privacy:** Zero-knowledge proofs prevent third parties from linking a Sui address with its corresponding OAuth identifier.
-- **Optional verified identity:** A user can opt in to verify the OAuth identifier that was used to derive a particular Sui address. This serves as the foundation for a verifiable on-chain identity layer.
-- **Accessibility:** zkLogin is one of several native Sui signature schemes thanks to Sui's [cryptography agility](./transaction-auth/signatures.mdx). It integrates with other Sui primitives, like sponsored transactions and multisig.
-- **Rigorousness:** The code for zkLogin has been independently [audited](https://github.com/sui-foundation/security-audits/blob/main/docs/zksecurity_zklogin-circuits.pdf) by two firms specializing in zero knowledge. The public zkLogin ceremony for creating the common reference string attracted contributions from more than 100 participants.
+- **简化入门流程：** zkLogin使你能够使用熟悉的OAuth登录流程在Sui上进行交易，消除了处理加密密钥或记住助记词的摩擦。
+- **自我托管：** zkLogin交易需要用户通过标准的OAuth登录流程进行批准，OAuth提供商不能代表用户进行交易。
+- **安全性：** zkLogin是一种两因素身份验证方案：发送交易需要来自最近OAuth登录的凭据和不由OAuth提供商管理的盐。攻击者即使攻击了OAuth帐户，也不能从用户对应的Sui地址进行交易，除非它们单独攻击了盐。
+- **隐私：** 零知识证明阻止第三方将Sui地址与其相应的OAuth标识符关联起来。
+- **可选的已验证身份：** 用户可以选择验证用于派生特定Sui地址的OAuth标识符。这为可验证的链上身份层奠定了基础。
+- **可访问性：** 由于Sui的[密码学灵活性](./transaction-auth/signatures.mdx)，zkLogin是几种原生Sui签名方案之一。它与其他Sui基元（如赞助交易和多重签名）集成。
+- **严谨性：** zkLogin的代码已由两家专门从事零知识的公司进行了独立的[审计](https://github.com/sui-foundation/security-audits/blob/main/docs/zksecurity_zklogin-circuits.pdf)。用于创建通用参考字符串的公共zkLogin仪式吸引了100多名参与者的贡献。
 
-Are you a builder who wants to integrate zkLogin into your application or wallet? Dive into our [Integration guide](#integration-guide).
+你是希望将zkLogin集成到你的应用程序或钱包中的开发者吗？深入了解我们的[集成指南](#integration-guide)。
 
-If you want to understand how zkLogin works, including how the zero-knowledge proof is generated, and how Sui verifies a zkLogin transaction, see [this section](#how-zklogin-works).
+如果你想了解zkLogin的工作原理，包括如何生成零知识证明以及Sui如何验证zkLogin交易，请参阅[此部分](#how-zklogin-works)。
 
-If you are curious about the security model and the privacy considerations of zkLogin, visit this [page](#security-and-privacy).
+如果你对zkLogin的安全模型和隐私考虑感兴趣，请访问此[页面](#security-and-privacy)。
 
-More questions? See [the FAQ section](#faq).
+还有更多问题吗？请查看[FAQ部分](#faq)。
 
-## OpenID providers
+## OpenID提供商
 
-The following table lists the OpenID providers that can support zkLogin or are currently being reviewed to determine whether they can support zkLogin.
+以下表列出了可以支持zkLogin或目前正在审核中以确定它们是否可以支持zkLogin的OpenID提供商。
 
 | Provider     | Can support? | Devnet   | Testnet  | Mainnet  |
 | ------------ | ----------   | -------- | -------- | -------- |
@@ -43,22 +43,22 @@ The following table lists the OpenID providers that can support zkLogin or are c
 | Auth0        | Under review |   No     |  No      | No       |
 | Okta         | Under review |   No     |  No      | No       |
 
-## Integration guide
+## 集成指南
 
-Here is the high-level flow the wallet or frontend application must implement to support zkLogin-enabled transactions:
+以下是支持zkLogin启用交易的钱包或前端应用程序必须实现的高级流程：
 
-1. The wallet creates an ephemeral KeyPair.
-1. The wallet prompts the user to complete an OAuth login flow with the nonce corresponding to the ephemeral public key.
-1. After receiving the JWT token, the wallet obtains a zero-knowledge proof.
-1. The wallet obtains a unique user salt based on a JWT token. The OAuth subject identifier and salt can be used to compute the zkLogin Sui address.
-1. The wallet signs transactions with the ephemeral private key.
-1. The wallet submits the transaction with the ephemeral signature and the zero-knowledge proof.
+1. 钱包创建一个临时KeyPair。
+1. 钱包提示用户完成OAuth登录流程，其中包含与临时公钥对应的随机数。
+1. 在收到JWT令牌后，钱包获取零知识证明。
+1. 钱包基于JWT令牌获取唯一的用户盐。OAuth主题标识符和盐可用于计算zkLogin Sui地址。
+1. 钱包使用临时私钥签署交易。
+1. 钱包提交交易，包括临时签名和零知识证明。
 
-Let's dive into the specific implementation details.
+让我们深入了解具体的实现细节。
 
-## Install the zkLogin TypeScript SDK
+## 安装zkLogin TypeScript SDK
 
-To use the zkLogin TypeScript SDK in your project, run the following command in your project root:
+要在项目中使用zkLogin TypeScript SDK，请在项目根目录中运行以下命令：
 
 ```typescript
 npm install @mysten/zklogin
@@ -67,11 +67,11 @@ npm install @mysten/zklogin
 npm install @mysten/zklogin@experimental
 ```
 
-## Configure a developer account with OpenID provider
+## 配置与OpenID提供商的开发者账户
 
-Sui currently supports Google, Facebook, and Twitch. More OpenID-compatible providers will be enabled in the future.
+Sui目前支持Google、Facebook和Twitch。将来将启用更多兼容OpenID的提供商。
 
-For example, the following TypeScript code can be used to construct a login URL for testing.
+例如，以下TypeScript代码可用于构建用于测试的登录URL。
 
 ```typescript
 const REDIRECT_URI = '<YOUR_SITE_URL>';
@@ -89,104 +89,104 @@ const params = new URLSearchParams({
 const loginURL = `https://accounts.google.com/o/oauth2/v2/auth?${params}`;
 ```
 
-You must configure the client ID (`$CLIENT_ID`) and redirect URL (`$REDIRECT_URL`) with each provider as follows:
+你必须在每个提供商中配置客户端ID（`$CLIENT_ID`）和重定向URL（`$REDIRECT_URL`）：
 
 ### Google
 
-1. Register for a Google Cloud account and access the [dashboard](https://console.cloud.google.com/home/dashboard).
-1. Select "APIs & Services" then "Credentials", where you can find the client ID. Set the redirect URL. This should be the wallet or application front end.
+1. 注册Google Cloud账户并访问[仪表板](https://console.cloud.google.com/home/dashboard)。
+1. 选择"APIs & Services"然后选择"Credentials"，在那里可以找到客户端ID。设置重定向URL。这应该是钱包或应用程序前端。
 
-![1](images/zklogin-google1.png 'Sign up for Google developer account')
+![1](images/zklogin-google1.png '注册Google开发者账户')
 
-_Sign up for Google developer account_
+_注册Google开发者账户_
 
-![2](images/zklogin-google2.png 'Go to Credentials')
+![2](images/zklogin-google2.png '转到Credentials')
 
-_Go to Credentials_
+_转到Credentials_
 
-![3](images/zklogin-google3.png 'Configure Redirect URL')
+![3](images/zklogin-google3.png '配置重定向URL')
 
-_Configure a Redirect URL_
+_配置重定向URL_
 
 ### Facebook
 
-1. Register for a Facebook developer account and access the [dashboard](https://developers.facebook.com/apps/).
+1. 注册Facebook开发者账户并访问[仪表板](https://developers.facebook.com/apps/)。
 
-1. Select "Build your app" then "Products" then "Facebook Login" where you can find the client ID. Set the redirect URL. This should be the wallet or application frontend.
+1. 选择"Build your app"，然后选择"Products"，然后选择"Facebook Login"，在那里可以找到客户端ID。设置重定向URL。这应该是钱包或应用程序前端。
 
-![1](images/zklogin-facebook1.png 'Sign up for Facebook developer account')
+![1](images/zklogin-facebook1.png '注册Facebook开发者账户')
 
-_Sign up for Facebook developer account_
+_注册Facebook开发者账户_
 
-![2](images/zklogin-facebook2.png 'Go to Settings')
+![2](images/zklogin-facebook2.png '转到Settings')
 
-_Go to Settings_
+_转到Settings_
 
 ### Twitch
 
-1. Register for a Twitch developer account. Access the [dashboard](https://dev.twitch.tv/console).
+1. 注册Twitch开发者账户。访问[仪表板](https://dev.twitch.tv/console)。
 
-1. Go to "Register Your Application" then "Application" where you can find the client ID. Set the redirect URL. This should be the wallet or application frontend.
+1. 转到"Register Your Application"，然后选择"Application"，在那里可以找到客户端ID。设置重定向URL。这应该是钱包或应用程序前端。
 
-![1](images/zklogin-twitch1.png "Sign up for Twitch developer account")
+![1](images/zklogin-twitch1.png "注册Twitch开发者账户")
 
-*Sign up for Twitch developer account*
+*注册Twitch开发者账户*
 
-![2](images/zklogin-twitch2.png "Go to Console")
+![2](images/zklogin-twitch2.png "转到Console")
 
-*Go to Console*
+*转到Console*
 
 ### Kakao
 
-1. Register for a Kakao developer account. Access the [dashboard](https://developers.kakao.com/console/app) and add an application.
+1. 注册Kakao开发者账户。访问[仪表板](https://developers.kakao.com/console/app)并添加一个应用。
 
-![1](images/zklogin-kakao1.png "Add applications to Kakao")
+![1](images/zklogin-kakao1.png "向Kakao添加应用")
 
-*Add applications to Kakao*
+*向Kakao添加应用*
 
-1. Go to "App Keys" where you can find the corresponding client ID for different platforms.
+1. 转到"App Keys"，在那里可以找到不同平台对应的客户端ID。
 
-- Native app key: Used to call APIs through the Android or iOS SDK.
-- JavaScript key: Used to call APIs through the JavaScript SDK.
-- REST API key: Used to call APIs through the REST API.
+- Native app key：用于通过Android或iOS SDK调用API。
+- JavaScript key：用于通过JavaScript SDK调用API。
+- REST API key：用于通过REST API调用API。
 
-![2](images/zklogin-kakao2.png "Find Client ID")
+![2](images/zklogin-kakao2.png "找到Client ID")
 
-*Find client ID*
+*找到Client ID*
 
-1. Toggle on "Kakao Login Activation" and "OpenID Connect Activation". Set the redirect URL in "Kakao Login" under "Product Settings". This should be the wallet or application frontend.
+1. 切换打开"Kakao Login Activation"和"OpenID Connect Activation"。在"Product Settings"下的"Kakao Login"中设置重定向URL。这应该是钱包或应用程序前端。
 
-![1](images/zklogin-kakao3.png "Set Redirect URL")
+![1](images/zklogin-kakao3.png "设置重定向URL")
 
-*Set redirect URL*
+*设置重定向URL*
 
 ### Slack
 
-1. Register for a Slack developer account. Access the [dashboard](https://api.slack.com/apps) and go to "Create New App" then choose "From scratch".
+1. 注册Slack开发者账户。访问[仪表板](https://api.slack.com/apps)并转到"Create New App"，然后选择"From scratch"。
 
-	![1](images/zklogin-slack1.png "Create app in Slack")
+	![1](images/zklogin-slack1.png "在Slack中创建应用")
 
-	*Create app in Slack*
+	*在Slack中创建应用*
 
-1. Find the Client ID and Client Secret under "App Credentials".
+1. 在"App Credentials"下找到Client ID和Client Secret。
 
-	![1](images/zklogin-slack2.png "Find Client ID and Client Secret")
+	![1](images/zklogin-slack2.png "找到Client ID和Client Secret")
 
-	*Find Client ID and Client Secret*
+	*找到Client ID和Client Secret*
 
-1. Set Redirect URL in "OAuth & Permissions" under "Features". This should be the wallet or application frontend.
+1. 在"Features"下的"OAuth & Permissions"中设置重定向URL。这应该是钱包或应用程序前端。
 
-	![1](images/zklogin-slack3.png "Set Redirect URL")
+	![1](images/zklogin-slack3.png "设置重定向URL")
 
-	*Set Redirect URL*
+	*设置重定向URL*
 
-## Get JWT Token
+## 获取JWT令牌
 
-1. Generate an ephemeral KeyPair. Follow the same process as you would generating a KeyPair in a traditional wallet. See [Sui SDK](https://sdk.mystenlabs.com/typescript/cryptography/keypairs) for details.
+1. 生成一个临时KeyPair。按照在传统钱包中生成KeyPair的相同过程进行。详细信息请参见 [Sui SDK](https://sdk.mystenlabs.com/typescript/cryptography/keypairs)。
 
-1. Set the expiration time for the ephemeral KeyPair. The wallet decides whether the maximum epoch is the current epoch or later. The wallet also determines whether this is adjustable by the user.
+1. 为临时KeyPair设置过期时间。钱包决定最大时期是当前时期还是以后的时期。钱包还确定是否用户可以调整此设置。
 
-1. Assemble the OAuth URL with configured client ID, redirect URL, ephemeral public key and nonce: This is what the application sends the user to complete the login flow with a computed [nonce](#notations).
+1. 使用配置的客户端ID、重定向URL、临时公钥和随机数组装OAuth URL：这是应用程序发送给用户以完成登录流程的内容，其中包括计算的[随机数](#notations)。
 
 ```typescript
 import { generateNonce, generateRandomness } from '@mysten/zklogin';
@@ -200,11 +200,11 @@ const ephemeralKeyPair = new Ed25519Keypair();
 const randomness = generateRandomness();
 const nonce = generateNonce(ephemeralKeyPair.getPublicKey(), maxEpoch, randomness);
 ```
-The auth flow URL can be constructed with `$CLIENT_ID`, `$REDIRECT_URL` and `$NONCE`.
+T认证流URL可以使用 `$CLIENT_ID`、`$REDIRECT_URL` 和 `$NONCE` 构建。
 
-For some providers ("Yes" for "Auth Flow Only"), the JWT token can be found immediately in the redirect URL after the auth flow.
+对于某些提供商（在“仅认证流”中选择“是”），JWT令牌可以立即在认证流之后的重定向URL中找到。
 
-For other providers ("No" for "Auth Flow Only"), the auth flow only returns a code (`$AUTH_CODE`) in redirect URL. To retrieve the JWT token, an additional POST call is required with "Token Exchange URL".
+对于其他提供商（在“仅认证流”中选择“否”），认证流只返回重定向URL中的代码（`$AUTH_CODE`）。要检索JWT令牌，需要使用“Token Exchange URL”进行额外的POST调用。
 
 | Provider | Auth Flow URL | Token Exchange URL | Auth Flow Only |
 | ----------- | ----------- | ----------- | ----------- |
@@ -215,17 +215,17 @@ For other providers ("No" for "Auth Flow Only"), the auth flow only returns a co
 | Apple | `https://appleid.apple.com/auth/authorize?client_id=$CLIENT_ID&redirect_uri=$REDIRECT_URL&scope=email&response_mode=form_post&response_type=code%20id_token&nonce=$NONCE` | N/A | Yes |
 | Slack | `https://slack.com/openid/connect/authorize?response_type=code&client_id=$CLIENT_ID&redirect_uri=$REDIRECT_URL&nonce=$NONCE&scope=openid` | `https://slack.com/api/openid.connect.token?code=$AUTH_CODE&client_id=$CLIENT_ID&client_secret=$CLIENT_SECRET` | No |
 
-## Decoding JWT
+## 解码JWT
 
-Upon successful redirection the ID Provider will attach the JWT token as a URL parameter (Using the Google Flow as an example)
+在成功重定向后，身份提供商将JWT令牌作为URL参数附加（以Google流程为例）
 
 ```
 http://host/auth?id_token=tokenPartA.tokenPartB.tokenPartC&authuser=0&prompt=none
 ```
 
-The `id_token` param is the JWT token in encoded format. You can validate the correctness of the encoded token and investigate its structure by pasting it in the [jwt.io](https://jwt.io) website.
+`id_token` 参数是以编码格式的JWT令牌。你可以通过将其粘贴到 [jwt.io](https://jwt.io) 网站中来验证编码令牌的正确性并调查其结构。
 
-To decode the JWT you can use a library like: `jwt_decode:` and map the response to the provided type `JwtPayload`:
+要解码JWT，你可以使用类似 `jwt_decode` 的库，并将响应映射到提供的类型 `JwtPayload`：
 
 ```typescript
 
@@ -242,17 +242,17 @@ export interface JwtPayload {
 }
 ```
 
-## User Salt Management
+## 用户盐管理
 
-User salt is used when computing the zkLogin Sui address (see [definition](#address-definition)). The salt is required to be a 16-bytes value or a integer smaller than `2n**128n`. There are several options for the application to maintain the user salt:
-1. Client Side:
-   - Option 1: Request user input for the salt during wallet access, transferring the responsibility to the user, who must then remember it.
-   - Option 2: Browser or Mobile Storage: Ensure proper workflows to prevent users from losing wallet access during device or browser changes. One approach is to email the salt during new wallet setup.
-2. Backend service that exposes an endpoint that returns a unique salt for each user consistently.
-   - Option 3: Store a mapping from user identifier (e.g. `sub`) to user salt in a conventional database (e.g. `user` or `password` table). The salt is unique per user.
-   - Option 4: Implement a service that keeps a master seed value, and derive a user salt with key derivation by validating and parsing the JWT token. For example, use `HKDF(ikm = seed, salt = iss || aud, info = sub)` defined [here](https://github.com/MystenLabs/fastcrypto/blob/e6161f9279510e89bd9e9089a09edc018b30fbfe/fastcrypto/src/hmac.rs#L121). Note that this option does not allow any rotation on master seed or change in client ID (i.e. aud), otherwise a different user address will be derived and will result in loss of funds.
+在计算zkLogin Sui地址时使用用户盐（请参见 [定义](#address-definition)）。盐必须是一个16字节的值，或者小于`2n**128n`的整数。应用程序在维护用户盐时有几个选项：
+1. 客户端端：
+   - 选项1：在访问钱包时请求用户输入盐，将责任转移到用户身上，用户需要记住盐。
+   - 选项2：浏览器或移动存储：确保适当的工作流程，以防止用户在更改设备或浏览器时失去钱包访问。一种方法是在设置新钱包时通过电子邮件发送盐。
+2. 公开一个端点的后端服务，该端点为每个用户一致返回唯一的盐。
+   - 选项3：在传统数据库中（例如 `user` 或 `password` 表）存储从用户标识符（例如 `sub`）到用户盐的映射。每个用户的盐是唯一的。
+   - 选项4：实现一个服务，保留主种子值，并通过验证和解析JWT令牌派生用户盐，使用密钥派生，例如使用 `HKDF(ikm = seed, salt = iss || aud, info = sub)` 在 [这里](https://github.com/MystenLabs/fastcrypto/blob/e6161f9279510e89bd9e9089a09edc018b30fbfe/fastcrypto/src/hmac.rs#L121)定义。请注意，此选项不允许在主种子上进行旋转或更改客户端ID（即aud），否则将导致派生不同用户地址，可能会导致资金丢失。
 
-Here's an example request and response for the Mysten Labs-maintained salt server (using option 4). If you wish to use the Mysten ran salt server, please contact us for whitelisting your registered client ID. Only valid JWT token authenticated with whitelisted client IDs are accepted.
+以下是Mysten Labs维护的盐服务器的示例请求和响应（使用选项4）。如果你希望使用Mysten运行的盐服务器，请联系我们以将你注册的客户端ID列入白名单。只有使用已列入白名单的客户端ID进行身份验证的有效JWT令牌才会被接受。
 
 ```bash
 curl -X POST https://salt.api.mystenlabs.com/get_salt -H 'Content-Type: application/json' -d '{"token": "$JWT_TOKEN"}'
@@ -260,11 +260,11 @@ curl -X POST https://salt.api.mystenlabs.com/get_salt -H 'Content-Type: applicat
 Response: {"salt":"129390038577185583942388216820280642146"}
 ```
 
-User salt is used to disconnect the OAuth identifier (sub) from the on-chain Sui address to avoid linking Web2 credentials with Web3 credentials. While losing or misusing the salt could enable this link, it wouldn't compromise fund control or zkLogin asset authority. See more discussion [here](#security-and-privacy).
+用户盐用于断开OAuth标识符（sub）与链上Sui地址之间的关联，以避免将Web2凭据与Web3凭据关联起来。尽管失去或滥用盐可能会启用此关联，但不会危及资金控制或zkLogin资产权限。请参阅更多讨论 [这里](#security-and-privacy)。
 
-## Get the User's Sui Address
+## 获取用户的Sui地址
 
-Once the OAuth flow completes, the JWT token can be found in the redirect URL. Along with the user salt, the zkLogin address can be derived as follows:
+一旦OAuth流程完成，JWT令牌可以在重定向URL中找到。结合用户盐，可以按照以下步骤派生zkLogin地址：
 
 ```typescript
 import { jwtToAddress } from '@mysten/zklogin';
@@ -272,11 +272,11 @@ import { jwtToAddress } from '@mysten/zklogin';
 const zkLoginUserAddress = jwtToAddress(jwt, userSalt);
 ```
 
-## Get the Zero-Knowledge Proof
+## 获取零知识证明
 
-The next step is to fetch the ZK proof. This is an attestation (proof) over the ephemeral key pair that proves the ephemeral key pair is valid.
+下一步是获取ZK证明。这是对临时密钥对的一种证明，证明临时密钥对是有效的。
 
-First, generate the extended ephemeral public key to use as an input to the ZKP.
+首先，生成扩展的临时公钥，以将其用作ZKP的输入。
 
 ```typescript
 import { getExtendedEphemeralPublicKey } from '@mysten/zklogin';
@@ -284,26 +284,26 @@ import { getExtendedEphemeralPublicKey } from '@mysten/zklogin';
 const extendedEphemeralPublicKey = getExtendedEphemeralPublicKey(ephemeralKeyPair.getPublicKey());
 ```
 
-You need to fetch a new ZK proof if the previous ephemeral key pair is expired or is otherwise inaccessible.
+如果之前的临时密钥对已过期或无法访问，你需要获取一个新的ZK证明。
 
-Because generating a ZK proof can be resource-intensive and potentially slow on the client side, it's advised that wallets utilize a backend service endpoint dedicated to ZK proof generation.
+由于在客户端生成ZK证明可能会消耗大量资源并且潜在地较慢，建议钱包使用专用于ZK证明生成的后端服务端点。
 
-There are two options:
-1. Call the Mysten Labs-maintained proving service
-1. Run the proving service in your backend using the provided Docker images.
+有两个选项：
+1. 调用Mysten Labs维护的证明服务
+1. 在你的后端使用提供的Docker映像运行证明服务。
 
-### Call the Mysten Labs-maintained proving service
+### 调用Mysten Labs维护的证明服务
 
-If you wish to use the Mysten ran ZK Proving Service for Mainnet, please contact us for whitelisting your registered client ID. Only valid JWT token authenticated with whitelisted client IDs are accepted.
+如果你希望在Mainnet上使用Mysten运行的ZK Proving Service，请联系我们，以便将你的注册客户端ID列入白名单。仅接受使用列入白名单的客户端ID进行身份验证的有效JWT令牌。
 
-To use `prover-dev` endpoint, you do not need to whitelist client IDs. Note that the proof generated with the `prover-dev` endpoint can only be submitted for Devnet zkLogin transactions, submitting it to Testnet or Mainnet fails.
+要使用`prover-dev`端点，你无需列入白名单客户端ID。请注意，使用`prover-dev`端点生成的证明只能提交用于Devnet zkLogin交易，将其提交到Testnet或Mainnet将失败。
 
-| Network | Prover URL |
+| 网络 | Prover URL |
 | ------- | ---------- |
 | Mainnet, Testnet | https://prover.mystenlabs.com/v1 |
 | Devnet | https://prover-dev.mystenlabs.com/v1 |
 
-You can use BigInt or Base64 encoding for `extendedEphemeralPublicKey`, `jwtRandomness`, and `salt`. The following examples show two sample requests with the first using BigInt encoding and the second using Base64.
+你可以使用BigInt或Base64编码来处理 `extendedEphemeralPublicKey`，`jwtRandomness`和 `salt`。以下示例展示了两个样本请求，第一个使用BigInt编码，第二个使用Base64。
 
 ```bash
 curl -X POST $PROVER_URL -H 'Content-Type: application/json' \
@@ -325,7 +325,7 @@ curl -X POST $PROVER_URL -H 'Content-Type: application/json' \
 }'
 ```
 
-Response:
+回应：
 
 ```json
 {
@@ -347,11 +347,11 @@ Response:
 }
 ```
 
-### How to handle CORS error
+### 如何处理CORS错误
 
-To avoid possible CORS errors in Frontend apps, it is suggested to delegate this call to a backend service.
+为了避免在前端应用中可能出现的CORS错误，建议将此调用委托给后端服务。
 
-The response can be mapped to the inputs parameter type of `getZkLoginSignature` of zkLogin SDK.
+响应可以映射到 zkLogin SDK 的 `getZkLoginSignature` 方法的输入参数类型。
 
 ```typescript
 const proofResponse = await post('/your-internal-api/zkp/get', zkpRequestPayload);
@@ -363,11 +363,10 @@ export type PartialZkLoginSignature = Omit<
 const partialZkLoginSignature = proofResponse as PartialZkLoginSignature;
 ```
 
-### Run the proving service in your backend
+### 在你的后端运行证明服务
 
-1. Download two images from from Docker Hub [repository](https://hub.docker.com/repository/docker/mysten/zklogin/general) that are tagged as `prover` and `prover-fe`.
-
-1. Download the [Groth16 proving key zkey file](https://docs.circom.io/getting-started/proving-circuits/) that will be later used as an argument to run the prover. There are zkeys available for Mainnet and Testnet, as well as a test zkey for Devnet. See [the Ceremony section](#ceremony) for more details on how the main proving key is generated. Please install [git lfs](https://git-lfs.com/) which is needed before downloading the zkey.
+1. 从  Docker Hub [仓库](https://hub.docker.com/repository/docker/mysten/zklogin/general) 下载标记为  `prover` 和 `prover-fe` 的两个镜像。
+1. 下载 [Groth16 证明密钥 zkey 文件](https://docs.circom.io/getting-started/proving-circuits/) ，稍后将用作运行 prover 的参数。有适用于 Mainnet 和 Testnet 的 zkeys，以及用于 Devnet 的测试 zkey。有关主证明密钥生成的详细信息，请参阅 [the Ceremony section](#ceremony)。在下载 zkey 前，请安装 [git lfs](https://git-lfs.com/)，这是必需的。
 
 	- Main zkey (for Mainnet and Testnet)
 		```bash
@@ -378,14 +377,14 @@ const partialZkLoginSignature = proofResponse as PartialZkLoginSignature;
 		wget -O - https://raw.githubusercontent.com/sui-foundation/zklogin-ceremony-contributions/main/download-test-zkey.sh | bash
 		```
 
-	- To verify the download contains the correct zkey file, you can run the following command to check the Blake2b hash: `b2sum ${file_name}.zkey`.
+	- 验证下载是否包含正确的 zkey 文件，可以运行以下命令检查 Blake2b 哈希：`b2sum ${file_name}.zkey`。
 
 		| Network | zkey file name | Hash |
 		| ------------ | ----------   | -------- |
 		| Mainnet, Testnet |  `zkLogin-main.zkey` | `060beb961802568ac9ac7f14de0fbcd55e373e8f5ec7cc32189e26fb65700aa4e36f5604f868022c765e634d14ea1cd58bd4d79cef8f3cf9693510696bcbcbce` |
 		| Devnet | `zkLogin-test.zkey` | `686e2f5fd969897b1c034d7654799ee2c3952489814e4eaaf3d7e1bb539841047ae8ee5fdcdaca5f4ddd76abb5a8e8eb77b44b693a2ba9d4be57e94292b26ce2` |
 
-1. Run `prover` at `PORT1` with the downloaded zkey. This needs to be run on Linux-based machines (amd64). Further, we recommended using at least 16 vcpu, preferably an AMD cpu and at least 16gb ram for production use. Whereas 8 vcpu, 8gb ram works for testing (but its not fast).
+1. 在 `PORT1` 上使用下载的 zkey 运行 `prover`。在 Linux-based 机器 (amd64) 上运行此命令。建议在生产环境中使用至少 16 vcpu，最好是 AMD cpu，并且至少需要 16GB RAM。而在测试环境中，8 vcpu 和 8GB RAM 可以工作（但速度较慢）。
 
 	```bash
 	docker run \
@@ -396,7 +395,7 @@ const partialZkLoginSignature = proofResponse as PartialZkLoginSignature;
 	<prover-image>
 	```
 
-1. Run `prover-fe` at `PORT2`:
+1. 在 `PORT2` 上运行 `prover-fe`
 
 	```bash
 	docker run \
@@ -407,22 +406,23 @@ const partialZkLoginSignature = proofResponse as PartialZkLoginSignature;
 		<prover-fe-image> 8080
 	```
 
-1. Expose the `prover-fe` service appropriately and keep the prover service internal.
-1. To call the proving service, the following two endpoints are supported:
-   - `/ping`: To test if the service is up. Running `curl http://localhost:PORT2/ping` should return `pong`.
-   - `/v1`: The request and response are the same as the Mysten Labs maintained service.
+1. 将 `prover-fe` 服务适当地暴露，同时将 prover 服务保持为内部服务。
+1. 调用证明服务的两个支持的端点：
+   - `/ping`：用于测试服务是否正常运行。运行 `curl http://localhost:PORT2/ping` 应返回 `pong`。
+   - `/v1`：请求和响应与 Mysten Labs 维护的服务相同。
 
-A few things to note:
 
-- If you want to compile the prover from scratch (for performance reasons), please see our fork of [rapidsnark](https://github.com/MystenLabs/rapidsnark#compile-prover-in-server-mode). You'd need to compile and launch the prover in server mode.
+一些建议注意事项：
 
-- Setting `DEBUG=*` turns on all logs in the prover-fe service some of which may contain PII. Consider using DEBUG=zkLogin:info,jwks in production environments.
+- 如果出于性能原因，你想从头开始编译 prover，请查看我们对 [rapidsnark](https://github.com/MystenLabs/rapidsnark#compile-prover-in-server-mode) 的分支。你需要编译并以服务器模式启动 prover。
 
-- If you are seeing the error message "Call to rapidsnark service took longer than 15s", consider increasing the timeout by setting the environment variable `PROVER_TIMEOUT` to a higher value. For example, `PROVER_TIMEOUT=30`.
+- 设置 `DEBUG=*` 会在 prover-fe 服务中打开所有日志，其中一些可能包含个人身份信息（PII）。在生产环境中，考虑使用 `DEBUG=zkLogin:info,jwks`。
 
-## Assemble the zkLogin signature and submit the transaction
+- 如果你看到错误消息 "Call to rapidsnark service took longer than 15s"，请考虑通过将环境变量 `PROVER_TIMEOUT` 设置为较高的值来增加超时时间。例如，`PROVER_TIMEOUT=30`。
 
-First, sign the transaction bytes with the ephemeral private key using the key pair generated previously. This is the same as [traditional KeyPair signing](https://sdk.mystenlabs.com/typescript/cryptography/keypairs). Make sure that the transaction `sender ` is also defined.
+## 组装 zkLogin 签名并提交交易
+
+首先，使用先前生成的密钥对，使用临时私钥对交易字节进行签名。这与 [传统的 KeyPair 签名](https://sdk.mystenlabs.com/typescript/cryptography/keypairs) 相同。确保交易中定义了 `sender`。
 
 ```typescript
  const ephemeralKeyPair = new Ed25519Keypair();
@@ -439,12 +439,11 @@ const { bytes, signature: userSignature } = await txb.sign({
 });
 ```
 
-Next, generate an address seed by combining `userSalt`, `sub` (subject ID), and `aud` (audience).
+接下来，通过组合 `userSalt`、`sub`（主题 ID）和 `aud`（受众）生成地址种子。
 
-Set the address seed and the partial zkLogin signature to be the `inputs` parameter.
+将地址种子和部分 zkLogin 签名设置为 `inputs` 参数。
 
-You can now serialize the zkLogin signature by combining the ZK proof (`inputs`),
-the `maxEpoch`, and the ephemeral signature (`userSignature`).
+现在，你可以通过组合 ZK 证明（`inputs`）、`maxEpoch` 和短暂签名（`userSignature`）来序列化 zkLogin 签名。
 
 ```typescript
 import { genAddressSeed, getZkLoginSignature } from "@mysten/zklogin";
@@ -461,7 +460,7 @@ const zkLoginSignature : SerializedSignature = getZkLoginSignature({
 });
 ```
 
-Finally, execute the transaction.
+最后，执行交易。
 
 ```typescript
 client.executeTransactionBlock({
@@ -470,94 +469,93 @@ client.executeTransactionBlock({
 });
 ```
 
-## Caching the ephemeral private key and ZK proof
+## 缓存短暂私钥和 ZK 证明
 
-As previously documented, each ZK proof is tied to an ephemeral key pair. So you can reuse the proof to sign any number of transactions until the ephemeral key pair expires (until the current epoch crosses `maxEpoch`).
+如先前记录的，每个 ZK 证明与一个短暂密钥对相关联。因此，你可以重用该证明来签署任意数量的交易，直到短暂密钥对过期（直到当前纪元超过 `maxEpoch` 为止）。
 
-You might want to cache the ephemeral key pair along with the ZKP for future uses.
+你可能希望缓存短暂密钥对以及 ZKP 供将来使用。
 
-However, the ephemeral key pair needs to be treated as a secret akin to a key pair in a traditional wallet. This is because if both the ephemeral private key and ZK proof are revealed to an attacker, then they can typically sign any transaction on behalf of the user (using the same process described previously).
+但是，短暂密钥对需要像传统钱包中的密钥对一样对待为机密信息。这是因为如果短暂私钥和 ZK 证明都被泄露给攻击者，那么它们通常可以代表用户签署任何交易（使用先前描述的相同过程）。
 
-Consequently, you should not store them persistently in an unsecure storage location, on any platform. For example, on browsers, use session storage instead of local storage to store the ephemeral key pair and the ZK proof.
+因此，你不应该在任何平台的不安全存储位置上持久存储它们。例如，在浏览器上，使用会话存储而不是本地存储来存储短暂密钥对和 ZK 证明。
 
+# zkLogin 工作原理
 
-# How zkLogin Works
+在简要概述中，zkLogin 协议依赖于以下内容：
 
-In rough sketches, the zkLogin protocol relies on the following:
+1. JWT 令牌是来自 OAuth 提供程序的已签名有效负载，包括一个名为 nonce 的用户定义字段。zkLogin 利用 [OpenID Connect OAuth 流程](https://openid.net/developers/how-connect-works/)，将 nonce 定义为公钥和到期时期。
+1. 钱包存储一个短暂 KeyPair，其中短暂公钥在 nonce 中定义。短暂私钥为短暂会话签署交易，消除了用户记忆的需要。
+   基于 JWT 令牌生成 Groth16 零知识证明，隐藏了隐私敏感字段。
+1. 提交具有短暂签名和 ZK 证明的交易上链。Sui 当局在验证短暂签名和证明后执行交易。
+1. 与基于公钥派生 Sui 地址不同，zkLogin 地址是从 `sub`（唯一标识每个提供程序的用户）、`iss`（标识提供程序）、`aud`（标识应用程序）和 `user_salt`（将 OAuth 标识符与链上地址解除链接的值）派生的。
 
-1. A JWT token is a signed payload from OAuth providers, including a user-defined field named nonce. zkLogin leverages [the OpenID Connect OAuth flow](https://openid.net/developers/how-connect-works/) by defining the nonce as a public key and an expiry epoch.
-1. The wallet stores an ephemeral KeyPair, where the ephemeral public key is defined in the nonce. The ephemeral private key signs transactions for a brief session, eliminating the need for user memorization.
-   The Groth16 zero-knowledge proof is generated based on the JWT token, concealing privacy-sensitive fields.
-1. A transaction is submitted on-chain with the ephemeral signature and the ZK proof. Sui authorities execute the transaction after verifying the ephemeral signature and the proof.
-1. Instead of deriving the Sui address based on a public key, the zkLogin address is derived from `sub` (that uniquely identifies the user per provider), `iss` (identifies the provider), `aud` (identifies the application) and `user_salt` (a value that unlinks the OAuth identifier with the on-chain address).
-
-## The complete zkLogin flow
+## 完整的 zkLogin 流程
 
 ![1](images/zklogin-flow.png 'zkLogin Complete Flow')
 
-(Step 0) We use Groth16 for our protocol's zkSNARK instantiation, requiring a singular generation of a structured common reference string (CRS) linked to the circuit. A ceremony is conducted to generate the CRS, which is used to produce the proving key in the ZK Proving Service, the verifying key in Sui Authority. See [the Ceremony section](#ceremony) for more details.
+(步骤 0) 我们在协议的 zkSNARK 实例化中使用 Groth16，需要生成与电路相关联的结构化公共参考字符串 (CRS)。进行仪式生成 CRS，用于在 ZK 证明服务中生成证明密钥和在 Sui 当局生成验证密钥。有关详细信息，请参阅 [仪式部分](#仪式)。
 
-(Step 1-3) The user begins by logging into an OpenID Provider (OP) to obtain a JWT token containing a defined nonce. In particular, the user generates an _ephemeral_ KeyPair `(eph_sk, eph_pk)` and embed `eph_pk`, along with expiry times (`max_epoch`) and randomness (`jwt_randomness`), into the nonce (see [definition](#notations)). After the user completes the OAuth login flow, an JWT token can be found in the redirect URL in the application.
+(步骤 1-3) 用户首先通过登录到 OpenID 提供程序 (OP) 来获取包含定义的 nonce 的 JWT 令牌。特别是，用户生成一个 _短暂_ KeyPair `(eph_sk, eph_pk)`，并将 `eph_pk` 与到期时间 (`max_epoch`) 和随机性 (`jwt_randomness`) 一起嵌入 nonce 中（参见 [definition](#notations)）。用户完成 OAuth 登录流程后，在应用程序的重定向 URL 中可以找到 JWT 令牌。
 
-(Step 4-5) The application frontend then sends the JWT token to a salt service. The salt service returns the unique `user_salt` based on `iss, aud, sub` upon validation of the JWT token.
+(步骤 4-5) 然后，应用程序前端将 JWT 令牌发送到 salt 服务。salt 服务在验证 JWT 令牌后，基于 `iss, aud, sub` 返回唯一的 `user_salt`。
 
-(Step 6-7) The user sends the ZK proving service the JWT token, user salt, ephemeral public key, jwt randomness, key claim name (i.e. `sub`). The proving service generates a Zero-Knowledge Proof that takes these as private inputs and does the following: (a) Checks the nonce is derived correctly [as defined](#notations) (b) Checks that key claim value matches the corresponding field in the JWT, (c) Verifies the RSA signature from OP on the JWT, and (d) the address is consistent with the key claim value and user salt.
+(步骤 6-7) 用户将 JWT 令牌、用户 salt、短暂公钥、jwt 随机性、密钥声明名称（即 `sub`）发送给 ZK 证明服务。证明服务生成一个零知识证明，将这些作为私有输入，并执行以下操作：(a) 检查 nonce 是否正确派生 [如定义](#notations) (b) 检查密钥声明值是否与 JWT 中的相应字段匹配，(c) 验证来自 OP 的 JWT 的 RSA 签名，以及 (d) 地址是否与密钥声明值和用户 salt 一致。
 
-(Step 8): The application computes the user address based on iss, aud, sub, aud. This step can be done independently as long as the application has a valid JWT token.
+(步骤 8): 应用程序基于 iss, aud, sub, aud 计算用户地址。只要应用程序具有有效的 JWT 令牌，可以独立执行此步骤。
 
-(Step 9-10) A transaction is signed using the ephemeral private key to generate an ephemeral signature. Finally, the user submits the transaction along with the ephemeral signature, ZK proof and other inputs to Sui.
+(步骤 9-10) 使用短暂私钥签署交易以生成短暂签名。最后，用户将交易与短暂签名、ZK 证明和其他输入一起提交给 Sui。
 
-(After Step 10) After submitted on chain, Sui Authorities verify the ZK proof against the provider JWKs from storage (agreed upon in consensus) and also the ephemeral signature.
+(步骤 10 之后) 在链上提交后，Sui 当局使用存储中的提供程序 JWK 验证 ZK 证明，并验证短暂签名。
 
-## Entities
+## 实体
 
-1. Application frontend: This describes the wallet or frontend application that supports zkLogin. This frontend is responsible for storing the ephemeral private key, directing users to complete the OAuth login flow, creating and signing a zkLogin transaction.
+1. 应用程序前端：描述支持 zkLogin 的钱包或前端应用程序。该前端负责存储短暂私钥，引导用户完成 OAuth 登录流程，创建和签署 zkLogin 交易。
 
-2. Salt Backup Service: This is a backend service responsible for returning a salt per unique user. See [integration guide](#integration-guide) for other strategies to maintain salt.
+2. Salt 备份服务：负责返回每个唯一用户的盐。有关维护盐的其他策略，请参阅 [集成指南](#integration-guide)。
 
-3. ZK Proving Service: This is a backend service responsible for generating ZK proofs based on JWT token, JWT randomness, user salt and max epoch. This proof is submitted on-chain along with the ephemeral signature for a zkLogin transaction.
+3. ZK 证明服务：负责基于 JWT 令牌、JWT 随机性、用户 salt 和最大纪元生成 ZK 证明的后端服务。此证明与 zkLogin 交易的短暂签名一起提交到链上。
 
-## Address definition
+## 地址定义
 
-The address is computed on the following inputs:
+地址是根据以下输入计算的：
 
-1. The address flag: `zk_login_flag = 0x05` for zkLogin address. This serves as a domain separator as a signature scheme defined in [crypto agility](./transaction-auth/signatures.mdx).
+1. 地址标志：`zk_login_flag = 0x05` 用于 zkLogin 地址。这充当 [密码敏捷性](./transaction-auth/signatures.mdx) 中定义的签名方案的域分隔符。
 
-1. `kc_name_F = hashBytesToField(kc_name, maxKCNameLen)`: Name of the key claim, e.g., `sub`. The sequence of bytes is mapped to a field element in BN254 using `hashBytesToField` (defined below).
+1. `kc_name_F = hashBytesToField(kc_name, maxKCNameLen)`：密钥声明的名称，例如 `sub`。使用 `hashBytesToField` 将字节序列映射到 BN254 中的字段元素（下文定义）。
 
-1. `kc_value_F = hashBytesToField(kc_value, maxKCValueLen)`: The value of the key claim mapped using `hashBytesToField`.
+1. `kc_value_F = hashBytesToField(kc_value, maxKCValueLen)`：密钥声明的值，使用 `hashBytesToField` 映射。
 
-1. `aud_F = hashBytesToField(aud, maxAudValueLen)`: The Relying Party (RP) identifier. See [definition](#terminology-and-notations).
+1. `aud_F = hashBytesToField(aud, maxAudValueLen)`：依赖方 (RP) 标识符。请参阅 [定义](#术语和符号)。
 
-1. `iss`: The OpenID Provider (OP) identifier. See [definition](#terminology-and-notations).
+1. `iss`：OpenID 提供程序 (OP) 标识符。请参阅 [定义](#术语和符号)。
 
-1. `user_salt`: A value introduced to unlink the OAuth identifier with the on-chain address.
+1. `user_salt`：用于解除 OAuth 标识符与链上地址的关联的值。
 
-Finally, we derive `zk_login_address = Blake2b_256(zk_login_flag, iss_L, iss, addr_seed)` where `addr_seed = Poseidon_BN254(kc_name_F, kc_value_F, aud_F, Poseidon_BN254(user_salt)`.
+最后，我们派生 `zk_login_address = Blake2b_256(zk_login_flag, iss_L, iss, addr_seed)`，其中 `addr_seed = Poseidon_BN254(kc_name_F, kc_value_F, aud_F, Poseidon_BN254(user_salt)`。
 
-## Terminology and notations
+## 术语和符号
 
-See below for all relevant OpenID terminology defined in [spec](https://openid.net/specs/openid-connect-core-1_0.html#Terminology) and how they are used in zkLogin, along with definitions for protocol details.
+下面是在 [规范](https://openid.net/specs/openid-connect-core-1_0.html#Terminology) 中定义的所有相关 OpenID 术语，以及它们在 zkLogin 中的使用，以及协议详细信息的定义。
 
-### OpenID provider (OP)
+### OpenID 提供程序 (OP)
 
-OAuth 2.0 authorization server that is capable of authenticating the end-user and providing claims to a relying party about the authentication event and the end-user. This is identified in the `iss` field in JWT token payload. Currently zkLogin supported OPs include Google, Facebook, and Twitch, and more compatible providers will be enabled in the future.
+能够对最终用户进行身份验证并向依赖方提供有关身份验证事件和最终用户的声明的 OAuth 2.0 授权服务器。在 JWT 令牌负载中通过 `iss` 字段标识。当前 zkLogin 支持的 OP 包括 Google、Facebook 和 Twitch，将来将启用更多兼容的提供程序。
 
-### Relying party (RP) or client
+### 依赖方 (RP) 或客户端
 
-OAuth 2.0 client application requiring end-user authentication and claims from an OpenID provider. This is assigned by OP when the developer creates the application. This is identified in the `aud` field in JWT token payload. This refers to any zkLogin enabled wallet or application.
+需要最终用户身份验证和来自 OpenID 提供程序的声明的 OAuth 2.0 客户端应用程序。由开发人员创建应用程序时由 OP 分配。在 JWT 令牌负载中通过 `aud` 字段标识。这指的是任何支持 zkLogin 的钱包或应用程序。
 
-### Subject identifier (sub)
+### 主题标识符 (sub)
 
-Locally unique and never reassigned identifier within the issuer for the end-user, which is intended to be consumed by the RP. Sui uses this as the key claim to derive user address.
+在颁发者内部唯一且永不重新分配的最终用户标识符，旨在由 RP 消耗。Sui 将其用作导出用户地址的密钥声明。
 
 ### JWK (JSON Web Key)
 
-A JSON data structure that represents a set of public keys for an OP. A public endpoint (e.g. https://www.googleapis.com/oauth2/v3/certs) can be queried to retrieve the valid public keys corresponding to `kid` for the provider. Upon matching with the `kid` in the header of a JWT token, the JWT token can be verified against the payload and its corresponding JWK. In Sui, all authorities call the JWK endpoints independently, and update the latest view of JWKs for all supported providers during protocol upgrades. The correctness of JWKs is guaranteed by the quorum (2f+1) of validator stake.
+表示 OP 的一组公钥的 JSON 数据结构。可以查询公共端点（例如 https://www.googleapis.com/oauth2/v3/certs）以检索与提供程序的 `kid` 对应的有效公钥。与 JWT 令牌头部中的 `kid` 匹配后，可以根据负载及其相应的 JWK 验证 JWT 令牌。在 Sui 中，所有当局独立调用 JWK 端点，并在协议升级期间更新所有支持的提供程序的最新 JWK 视图。JWK 的正确性由验证者的法定数量（2f+1）保证。
 
-### JWT Token (JSON Web Token)
+### JWT 令牌 (JSON Web Token)
 
-JWT token can be found in the redirect URL to RP after the user completes the OAuth login flow (i.e. `https://redirect.com?id_token=$JWT_TOKEN`). The JWT token contains a `header`, `payload` and a `signature`. The signature is an RSA signature that can be verified against `jwt_message = header + . + payload` and its JWK identified by `kid`. The `payload` contains a JSON of many claims that is a name, value pair. See below for the specific claims that are relevant to the zkLogin protocol.
+JWT 令牌可以在用户完成 OAuth 登录流程后在 RP 的重定向 URL 中找到（即 `https://redirect.com?id_token=$JWT_TOKEN`）。JWT 令牌包含一个 `header`、`payload` 和一个 `signature`。签名是可以根据 `jwt_message = header + . + payload` 及其由 `kid` 标识的 JWK 验证的 RSA 签名。`payload` 包含许多声明的 JSON，是名称-值对。请参阅下文，了解与 zkLogin 协议相关的特定声明。
 
 **Header**
 
@@ -576,194 +574,194 @@ JWT token can be found in the redirect URL to RP after the user completes the OA
 | nonce | hTPpgF7XAKbW37rEUS6pEVZqmoI                                              | A value set by the relying party. The zkLogin enabled wallet is required to set this to the hash of ephemeral public key, an expiry time and a randomness. |
 | sub   | 110463452167303000000                                                    | A unique identifier assigned to the user.                                                                                                                  |
 
-For a zkLogin transaction, we do not use the `iat` and `exp` claims (i.e., timestamp). This is because we provide a different way for users to specify expiry times, namely via `nonce`.
+对于 zkLogin 交易，我们不使用 `iat` 和 `exp` 声明（即时间戳）。这是因为我们为用户提供了一种通过 `nonce` 指定到期时间的不同方式。
 
 ### Key Claim
 
-We call the claim used to derive a users' address as the "key claim" e.g., sub or email. Naturally, we only want to use claims that are fixed once and never changed again. For zkLogin, we currently support sub as the key claim because OpenID spec mandates that providers do not change this identifier. In the future, this can be extended to use email, username, etc.
+我们将用于推导用户地址的声明称为 "key claim"，例如 sub 或 email。当然，我们只希望使用一次固定并且永远不再更改的声明。对于 zkLogin，我们目前支持 sub 作为 key claim，因为 OpenID 规范要求提供程序不更改此标识符。在将来，这可以扩展为使用 email、username 等。
 
-### Notations
+### 符号表示
 
-1. `(eph_sk, eph_pk)`: Ephemeral key pair refers to the private and public key pair used to produce ephemeral signatures. The signing mechanism is the same as traditional transaction signing, but it is ephemeral because it is only stored for a short session and can be refreshed upon new OAuth sessions. The ephemeral public key is used to compute nonce.
-2. `nonce`: An application-defined field embedded in the JWT token payload, computed as the hash of the ephemeral public key, JWT randomness, and the maximum epoch (Sui's defined expiry epoch). Specifically, a zkLogin compatible nonce is required to passed in as `nonce = ToBase64URL(Poseidon_BN254([ext_eph_pk_bigint / 2^128, ext_eph_pk_bigint % 2^128, max_epoch, jwt_randomness]).to_bytes()[len - 20..])` where `ext_eph_pk_bigint` is the BigInt representation of `ext_eph_pk`.
-3. `ext_eph_pk`: The byte representation of an ephemeral public key (`flag || eph_pk`). Size varies depending on the choice of the signature scheme (denoted by the flag, defined in [Signatures](./transaction-auth/signatures.mdx)).
-4. `user_salt`: A value introduced to unlink the OAuth identifier with the on-chain address.
-5. `max_epoch`: The epoch at which the JWT token expires. This is u64 used in Sui.
-6. `kc_name`: The key claim name, e.g. `sub`.
-7. `kc_value`: The key claim value, e.g. `110463452167303000000`.
-8. `hashBytesToField(str, maxLen)`: Hashes the ASCII string to a field element using the Poseidon hash.
+1. `(eph_sk, eph_pk)`：短暂密钥对指的是用于生成短暂签名的私钥和公钥对。签名机制与传统交易签名相同，但它是短暂的，因为它仅在短会话中存储，并且可以在新的 OAuth 会话上刷新。短暂公钥用于计算 nonce。
+2. `nonce`：一个嵌入在 JWT 令牌载荷中的应用程序定义字段，计算为短暂公钥、JWT 随机性和最大纪元（Sui 定义的到期纪元）的哈希。具体而言，一个与 zkLogin 兼容的 nonce 需要作为 `nonce = ToBase64URL(Poseidon_BN254([ext_eph_pk_bigint / 2^128, ext_eph_pk_bigint % 2^128, max_epoch, jwt_randomness]).to_bytes()[len - 20..])` 传递，其中 `ext_eph_pk_bigint` 是 `ext_eph_pk` 的 BigInt 表示。
+3. `ext_eph_pk`：短暂公钥的字节表示形式（`flag || eph_pk`）。其大小取决于签名方案的选择（由标志表示，在 [Signatures](./transaction-auth/signatures.mdx) 中定义）。
+4. `user_salt`：引入的值，用于取消关联 OAuth 标识符与链上地址。
+5. `max_epoch`：JWT 令牌过期的纪元。这是 Sui 中使用的 u64。
+6. `kc_name`：键声明名称，例如 `sub`。
+7. `kc_value`：键声明值，例如 `110463452167303000000`。
+8. `hashBytesToField(str, maxLen)`：使用 Poseidon 哈希将 ASCII 字符串哈希到字段元素。
 
-## Ceremony
+## 仪式
 
-To preserve privacy of the OAuth artifacts, a zero-knowledge proof of possession of the artifacts is provided. zkLogin employs the Groth16 zkSNARK to instantiate the zero-knowledge proofs, as it is the most efficient general-purpose zkSNARK in terms of proof size and verification efficiency.
+为了保护 OAuth 构件的隐私，我们提供了对构件拥有零知识证明的证明。zkLogin 使用 Groth16 zkSNARK 来实例化零知识证明，因为它是就证明大小和验证效率而言最高效的通用 zkSNARK。
 
-However, Groth16 needs a computation-specific Common Reference String (CRS) to be setup by a trusted party. With zkLogin expected to ensure the safe-keeping of high value transactions and the integrity of critical smart contracts, we cannot base the security of the system on the honesty of a single entity. Hence, to generate the CRS for the zkLogin circuit, it is vital to run a protocol which bases its security on the assumed honesty of a small fraction of a large number of parties.
+然而，Groth16 需要由可信方设置的特定于计算的公共参考字符串（CRS）。由于 zkLogin 预期确保高价值交易的安全保管和关键智能合约的完整性，我们不能将系统的安全性建立在单个实体的诚实上。因此，为了生成 zkLogin 电路的 CRS，必须运行一个基于大量参与方的假设诚实的协议。
 
-### What is the ceremony?
+### 什么是仪式？
 
-The Sui zkLogin ceremony is essentially a cryptographic multi-party computation (MPC) performed by a diverse group of participants to generate this CRS. We follow the MPC protocol [MMORPG](https://eprint.iacr.org/2017/1050.pdf) described by Bowe, Gabizon and Miers. The protocol roughly proceeds in 2 phases. The first phase results in a series of powers of a secret quantity tau in the exponent of an elliptic curve element. Since this phase is circuit-agnostic, we adopted the result of the existing community contributed [perpetual powers of tau](https://github.com/privacy-scaling-explorations/perpetualpowersoftau/tree/master). Our ceremony was the second phase, which is specific to the zkLogin circuit.
+Sui zkLogin 仪式本质上是由多样化的参与者执行的密码多方计算（MPC），以生成这个 CRS。我们遵循由 Bowe、Gabizon 和 Miers 描述的 MPC 协议 [MMORPG](https://eprint.iacr.org/2017/1050.pdf)。该协议大致分为两个阶段。第一个阶段导致在椭圆曲线元素的指数中得到一系列秘密量 tau 的幂。由于此阶段与电路无关，我们采用了现有社区贡献的 [perpetual powers of tau](https://github.com/privacy-scaling-explorations/perpetualpowersoftau/tree/master) 的结果。我们的仪式是第二阶段，专门用于 zkLogin 电路。
 
-The MMORPG protocol is a sequential protocol, which allows an indefinite number of parties to participate in sequence, without the need of any prior synchronization or ordering. Each party needs to download the output of the previous party, generate entropy of its own and then layer it on top of the received result, producing its own contribution, which is then relayed to the next party. The protocol guarantees security, if at least one of the the participants follows the protocol faithfully, generates strong entropy and discards it reliably.
+MMORPG 协议是一个顺序协议，允许无限数量的参与方按顺序参与，无需任何先前的同步或排序。每个参与方需要下载前一个参与方的输出，生成自己的熵，然后将其叠加在接收到的结果之上，产生自己的贡献，然后传递给下一个参与方。该协议保证安全性，只要至少有一个参与方忠实地遵循协议、生成强熵并可靠地丢弃它。
 
-### How was the ceremony performed?
+### 仪式如何进行？
 
-We sent invitations to 100+ people with diverse backgrounds and affiliations: Sui validators, cryptographers, web3 experts, world-renowned academicians, and business leaders. We planned the ceremony to take place on the dates September 12-18, 2023, but allowed participants to join when they wanted with no fixed slots.
+我们向 100 多名具有不同背景和从属关系的人发送了邀请：Sui 验证人、密码学家、web3 专家、世界著名学者和商业领袖。我们计划在 2023 年 9 月 12 日至 18 日的日期进行仪式，但允许参与者在希望的任何时候加入，没有固定的时间段。
 
-Since the MPC is sequential, each contributor needed to wait till the previous contributor finished in order to receive the previous contribution, follow the MPC steps and produce their own contribution. Due to this structure, we provisioned a queue where participants waited, while those who joined before them finished. To authenticate participants, we sent a unique activation code to each of them. The activation code was the secret key of a signing key pair, which had a dual purpose: it allowed the coordination server to associate the participant's email with the contribution, and to verify the contribution with the corresponding public key.
+由于 MPC 是顺序的，每个贡献者都需要等到前一个贡献者完成，以便接收先前的贡献，按照 MPC 步骤进行，并生成自己的贡献。由于这个结构，我们提供了一个队列，参与者在其中等待，而那些在他们之前加入的人完成了。为了验证参与者，我们向每个参与者发送了一个唯一的激活代码。激活代码是签名密钥对的秘密密钥，具有双重目的：它允许协调服务器将参与者的电子邮件与贡献关联起来，并使用相应的公钥验证贡献。
 
-Participants had two options to contribute: through a browser or a docker. The browser option was more user-friendly for contributors to participate as everything happens in the browser. The Docker option required Docker setup but is more transparent—the Dockerfile and contributor source code are open-sourced and the whole process is verifiable. Moreover, the browser option utilizes [snarkjs](https://github.com/iden3/snarkjs) while the Docker option utilizes [Kobi's implementation](https://github.com/iseriohn/phase2-bn254). This provided software variety and contributors could choose to contribute by whichever method they trust. In addition, participants could generate entropy via entering random text or making random cursor movements.
+参与者有两种贡献选项：通过浏览器或通过 Docker。浏览器选项对于贡献者在浏览器中完成所有操作更加用户友好。Docker 选项需要 Docker 设置，但更透明 —— Dockerfile 和贡献者源代码是开源的，并且整个过程是可验证的。此外，浏览器选项使用 [snarkjs](https://github.com/iden3/snarkjs)，而 Docker 选项使用 [Kobi 的实现](https://github.com/iseriohn/phase2-bn254)。这提供了软件的多样性，参与者可以选择通过他们信任的任何方法进行贡献。此外，参与者可以通过输入随机文本或进行随机光标移动来生成熵。
 
-The zkLogin circuit and the ceremony client [code](https://github.com/sui-foundation/zk-ceremony-client) were made open source and the links were made available to the participants to review before the ceremony. In addition, we also posted these developer docs and an [audit report](https://github.com/sui-foundation/security-audits/blob/main/docs/zksecurity_zklogin-circuits.pdf) on the circuit from zkSecurity. We adopted [challenge #0081](https://pse-trusted-setup-ppot.s3.eu-central-1.amazonaws.com/challenge_0081) (resulting from 80 community contributions) from [perpetual powers of tau](https://github.com/privacy-scaling-explorations/perpetualpowersoftau/tree/master/0080_carter_response) in phase 1, which is circuit agnostic. We applied the output of the [Drand](http://drand.love) random beacon at epoch #3298000 to remove bias. For phase 2, our ceremony had 111 contributions, 82 from browser and 29 from docker. Finally, we applied the output of the Drand random beacon at epoch #3320606 to remove bias from contributions. All intermediate files can be reproduced following instructions [here](https://github.com/sui-foundation/zklogin-ceremony-contributions/blob/main/phase1/README.md) for phase 1 and [here](https://github.com/sui-foundation/zklogin-ceremony-contributions/blob/main/phase2/README.md) for phase 2.
+zkLogin 电路和仪式客户端 [代码](https://github.com/sui-foundation/zk-ceremony-client) 被开源，链接在仪式之前提供给参与者进行审核。此外，我们还发布了这些开发人员文档和 zkSecurity 对电路的 [审计报告](https://github.com/sui-foundation/security-audits/blob/main/docs/zksecurity_zklogin-circuits.pdf)。我们从第 1 阶段采用了 [perpetual powers of tau](https://github.com/privacy-scaling-explorations/perpetualpowersoftau/tree/master/0080_carter_response) 的 [挑战 #0081](https://pse-trusted-setup-ppot.s3.eu-central-1.amazonaws.com/challenge_0081)（由 80 个社区贡献产生），该阶段与电路无关。我们在第 2 阶段应用了 [Drand](http://drand.love) 随机信标在纪元 #3298000 上的输出，以消除偏差。对于第 2 阶段，我们的仪式有 111 个贡献，其中浏览器贡献 82 个，Docker 贡献 29 个。最后，我们在第 2 阶段应用了 Drand 随机信标在纪元 #3320606 上的输出，以消除贡献的偏差。所有中间文件可以按照 [这里](https://github.com/sui-foundation/zklogin-ceremony-contributions/blob/main/phase1/README.md) 的说明进行第 1 阶段的复制，以及 [这里](https://github.com/sui-foundation/zklogin-ceremony-contributions/blob/main/phase2/README.md) 的说明进行第 2 阶段的复制。
 
-## Finalization
+## 最终化
 
-The final CRS along with the transcript of contribution of every participant is available in a public repository. Contributors received both the hash of the previous contribution they were working on and the resulting hash after their contribution, displayed on-screen and sent via email. They can compare these hashes with the transcripts publicly available on the ceremony site. In addition, anyone is able to check that the hashes are computed correctly and each contribution is properly incorporated in the finalized parameters.
+最终的 CRS 以及每个参与者的贡献记录的成绩单都在一个公共存储库中可用。贡献者收到了他们正在工作的前一个贡献的哈希以及他们的贡献后的结果哈希，这两个哈希都在屏幕上显示并通过电子邮件发送。他们可以将这些哈希与在仪式站点上公开可用的记录进行比较。此外，任何人都可以检查哈希是否计算正确，每个贡献是否正确地纳入了最终的参数中。
 
-Eventually, the final CRS was used to generate the proving key and verifying key. The proving key is used to generate zero knowledge proof for zkLogin, stored with the ZK proving service. The verifying key was [deployed](https://github.com/MystenLabs/sui/pull/13822) as part of the validator software (protocol version 25 in [release 1.10.1](https://github.com/MystenLabs/sui/releases/tag/mainnet-v1.10.1)) that is used to verify the zkLogin transaction on Sui.
+最终，最终的 CRS 被用于生成证明密钥和验证密钥。证明密钥用于为 zkLogin 生成零知识证明，并与 ZK 证明服务一起存储。验证密钥已经 [部署](https://github.com/MystenLabs/sui/pull/13822) 作为验证人软件的一部分（协议版本 25 在 [发布 1.10.1](https://github.com/MystenLabs/sui/releases/tag/mainnet-v1.10.1) 中使用），用于验证 Sui 上的 zkLogin 交易。
 
-## Security and Privacy
+## 安全和隐私
 
-We'll walk through all zkLogin artifacts, their security assumptions, and the consequences of loss or exposure.
+我们将逐步介绍所有 zkLogin 构件、它们的安全假设以及丢失或暴露的后果。
 
-## JWT Token
+## JWT 令牌
 
-The JWT token's validity is scoped on the client ID (i.e. aud) to prevent phishing attacks. The same origin policy for the proof prevents the JWT token obtained for a malicious application from being used for zkLogin. The JWT token for the client ID is sent directly to the application frontend through the redirect URL. A leaked JWT token for the specific client ID can compromise user privacy, as these tokens frequently hold sensitive information like usernames and emails. Furthermore, if a backend salt server is responsible for user salt management, the JWT token could potentially be exploited to retrieve the user's salt, which introduces additional risks.
+JWT 令牌的有效性受到客户端 ID（即 aud）的限制，以防止钓鱼攻击。对于证明的同源策略阻止了为恶意应用程序获取的 JWT 令牌用于 zkLogin。针对客户端 ID 获取的 JWT 令牌直接通过重定向 URL 发送到应用程序前端。特定客户端 ID 的泄漏的 JWT 令牌可能会损害用户隐私，因为这些令牌经常包含诸如用户名和电子邮件之类的敏感信息。此外，如果后端 salt 服务器负责用户 salt 管理，JWT 令牌可能会被利用以检索用户的 salt，从而引入额外的风险。
 
-However, a JWT leak does not mean loss of funds as long as the corresponding ephemeral private key is safe.
+但是，JWT 泄漏并不意味着资金的损失，只要相应的短暂私钥是安全的。
 
-## User Salt
+## 用户 Salt
 
-The user salt is required to get access to the zkLogin wallet. This value is essential for both ZK proof generation and zkLogin address derivation.
+用户 salt 是获取对 zkLogin 钱包访问的必要条件。这个值对于 ZK 证明生成和 zkLogin 地址推导都是必不可少的。
 
-The leak of user salt does not mean loss of funds, but it enables the attacker to associate the user's subject identifier (i.e. `sub`) with the Sui address. This can be problematic depending on whether pairwise or public subject identifiers are in use. In particular, there is no problem if pairwise IDs are used (e.g., Facebook) as the subject identifier is unique per RP. However, with public reusable IDs (e.g., Google and Twitch), the globally unique sub value can be used to identify users.
+用户 salt 泄漏并不意味着资金的损失，但它使攻击者能够将用户的主题标识符（即 `sub`）与 Sui 地址关联起来。这可能是有问题的，具体取决于是否使用了成对或公共主题标识符。特别是，如果使用成对的 ID（例如，Facebook），则主题标识符是每个 RP 唯一的。然而，对于可重用的公共 ID（例如，Google 和 Twitch），全球唯一的 sub 值可以用于识别用户。
 
-## Ephemeral Private Key
+## 短暂私钥
 
-The ephemeral private key's lifespan is tied to the maximum epoch specified in nonce for creating a valid ZK proof. Should it be misplaced, a new ephemeral private key can be generated for transaction signing, accompanied by a freshly generated ZK proof using a new nonce. However, if the ephemeral private key is compromised, acquiring the user salt and the valid ZK proof would be necessary to move funds.
+短暂的私钥寿命与用于创建有效的零知识证明的 nonce 中指定的最大纪元相关联。如果它被放错地方，可以为交易签名生成新的短暂私钥，同时使用新的 nonce 生成新的 ZK 证明。然而，如果短暂私钥被泄露，获取用户盐和有效的 ZK 证明将是必要的以移动资金。
 
-## Proof
+## 证明
 
-Obtaining the proof itself cannot create a valid zkLogin transaction because an ephemeral signature over the transaction is also needed.
+仅仅获得证明本身不能创建有效的 zkLogin 交易，因为还需要交易上的短暂签名。
 
-## Privacy
+## 隐私
 
-By default, there is no linking between the OAuth subject identifier (i.e. `sub`) and a Sui address. This is the purpose of the user salt.
-The JWT token is not published on-chain by default. The revealed values include `iss`, `aud` and `kid` so that the public input hash can be computed, any sensitive fields such as `sub` are used as private inputs when generating the proof.
+默认情况下，OAuth 主题标识符（即 `sub`）与 Sui 地址之间没有链接。这就是用户盐的目的。
+JWT 令牌默认情况下不会上链。揭示的值包括 `iss`、`aud` 和 `kid`，以便可以计算公共输入哈希，任何敏感字段（如 `sub`）在生成证明时被用作私有输入。
 
-The ZK proving service and the salt service (if maintained) can link the user identity since the user salt and JWT token are known, but the two services are stateless by design.
+零知识证明服务和盐服务（如果维护的话）可以链接用户身份，因为用户盐和 JWT 令牌是已知的，但这两个服务都是无状态设计。
 
-In the future, the user can opt in to verify their OAuth identity associated with an Sui address on-chain.
+将来，用户可以选择验证与 Sui 地址关联的他们的 OAuth 身份。
 
 ## FAQ
 
-### What providers is zkLogin compatible with?
+### zkLogin 兼容的提供商是哪些？
 
-zkLogin can support providers that work with OpenID Connect built on top of the OAuth 2.0 framework. This is a subset of OAuth 2.0 compatible providers. Sui currently supports Google, Facebook and Twitch. Other compatible providers will be enabled via protocol upgrades in the future.
+zkLogin 可以支持在 OAuth 2.0 框架之上构建的 OpenID Connect 的提供商。这是 OAuth 2.0 兼容提供商的子集。目前 Sui 支持 Google、Facebook 和 Twitch。其他兼容提供商将通过将来的协议升级启用。
 
-### How is a zkLogin Wallet different from a traditional private key wallet?
+### zkLogin 钱包与传统私钥钱包有何不同？
 
-Traditional private key wallets demand users to consistently recall mnemonics and passphrases, necessitating secure storage to prevent fund loss from private key compromise.
+传统私钥钱包要求用户始终记住助记词和口令，需要安全存储以防止由于私钥泄露而导致资金损失。
 
-On the other hand, a zkLogin wallet only requires an ephemeral private key storage with session expiry and the OAuth login flow with expiry. Forgetting an ephemeral key does not result in loss of funds, because a user can always sign in again to generate a new ephemeral key and a new ZK proof.
+另一方面，zkLogin 钱包只需要短暂私钥存储与会话到期以及带有到期的 OAuth 登录流程。遗忘短暂私钥不会导致资金损失，因为用户随时可以重新登录以生成新的短暂私钥和新的 ZK 证明。
 
-### How is zkLogin different from MPC or Multisig wallets?
+### zkLogin 与 MPC 或多重签名钱包有何不同？
 
-Multi-Party Computation (MPC) and Multisig wallets rely on multiple keys or distributing multiple key shares and then defining a threshold value for accepting a signature.
+多方计算（MPC）和多重签名钱包依赖于多个密钥或分发多个密钥份额，然后定义接受签名的阈值。
 
-zkLogin does not split any individual private keys, but ephemeral private keys are registered using a fresh nonce when the user authenticates with the OAuth provider. The primary advantage of zkLogin is that the user does not need to manage any persistent private key anywhere, not even with any private keys management techniques like MPC or Multisig.
+zkLogin 不会分割任何个体私钥，而是在用户使用 OAuth 提供商进行身份验证时使用新的 nonce 注册短暂私钥。zkLogin 的主要优势在于用户不需要在任何地方管理任何持久的私钥，甚至不需要使用 MPC 或多重签名等私钥管理技术。
 
-You can think of zkLogin as a 2FA scheme for an address, where the first part is user's OAuth account and the second is the user's salt.
+您可以将 zkLogin 视为地址的双因素身份验证方案，其中第一部分是用户的 OAuth 帐户，第二部分是用户的盐。
 
-Furthermore, because Sui native supports Multisig wallets, one can always include one or more zkLogin signers inside a Multisig wallet for additional security, such as using the zkLogin part as 2FA in k-of-N settings.
+此外，由于 Sui 本地支持多重签名钱包，用户始终可以在多重签名钱包中包含一个或多个 zkLogin 签名者，以增加安全性，例如在 k-of-N 设置中将 zkLogin 部分用作双因素身份验证。
 
-### If my OAuth account is compromised, what happens to my zkLogin address?
+### 如果我的 OAuth 帐户被破坏，我的 zkLogin 地址会发生什么？
 
-Because zkLogin is a 2FA system, an attacker that has compromised your OAuth account cannot access your zkLogin address unless they have separately compromised your salt.
+由于 zkLogin 是一个双因素身份验证系统，攻击者如果破坏了您的 OAuth 帐户，则无法访问您的 zkLogin 地址，除非他们单独破坏了您的盐。
 
-### If I lose access to my OAuth account, do I lose access to my zkLogin address?
+### 如果我失去对我的 OAuth 帐户的访问权限，我会失去对我的 zkLogin 地址的访问权限吗？
 
-Yes. You must be able to log into your OAuth account and produce a current JWT in order to use zkLogin.
+是的。您必须能够登录到您的 OAuth 帐户并生成当前的 JWT，以便使用 zkLogin。
 
-### Does losing my OAuth credential mean the loss of funds in the zkLogin wallet?
+### 失去 OAuth 凭证是否意味着 zkLogin 钱包中的资金丧失？
 
-A forgotten OAuth credential can typically be recovered by resetting the password in that provider.
-In the unfortunate event where user's OAuth credentials get compromised, an adversary will still require to obtain `user_salt`, but also learn which wallet is used in order to take over that account. Note that modern `user_salt` providers may have additional 2FA security measures in place to prevent provision of user's salt even to entities that present a valid, non-expired JWT.
+通常可以通过在提供商中重置密码来找回遗忘的 OAuth 凭证。
+在不幸的情况下，用户的 OAuth 凭证被破坏，对手仍然需要获取 `user_salt`，但还需要了解使用哪个钱包以接管该帐户。请注意，现代的 `user_salt` 提供商可能有额外的双因素身份验证安全措施，以防止向提供有效且未过期的 JWT 的实体提供用户盐。
 
-It's also important to highlight that due to the fact that zkLogin addresses do not expose any information about the user's identity or wallet used, targeted attacks by just monitoring the blockchain are more difficult.
-Finally, on the unfortunate event where one loses access to their OAuth account permanently, access to that wallet is lost. But if recovery from a lost OAuth account is desired, a good suggestion for wallet providers is to support the native Sui Multisig functionality and add a backup method. Note that it's even possible to have a Multisig wallet that all signers are using zkLogin, i.e. an 1-of-2 Multisig zkLogin wallet where the first part is Google and the second Facebook OAuth, respectively.
+同样重要的是要强调，由于 zkLogin 地址不暴露有关用户身份或使用的钱包的任何信息，仅通过监视区块链进行的有针对性的攻击更加困难。
+最后，在不幸的情况下，如果永久失去对其 OAuth 帐户的访问权限，将失去对该钱包的访问权限。但如果希望从失去的 OAuth 帐户中恢复，对于钱包提供商的一个好建议是支持原生 Sui 多重签名功能并添加一种备份方法。请注意，甚至可以在所有签署者都使用 zkLogin 的多重签名钱包中使用，即一个 1-of-2 多重签名 zkLogin 钱包，其中第一部分是 Google，第二部分是 Facebook OAuth。
 
-### Can I convert or merge a traditional private key wallet into a zkLogin one, or vice versa?
+### 我能将传统私钥钱包转换或合并为 zkLogin 钱包，反之亦然吗？
 
-No. The zkLogin wallet address is derived differently compared to a private key address.
+不行。与私钥地址相比，zkLogin 钱包地址的派生方式不同。
 
-### Will my zkLogin address ever change?
+### 我的 zkLogin 地址会改变吗？
 
-zkLogin address is derived from `sub`, `iss`, `aud` and `user_salt`.
+zkLogin 地址是从 `sub`、`iss`、`aud` 和 `user_salt` 派生的。
 
-The address will not change if the user logs in to the same wallet with the same OAuth provider, since `sub`, `iss`, `aud` and `user_salt` (see definitions) will remain unchanged in the JWT token, even though the JWT token itself may look different every time the user logs in.
+如果用户使用相同的 OAuth 提供商登录相同的钱包，则地址不会更改，因为在 JWT 令牌中，`sub`、`iss`、`aud` 和 `user_salt`（参见定义）将保持不变，即使用户每次登录时 JWT 令牌本身可能看起来不同。
 
-However, if the user logs in with different OAuth providers, your address will change because the `iss` and `aud` are defined distinctly per provider.
+但是，如果用户使用不同的 OAuth 提供商登录，则地址将更改，因为`iss` 和 `aud` 是每个提供商分别定义的。
 
-In addition, each wallet or application maintains its own `user_salt`, so logging with the same provider for different wallets may also result in different addresses.
+此外，每个钱包或应用程序都维护其自己的 `user_salt`，因此使用相同的提供商登录不同的钱包可能导致不同的地址。
 
-See more on address [definition](#address-definition).
+有关地址的详细信息，请参见[定义](#address-definition)。
 
-### Can I have multiple addresses with the same OAuth provider?
+### 我能够在相同的 OAuth 提供商下拥有多个地址吗？
 
-Yes, this is possible by using a different wallet provider or different `user_salt` for each account. This is useful for separating funds between different accounts.
+是的，通过使用不同的钱包提供商或不同的 `user_salt` 为每个帐户，这是可能的。这对于在不同帐户之间分隔资金非常有用。
 
-### Is a zkLogin Wallet custodial?
+### zkLogin 钱包是托管的吗？
 
-A zkLogin wallet is a non-custodial or unhosted wallet.
+zkLogin 钱包是非托管或非托管钱包。
 
-A custodial or hosted wallet is where a third party (the custodian) controls the private keys on behalf of a wallet user. No such third-party exists for zkLogin wallets.
+托管或托管钱包是第三方（托管人）代表钱包用户控制私钥的地方。对于 zkLogin 钱包不存在这样的第三方。
 
-Instead, a zkLogin wallet can be viewed as a 2-out-of-2 Multisig where the two credentials are the user's OAuth credentials (maintained by the user) and the salt. In other words, neither the OAuth provider, the wallet vendor, the ZK proving service or the salt service provider is a custodian.
+相反，zkLogin 钱包可以被视为 2-of-2 多重签名，其中两个凭据分别是用户的 OAuth 凭据（由用户维护）和盐。换句话说，OAuth 提供商、钱包供应商、ZK 证明服务或盐服务提供商都不是托管者。
 
-### Generating a ZK proof is expensive, is a new proof required to be generated for every transaction?
+### 生成 ZK 证明很昂贵，每笔交易都需要生成新的证明吗？
 
-No. Proof generation is only required when ephemeral KeyPair expires. Since the nonce is defined by the ephemeral public key (`eph_pk`) and expiry (`max_epoch`), the ZK proof is valid until what the expiry is committed to nonce in the JWT token. The ZK proof can be cached and the same ephemeral key can be used to sign transactions till it expires.
+不需要。仅当短暂密钥对过期时才需要生成证明。由于 nonce 由短暂公钥 (`eph_pk`) 和到期 (`max_epoch`) 定义，因此 ZK 证明有效直到在 JWT 令牌的 nonce 中承诺的到期。ZK 证明可以被缓存，可以使用相同的短暂密钥签署交易，直到它过期。
 
-### Does zkLogin work on mobile?
+### zkLogin 在移动设备上可以使用吗？
 
-zkLogin is a Sui native primitive and not a feature of a particular application or wallet. It can be used by any Sui developer, including on mobile.
+zkLogin 是 Sui 本地的原语，不是特定应用程序或钱包的功能。任何 Sui 开发人员都可以使用它，包括在移动设备上使用。
 
-### Is account recovery possible if the user loses the OAuth credentials?
+### 如果用户失去 OAuth 凭据，是否可以进行帐户恢复？
 
-Yes, the user can follow the OAuth providers' recovery flow. The ephemeral private key can be refreshed and after completing a new OAuth login flow, the user can obtain new ZK proof and sign transactions with the refreshed key.
+是的，用户可以按照 OAuth 提供商的恢复流程进行。短暂私钥可以被刷新，在完成新的 OAuth 登录流程后，用户可以获得新的 ZK 证明并使用刷新后的密钥签署交易。
 
-### What are some assumptions for the zkLogin circuit?
+### zkLogin 电路的一些假设是什么？
 
-Due to the way Groth16 works, we impose length restrictions on several fields in the JWT. Some of the fields that are length-restricted include aud, iss, the JWT's header and payload. For example, zkLogin can currently only work with aud values of up to length 120 (this value is not yet final). In general, we tried to make sure that the restrictions are as generous as possible. We have decided on these values after looking at as many JWTs that we could get our hands on.
+由于 Groth16 的工作方式，我们对 JWT 中的几个字段施加了长度限制。一些受到长度限制的字段包括 aud、iss、JWT 的头部和有效负载。例如，zkLogin 目前只能处理长度不超过 120 的 aud 值（此值尚未最终确定）。总体而言，我们试图确保这些限制尽可能宽松。我们在查看了我们能够获取的尽可能多的 JWT 后决定了这些值。
 
-### How is zkLogin different from other solutions that support social login?
+### zkLogin 与支持社交登录的其他解决方案有何不同？
 
-While providing social login with Web2 credentials for Web3 wallet is not a new concept, the existing solutions have one or more of the trust assumptions:
+虽然使用 Web2 凭据为 Web3 钱包提供社交登录并非新概念，但现有的解决方案有一个或多个信任假设：
 
-1. Trust a different network or parties to verify Web2 credentials other than the Blockchain itself, usually involving a JWK oracle posted on-chain by a trusted party.
-1. Trust some parties to manage a persistent private key, whether it uses MPC, threshold cryptography or secure enclaves.
-1. Relying on smart contracts (account abstraction) to verify the JWT token on-chain with revealing privacy fields, or to verify ZK proofs on-chain which can be expensive.
+1. 信任不同的网络或方在区块链之外验证 Web2 凭据，通常涉及由受信任方在链上发布的 JWK 神谕。
+1. 信任某些方来管理持久私钥，无论是使用 MPC、阈值密码学还是安全隔离。
+1. 依赖智能合约（账户抽象）在链上验证 JWT 令牌并揭示隐私字段，或者在链上验证可能昂贵的 ZK 证明。
 
-Some of the existing deployed solutions rely on some of these assumptions. Web3Auth and DAuth social login requires deployment of custom OAuth verifiers to Web3auth Auth Network nodes to verify the JWT token. Magic Wallet and Privy also require custom OAuth identity issuer and verifiers to adopt the DID standard. All of the solutions still require persistent private keys management, either with trusted parties like AWS via delegation, Shamir Secret Sharing or MPC.
+一些现有的部署解决方案依赖于这些假设之一。Web3Auth 和 DAuth 社交登录要求在 Web3Auth Auth Network 节点上部署自定义 OAuth 验证器以验证 JWT 令牌。Magic Wallet 和 Privy 也需要自定义 OAuth 身份颁发者和验证者来采用 DID 标准。所有这些解决方案仍然需要持久私钥管理，无论是通过像 AWS 这样的受信任方通过委托，Shamir Secret Sharing 还是 MPC。
 
-The key differentiators that zkLogin brings to Sui are:
+zkLogin 带给 Sui 的主要差异因素有：
 
-1. Native Support in Sui: Unlike other solutions that are blockchain agnostic, zkLogin is deployed just for Sui. This means a zkLogin transaction can be combined with Multisig and sponsored transactions seamlessly.
+1. Sui 的本地支持：与其他通用区块链解决方案不同，zkLogin 仅部署在 Sui 上。这意味着 zkLogin 交易可以与多重签名和赞助交易无缝结合。
 
-2. Self-Custodial without additional trust: We leverage the nonce field in JWT token to commit to ephemeral public key, so no persistent private key management is required with any trusted parties. In addition, the JWK itself is an oracle agreed upon by the quorum of stakes by the validators with trusting any source of authority.
+2. 无需额外信任的自托管：我们利用 JWT 令牌中的 nonce 字段来承诺短暂公钥，因此不需要与任何受信任方一起管理持久私钥。此外，JWK 本身是由验证者的利益池中的权益者协商同意的神谕，不需要信任任何权威来源。
 
-3. Full privacy: Nothing is required to submit on-chain except the ZK proof and the ephemeral signature.
+3. 完全隐私：只需提交 ZK 证明和短暂签名到链上，无需其他信息。
 
-4. Compatible with Existing Identity Providers: zkLogin is compatible with providers that adopt OpenID Connect. No need to trust any intermediate identity issuers or verifiers other than the OAuth providers themselves.
+4. 与现有身份提供商兼容：zkLogin 兼容采用 OpenID Connect 的提供商。无需信任除 OAuth 提供商本身以外的任何中间身份颁发者或验证者。
 
-## How to verify a zkLogin signature offchain?
+## 如何在链下验证 zkLogin 签名？
 
-The following options support a zkLogin signature over either transaction data or personal message.
+以下选项支持 zkLogin 签名，无论是交易数据还是个人消息。
 
-1. Use keytool: See usage in keytool.
+1. 使用 keytool：查看 keytool 的使用方法。
 
 ```bash
 $SUI_BINARY keytool zk-login-sig-verify -h
 ```
 
-2. Use a self hosted server endpoint: See usage in [zklogin-verifier](https://github.com/MystenLabs/zklogin-verifier).
+2. 使用自托管服务器端点：请参阅 [zklogin-verifier](https://github.com/MystenLabs/zklogin-verifier) 的用法。

@@ -1,59 +1,58 @@
 ---
-title: Keys and Addresses
+title: 密钥和地址
 ---
 
 import TabItem from '@theme/TabItem';
 import Tabs from '@theme/Tabs';
 
-Sui adheres to widely accepted wallet specifications in the cryptocurrency industry, including BIP-32 (and its variation, SLIP-0010) and its variation SLIP-0010, BIP-44, and BIP-39, to facilitate key management for users. At present, Sui supports pure Ed25519, ECDSA Secp256k1, ECDSA Secp256r1, and multisig for signed transactions.
+Sui 遵循加密货币行业中广泛接受的钱包规范，包括 BIP-32（及其变种 SLIP-0010）、BIP-44 和 BIP-39，以便为用户提供密钥管理。目前，Sui 支持纯 Ed25519、ECDSA Secp256k1、ECDSA Secp256r1 和用于签名交易的多重签名。
 
-Follow the relevant link for more information on each wallet specification:
+有关每个钱包规范的更多信息，请单击相关链接：
 
 - [BIP-32](https://github.com/bitcoin/bips/blob/master/bip-0032.mediawiki)
 - [BIP-39](https://github.com/bitcoin/bips/blob/master/bip-0039.mediawiki)
 - [BIP-44](https://github.com/bitcoin/bips/blob/master/bip-0044.mediawiki)
 - [SLIP-0010](https://github.com/satoshilabs/slips/blob/master/slip-0010)
 
-## Key derivation scheme
+## 密钥派生方案
 
-Sui follows SLIP-0010 for managing wallets that support the Ed25519 (EdDSA) signing scheme.
+Sui 遵循 SLIP-0010 来管理支持 Ed25519（EdDSA）签名方案的钱包。
 
-For managing wallets that support the Ed25519 (EdDSA) signing scheme, Sui follows SLIP-0010, which enforces wallets to always derive child private keys from parent private keys using the hardened key path.
+对于支持 Ed25519（EdDSA）签名方案的钱包管理，Sui 遵循 SLIP-0010，该协议要求始终使用硬化密钥路径从父私钥派生子私钥。
 
-Sui follows BIP-32 for managing wallets that support the ECDSA Secp256k1 and ECDSA Secp256r1 signing scheme.
+Sui 遵循 BIP-32 来管理支持 ECDSA Secp256k1 和 ECDSA Secp256r1 签名方案的钱包。
 
-BIP-32 defines the hierarchical deterministic wallet structure to logically associate a set of keys. Grouping keys in this manner reduces the overhead of keeping track of a large number of private keys for a user. This method also lets custodians issue distinct managed addresses for each user account under one source of control. Using BIP-32 decouples the private key derivation from the public key derivation, enabling the watch-only wallet use case, where a chain of public keys and its addresses can be derived, while the private key can be kept offline for signing.
+BIP-32 定义了分层确定性钱包结构，以逻辑关联一组密钥。以这种方式对密钥进行分组减少了为用户跟踪大量私钥的开销。此方法还允许监护人为一种控制源下的每个用户帐户发行不同的托管地址。使用 BIP-32 将私钥派生与公钥派生分离开来，实现了只读钱包用例，其中可以派生公钥链及其地址，而私钥可以脱机保持以进行签名。
 
-## Key derivation path
+## 密钥派生路径
 
-BIP-44 further defines the five levels of the derivation path with their exact meanings:
-`m / purpose' / coin_type' / account' / change / address_index`. In this structure, the slashes indicate new levels, or children, in the hierarchy.
+BIP-44 进一步定义了派生路径的五个级别及其确切含义：`m / purpose' / coin_type' / account' / change / address_index`。在此结构中，斜杠表示层次结构中的新级别或子级。
 
-The `purpose` level is generally set to 44, corresponding to the BIP number. In Sui, however, the purpose level distinguishes different signing schemes: 44 is set for Ed25519, 54 for ECDSA Secp256k1 and 74 for Secp256r1. While it is non-standard to set the purpose level to a value that is not 44, it is common to use the purpose field to distinguish different signing schemes. BIP-49 and BIP-84, for example, are used to identify script types in Bitcoin. Sui chose 54 to indicate ECDSA Secp256k1 because there is no existing BIP under 54, avoiding confusion with any Bitcoin standard.
+`purpose` 级别通常设置为 44，对应于 BIP 编号。但是，在 Sui 中，purpose 级别用于区分不同的签名方案：为 Ed25519 设置为 44，为 ECDSA Secp256k1 设置为 54，为 Secp256r1 设置为 74。虽然将 purpose 级别设置为非 44 的值是非标准的，但通常使用 purpose 字段来区分不同的签名方案是常见的。例如，BIP-49 和 BIP-84 用于在比特币中标识脚本类型。Sui 选择使用 54 表示 ECDSA Secp256k1，因为在 54 下没有现有的 BIP，避免与任何比特币标准混淆。
 
-The `coin_type` value is managed with a repository of all other cryptocurrencies. Both signature schemes use Sui's registered coin_type, 784 (SUI on a telephone keypad).
+`coin_type` 值由所有其他加密货币的存储库管理。两种签名方案都使用 Sui 注册的 coin_type，784（在电话键盘上为 SUI）。
 
-The `account` level is usually used for logically separating user accounts and creating specific account categories.
+`account` 级别通常用于逻辑上分隔用户帐户并创建特定的帐户类别。
 
-It is generally accepted that, while account-based currencies define only the first three levels, UTXO-based currencies add change and address level definitions. Because Sui's object-oriented data model is neither UTXO nor account-based (it in fact combines both), it employs all five levels for maximum compatibility.
+通常认为，基于帐户的货币仅定义前三个级别，基于 UTXO 的货币添加了更改和地址级别的定义。由于 Sui 的面向对象的数据模型既不是 UTXO 也不是基于帐户的（实际上结合了两者），因此它使用所有五个级别以实现最大的兼容性。
 
-| Scheme          | Path                                         | Comments                                       |
+| 方案          | 路径                                         | 注释                                        |
 | --------------- | -------------------------------------------- | ---------------------------------------------- |
-| Ed25519         | `m/44'/784'/{account}'/{change}'/{address}'` | Each level of the derivation path is hardened. |
-| ECDSA Secp256k1 | `m/54'/784'/{account}'/{change}/{address}`   | The first three levels are hardened.           |
-| ECDSA Secp256r1 | `m/74'/784'/{account}'/{change}/{address}`   | The first three levels are hardened.           |
+| Ed25519         | `m/44'/784'/{account}'/{change}'/{address}'` | 派生路径的每个级别都是硬化的。 |
+| ECDSA Secp256k1 | `m/54'/784'/{account}'/{change}/{address}`   | 前三个级别是硬化的。           |
+| ECDSA Secp256r1 | `m/74'/784'/{account}'/{change}/{address}`   | 前三个级别是硬化的。           |
 
-## Mnemonics support
+## 助记词支持
 
-After Sui defines the deterministic way to derive the master key from a seed, BIP-39 is introduced to make the seed more human-readable and memorizable using mnemonics. Sui accepts 12, 15, 18, 21, and 24 words from the BIP-39 word list that is properly checksummed, corresponding to 128, 160, 192, 224, and 256 bits of entropy. Sui Wallet and SDKs provide a flexible interface to sign transactions with various signing schemes.
+在 Sui 定义了从种子派生主密钥的确定性方法之后，引入了 BIP-39 以使用助记词使种子更具人类可读性和可记忆性。Sui 接受 BIP-39 单词列表中经过适当校验和的 12、15、18、21 和 24 个单词，分别对应于 128、160、192、224 和 256 位的熵。Sui 钱包和 SDK 提供了一个灵活的界面，以各种签名方案对交易进行签名。
 
-## Address format
+## 地址格式
 
-For deriving a 32-byte Sui address, Sui hashes the signature scheme flag 1-byte concatenated with public key bytes using the [BLAKE2b](https://www.blake2.net/) (256 bits output) hashing function. Sui address currently supports pure Ed25519, Secp256k1, Secp256r1, and MultiSig with corresponding flag bytes of 0x00, 0x01, 0x02, and 0x03, respectively.
+为了派生一个 32 字节的 Sui 地址，Sui 使用 [BLAKE2b](https://www.blake2.net/)（256 位输出）哈希函数将包含公钥字节的签名方案标志 1 字节连接起来。Sui 地址当前支持纯 Ed25519、Secp256k1、Secp256r1 和 MultiSig，对应的标志字节分别为 0x00、0x01、0x02 和 0x03。
 
-## Example
+## 示例
 
-Sui Wallet and SDKs provide a flexible interface to sign transactions with various signing schemes.
+Sui 钱包和 SDK 提供了一个灵活的界面，以各种签名方案对交易进行签名。
 
 <Tabs>
 <TabItem value="typescript" label="TypeScript">
@@ -74,4 +73,4 @@ sui client new-address ed25519 "m/44'/784'/0'/0'/0'"
 </TabItem>
 </Tabs>
 
-See more test vectors for [pure Ed25519](https://github.com/MystenLabs/sui/blob/f3b5fdd73da64a0df65fb4323471512b0f57ec4d/sdk/typescript/test/unit/cryptography/ed25519-keypair.test.ts) or [ECDSA Secp256k1](https://github.com/MystenLabs/sui/blob/199f06d25ce85f0270a1a5a0396156bb2b83122c/sdk/typescript/test/unit/cryptography/secp256k1-keypair.test.ts).
+查看更多测试向量 [pure Ed25519](https://github.com/MystenLabs/sui/blob/f3b5fdd73da64a0df65fb4323471512b0f57ec4d/sdk/typescript/test/unit/cryptography/ed25519-keypair.test.ts) 或者 [ECDSA Secp256k1](https://github.com/MystenLabs/sui/blob/199f06d25ce85f0270a1a5a0396156bb2b83122c/sdk/typescript/test/unit/cryptography/secp256k1-keypair.test.ts)。

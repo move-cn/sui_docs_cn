@@ -1,74 +1,72 @@
 ---
-title: Collections
-description: The Sui framework provides several modules you can use to work with groups of data. 
+title: 集合 (Collections)
+description: Sui 框架提供了几个模块，供你处理数据组。
 ---
 
-Collections provide a convenient way to work with groups of data. The Sui framework provides several modules that provide collection logic:
+集合提供了一种便捷的方式来处理数据组。Sui 框架提供了几个提供集合逻辑的模块：
 
 ## bag
 
-A bag is a heterogeneous map-like collection. The collection is similar to `sui::table` in that its keys and values are not stored within the Bag value, but instead are stored using Sui's object system. The Bag struct acts only as a handle into the object system to retrieve those keys and values. This means that Bag values with exactly the same key-value mapping will not be equal, with ==, at runtime.
+Bag 是一种异构的类似映射的集合。该集合类似于 `sui::table`，因为其键和值并未存储在 Bag 值内部，而是使用 Sui 的对象系统存储。Bag 结构仅充当进入对象系统以检索那些键和值的句柄。这意味着在运行时，具有完全相同键值映射的 Bag 值不会相等，使用 ==。
 
-To learn more, see [Table and Bag](../dynamic-fields/tables-bags.mdx) or the [framework definition](https://github.com/MystenLabs/sui/blob/main/crates/sui-framework/docs/bag.md) on GitHub.
+要了解更多，请参阅 [Table and Bag](../dynamic-fields/tables-bags.mdx) 或 GitHub 上的 [框架定义](https://github.com/MystenLabs/sui/blob/main/crates/sui-framework/docs/bag.md)。
 
 ## dynamic_field
 
-In addition to the fields declared in its type definition, a Sui object can have dynamic fields that can be added after the object has been constructed. Unlike ordinary field names (which are always statically declared identifiers) a dynamic field name can be any value with the copy, drop, and store abilities (for example, an integer, a boolean, or a string). This gives Sui programmers the flexibility to extend objects on-the-fly, and it also serves as a building block for core collection types.
+除了类型定义中声明的字段之外，Sui 对象还可以具有在构建对象后添加的动态字段。与普通字段名称（始终是静态声明的标识符）不同，动态字段名称可以是具有复制、丢弃和存储能力的任何值（例如，整数、布尔值或字符串）。这使得 Sui 程序员可以灵活地动态扩展对象，并且它也作为核心集合类型的构建块。
 
-To learn more, see [Dynamic Fields](../dynamic-fields.mdx) or the [framework definition](https://github.com/MystenLabs/sui/blob/main/crates/sui-framework/docs/dynamic_field.md) on GitHub.
+要了解更多，请参阅 [Dynamic Fields](../dynamic-fields.mdx) 或 GitHub 上的 [框架定义](https://github.com/MystenLabs/sui/blob/main/crates/sui-framework/docs/dynamic_field.md)。
 
 ## dynamic_object_field
 
-Similar to `sui::dynamic_field`, this module allows for the access of dynamic fields. But unlike, `sui::dynamic_field` the values bound to these dynamic fields must be objects themselves. This allows for the objects to still exist within storage, which may be important for external tools. The difference is otherwise not observable from within Move.
+与 `sui::dynamic_field` 类似，此模块允许访问动态字段。但与 `sui::dynamic_field` 不同，这些动态字段绑定的值必须是对象本身。这允许对象仍然存在于存储中，这对于外部工具可能很重要。从 Move 内部来看，除了这一点外，其他地方没有可观察到的差异。
 
-To learn more, see [Dynamic Fields](../dynamic-fields.mdx) or the [framework definition](https://github.com/MystenLabs/sui/blob/main/crates/sui-framework/docs/dynamic_object_field.md) on GitHub.
+要了解更多，请参阅 [Dynamic Fields](../dynamic-fields.mdx) 或 GitHub 上的 [框架定义](https://github.com/MystenLabs/sui/blob/main/crates/sui-framework/docs/dynamic_object_field.md)。
 
 ## linked_table
 
-Similar to `sui::table` but the values are linked together, allowing for ordered insertion and removal.
+类似于 `sui::table`，但值被链接在一起，允许有序插入和删除。
 
-To learn more, see the [framework definition](https://github.com/MystenLabs/sui/blob/main/crates/sui-framework/docs/linked_table.md) on GitHub.
+要了解更多，请参阅 GitHub 上的 [框架定义](https://github.com/MystenLabs/sui/blob/main/crates/sui-framework/docs/linked_table.md)。
 
 ## object_bag
 
-Similar to `sui::bag`, an `ObjectBag` is a heterogeneous map-like collection. But unlike `sui::bag`, the values bound to these dynamic fields must be objects themselves. This allows for the objects to still exist in storage, which might be important for external tools. The difference is otherwise not observable from within Move.
+类似于 `sui::bag`，`ObjectBag` 是一种异构的类似映射的集合。但与 `sui::bag` 不同，绑定到这些动态字段的值必须是对象本身。这允许对象仍然存在于存储中，这对于外部工具可能很重要。从 Move 内部来看，除了这一点外，其他地方没有可观察到的差异。
 
-To learn more, see [Table and Bag](../dynamic-fields/tables-bags.mdx) or the [framework definition](https://github.com/MystenLabs/sui/blob/main/crates/sui-framework/docs/object_bag.md) on GitHub.
+要了解更多，请参阅 [Table and Bag](../dynamic-fields/tables-bags.mdx) 或 GitHub 上的 [框架定义](https://github.com/MystenLabs/sui/blob/main/crates/sui-framework/docs/object_bag.md)。
 
 ## object_table
 
-Similar to `sui::table`, an `ObjectTable<K, V>` is a map-like collection. But unlike `sui::table`, the values bound to these dynamic fields must be objects themselves. This allows for the objects to still exist within in storage, which may be important for external tools. The difference is otherwise not observable from within Move.
+类似于 `sui::table`，`ObjectTable<K, V>` 是一种类似映射的集合。但与 `sui::table` 不同，绑定到这些动态字段的值必须是对象本身。这允许对象仍然存在于存储中，这可能对于外部工具很重要。从 Move 内部来看，除了这一点外，其他地方没有可观察到的差异。
 
-To learn more, see [Table and Bag](../dynamic-fields/tables-bags.mdx) or the [framework definition](https://github.com/MystenLabs/sui/blob/main/crates/sui-framework/docs/object_table.md) on GitHub.
+要了解更多，请参阅 [Table and Bag](../dynamic-fields/tables-bags.mdx) 或 GitHub 上的 [框架定义](https://github.com/MystenLabs/sui/blob/main/crates/sui-framework/docs/object_table.md)。
 
 ## priority_queue
 
-Priority queue implemented using a max heap.
+使用最大堆实现的优先级队列。
 
-To learn more, see the [framework definition](https://github.com/MystenLabs/sui/blob/main/crates/sui-framework/docs/priority_queue.md) on GitHub.
+要了解更多，请参阅 GitHub 上的 [框架定义](https://github.com/MystenLabs/sui/blob/main/crates/sui-framework/docs/priority_queue.md)。
 
 ## table
 
-A table is a map-like collection. But unlike a traditional collection, its keys and values are not stored within the Table value, but instead are stored using Sui's object system. The Table struct acts only as a handle into the object system to retrieve those keys and values. Note that this means that Table values with exactly the same key-value mapping will not be equal, with ==, at runtime.
+Table 是一种类似映射的集合。但与传统集合不同，其键和值并未存储在 Table 值内部，而是使用 Sui 的对象系统存储。Table 结构仅充当进入对象系统以检索那些键和值的句柄。请注意，这意味着在运行时，具有完全相同键值映射的 Table 值不会相等，使用 ==。
 
-To learn more, see [Table and Bag](../dynamic-fields/tables-bags.mdx) or the [framework definition](https://github.com/MystenLabs/sui/blob/main/crates/sui-framework/docs/table.md) on GitHub.
+要了解更多，请参阅 [Table and Bag](../dynamic-fields/tables-bags.mdx) 或 GitHub 上的 [框架定义](https://github.com/MystenLabs/sui/blob/main/crates/sui-framework/docs/table.md)。
 
 ## table_vec
 
-A basic scalable vector library implemented using Table.
+使用 Table 实现的基本可扩展矢量库。
 
-To learn more, see the [framework definition](https://github.com/MystenLabs/sui/blob/main/crates/sui-framework/docs/table_vec.md) on GitHub.
+要了解更多，请参阅 GitHub 上的 [框架定义](https://github.com/MystenLabs/sui/blob/main/crates/sui-framework/docs/table_vec.md)。
 
 ## vec_map
 
-A map data structure backed by a vector. The map is guaranteed not to contain duplicate keys, but entries are not sorted by key--entries are included in insertion order. All operations are O(N) in the size of the map--the intention of this data structure is only to provide the convenience of programming against a map API. Large maps should use handwritten parent/child relationships instead. Maps that need sorted iteration rather than insertion order iteration should also be handwritten.
+由向量支持的映射数据结构。该映射保证不包含重复的键，但条目不按键排序--条目按插入顺序包含。所有操作在映射大小的 O(N) 内完成--此数据结构的意图仅在提供对映射 API 的编程便利性。大型映射应该使用手工编写的父/子关系。需要排序迭代而不是按插入顺序迭代的映射也应该手工编写。
 
-To learn more, see the [framework definition](https://github.com/MystenLabs/sui/blob/main/crates/sui-framework/docs/vec_map.md) on GitHub.
+要了解更多，请参阅 GitHub 上的 [框架定义](https://github.com/MystenLabs/sui/blob/main/crates/sui-framework/docs/vec_map.md)。
 
 ## vec_set
 
-The main object for `vec_set` is a set data structure backed by a vector. The set is guaranteed not to contain duplicate keys. All operations are O(N) in the size of the set. The intention of this data structure is only to provide the convenience of programming against a set API. Sets that need sorted iteration rather than insertion order iteration should be handwritten.
+`vec_set` 的主要对象是由向量支持的集合数据结构。这个集合保证不包含重复的键。所有操作在集合大小的 O(N) 内完成。这个数据结构的目的只是为了提供对集合 API 的编程便利性。需要排序迭代而不是按插入顺序迭代的集合应该手工编写。
 
-To learn more, see the [framework definition](https://github.com/MystenLabs/sui/blob/main/crates/sui-framework/docs/vec_set.md) on GitHub.
-
-
+要了解更多，请参阅 GitHub 上的 [框架定义](https://github.com/MystenLabs/sui/blob/main/crates/sui-framework/docs/vec_set.md)。

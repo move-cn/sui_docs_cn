@@ -1,25 +1,25 @@
 ---
-title: Module Initializers
+title: Initializers 模块
 ---
 
-The module initializer function, `init`, is special in that it executes only once - when you publish the associated module - and must have the following properties:
+模块初始化函数 `init` 具有特殊性，因为它仅在以下情况下执行一次 - 当你发布相关模块时，并且必须具有以下属性：
 
-- Function name must be `init`
-- The parameter list must end with either a `&mut TxContext` or a `&TxContext` type
-- No return values
-- Private visibility
-- Optionally, the parameter list starts by accepting the module's one-time witness by value
+- 函数名称必须是 `init`
+- 参数列表必须以 `&mut TxContext` 或 `&TxContext` 类型结束
+- 没有返回值
+- 私有可见性
+- 可选地，参数列表以按值接受模块的一次性见证的方式开始
 
-For example, the following `init` functions are all valid:
+例如，以下 `init` 函数都是有效的：
 
 - `fun init(ctx: &TxContext)`
 - `fun init(ctx: &mut TxContext)`
 - `fun init(otw: EXAMPLE, ctx: &TxContext)`
 - `fun init(otw: EXAMPLE, ctx: &mut TxContext)`
 
-Every function that fits this criteria will be run when the package is first published, and at no other time, including when the package is upgraded.  This means that an `init` function that was introduced during an upgrade (to a new or existing module) will never run.
+符合这些条件的每个函数都将在首次发布包时运行，而在其他时间（包括升级包时）都不会运行。这意味着在升级期间引入的 `init` 函数（对于新模块或现有模块）将永远不会运行。
 
-The following example demonstrates a valid `init` function in a module:
+以下示例演示了模块中的有效 `init` 函数：
 
 ```move
 module examples::one_timer {

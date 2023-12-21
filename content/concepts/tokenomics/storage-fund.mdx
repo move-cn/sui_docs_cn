@@ -1,44 +1,45 @@
 ---
-title: Storage Fund
-description: Sui includes an efficient and sustainable economic mechanism for financing data storage, which is important given the ability of Sui to store arbitrarily large amounts of on-chain data.
+title: 存储基金
+description: Sui包含一个高效和可持续的经济机制，用于资助数据存储，考虑到Sui具有存储任意大量的链上数据的能力。
 ---
 
-Sui includes an efficient and sustainable economic mechanism for financing data storage, which is important given the ability of Sui to store arbitrarily large amounts of on-chain data.
+Sui包含一个高效和可持续的经济机制，用于资助数据存储，考虑到Sui具有存储任意大量的链上数据的能力。
 
-Financially, on-chain data storage introduces a severe inter-temporal challenge: validators who process and write data into storage today might differ from the future validators needing to store that data. If users paid fees for computation power only at write, then future users would need to subsidize past users for their storage and pay disproportionately high fees. This negative network externality can become highly taxing for Sui in the future if left unaddressed.
+从财务角度来看，链上数据存储引入了一个严重的跨时间挑战：今天处理和写入数据到存储的验证器可能与未来需要存储该数据的验证器不同。如果用户仅在写入时支付计算能力的费用，那么未来的用户将需要为过去的用户提供存储补贴，并支付不成比例的高费用。如果不加以解决，这种负面的网络外部性对于Sui未来可能变得非常繁重。
 
-Sui economic design includes a storage fund that redistributes storage fees from past transactions to future validators. When users transact on Sui, they pay fees upfront for both computation and storage. The storage fees are deposited into a storage fund used to adjust the share of future stake rewards distributed to validators relative to the users that stake SUI with them. This design provides future Sui validators with viable business models.
+Sui的经济设计包括一个存储基金，将过去交易的存储费重新分配给未来的验证器。当用户在Sui上进行交易时，他们预先支付计算和存储的费用。存储费用被存入一个存储基金，用于调整未来分配给验证器的质押奖励份额，相对于与他们质押SUI的用户。这个设计为未来的Sui验证器提供了可行的商业模型。
 
-## Storage fund rewards {#rewards}
+## 存储基金奖励 {#rewards}
 
-The Sui delegated proof-of-stake (PoS) mechanism calculates total stake as the sum of user stake plus the SUI tokens deposited in the storage fund. Hence, the storage fund receives a proportional share of the overall stake rewards depending on its size relative to total stake. The majority of these stake rewards – a share $\gamma$ – are paid out to current validators to compensate for storage costs, while the remaining $(1-\gamma)$ rewards are used to reinvest in the fund. In other words, stake rewards accruing to the storage fees submitted by past transactions are paid out to current validators to compensate them for data storage costs. When on-chain storage requirements are high, validators receive substantial additional rewards to compensate for their storage costs. Vice versa when storage requirements are low.
+Sui的委托权益证明（PoS）机制计算总质押为用户质押和存储基金中存入的SUI代币的总和。因此，存储基金根据其与总质押的大小相对应的份额，获得了整体质押奖励的相应份额。这些质押奖励的大部分，即份额 $\gamma$，支付给当前验证器以补偿存储成本，而剩余的 $(1-\gamma)$ 的奖励用于再投资基金。换句话说，分配给过去交易提交的存储费用的质押奖励被支付给当前验证器，以补偿他们的数据存储成本。当链上存储要求较高时，验证器会因为存储成本而获得可观的额外奖励，反之亦然。
 
-More specifically, the storage fund has three key features:
+具体而言，存储基金具有三个关键特征：
 
-- The storage fund is funded by past transactions and functions as a tool for shifting gas fees across different epochs. This ensures that future validators are compensated for their storage costs by the past users who created those storage requirements in the first place.
-- The storage fund pays out only the returns on its capital and does not distribute its principal. That is, in practice, it is as if validators were able to borrow the storage fund’s SUI as additional stake and keep the majority of stake rewards (a $\gamma$%). But note that validators do not receive funds directly from the storage fund. This guarantees the fund never loses its capitalization and can survive indefinitely. This feature is further buttressed by the $(1-\gamma)$% of stake rewards reinvested in the fund.
-- The storage fund includes a _deletion option_. If you delete data, you get a partial refund of the storage fees paid originally. Storage fees exist to pay for storage throughout the data lifecycle. There is no reason to keep charging for storage after deletion of the data, so these fees are rebated.
+- 存储基金由过去的交易资助，并作为将气费在不同纪元之间移动的工具。这确保未来的验证器得到了对过去的用户提出的存储要求的补偿。
+- 存储基金仅支付其资本的回报，不分发其本金。实际上，这就好像验证器能够借用存储基金的SUI作为额外的质押，并保留大部分质押奖励（占 $\gamma$%）。但请注意，验证器不会直接从存储基金获得资金。这确保了基金永远不会失去其资本化，并且可以无限期生存。这一特性得到了在基金中再投资的 $(1-\gamma)$% 的质押奖励的进一步支持。
+- 存储基金包括一个“删除选项”。如果你删除数据，则将对最初支付的存储费用获得部分退款。存储费用存在是为了在数据生命周期内支付存储费用。在删除数据后，继续收费是没有理由的，因此这些费用会被退还。
 
 :::info
 
-The _deletion option_ should not be confused with deleting past transactions. Activity on Sui is finalized at each epoch boundary and past transactions are immutable and can never be reversed. The type of data that can be deleted is, for example, data corresponding to objects that are no longer live, such as NFT metadata, tickets that have been redeemed, auctions that have concluded, and so on.
+“删除选项”不应与删除过去交易的概念混淆。Sui上的活动在每个纪元边界都是最终的，过去的交易是不可变的，永远无法撤销。可以删除的数据类型，例如不再存在的对象的数据，如NFT元数据，已兑换的门票，已结束的拍卖等。
 
 :::
 
-## Storage fund mechanics {#mechanics}
+## 存储基金机制 {#mechanics}
 
-The storage fund size is fixed throughout each epoch, with its size changing at the epoch boundary according to the net inflows accumulated throughout the epoch. Inflows and outflows correspond to:
+存储基金的大小在每个纪元内保持不变，在纪元边界根据整个纪元累积的净流入而变化。流入和流出对应于：
 
-- Inflows from the storage fees paid for transactions executed during the current epoch.
-- Inflows from reinvestments of the fund’s returns into new principal. Specifically, the share $(1-\gamma)$ of stake rewards accrued to the storage fund that is not paid out to validators.
-- Outflows from storage fee rebates paid to users who delete the data associated with past transactions.
+- 从当前纪元执行的交易所支付的存储费用。
+- 从基金的回报重新投资到新的本金。具体来说，即 $(1-\gamma)$ 的质押奖励，未支付给验证器的部分。
 
-The key property of the rebate function is that it limits storage fund outflows to be always less than the original storage flow, at the individual transaction level. This mechanism guarantees that the storage fund is never depleted and that its size moves in line with the amount of data held in storage.
+从与过去交易相关联的数据中删除数据的用户支付的存储费用的部分退款。
 
-## Storage fund incentives {#incentives}
+退款函数的关键特性是，在个体交易水平上，它限制了存储基金的流出始终小于原始存储流量。这个机制确保存储基金永远不会耗尽，并且其大小与存储中的数据量相一致。
 
-The storage fund introduces various desirable incentives into the Sui economy:
+## 存储基金激励 {#incentives}
 
-- Its mechanics incentivize users to delete data and obtain a rebate on their storage fees when the cost of storing such data exceeds the value obtained from maintaining that data on-chain. This introduces a useful market-based mechanism where users free storage when it becomes uneconomical for them to keep it.
-- It creates deflationary pressure over the SUI token in that increased activity leads to larger storage requirements and to more SUI removed from circulation.
-- It is capital efficient in that it is economically equivalent to a rent model where users pay for storage through a pay-per-period model.
+存储基金引入了各种有益的激励措施到Sui经济中：
+
+- 其机制激励用户删除数据，并在存储这些数据的成本超过在链上保留数据所获得的价值时获得存储费用的退款。这引入了一个有用的基于市场的机制，用户在无法经济上保留数据时释放存储。
+- 它对SUI代币施加通货紧缩压力，因为活动增加会导致更大的存储需求，从而导致更多的SUI从流通中移除。
+- 它在资本效率上非常高，因为它在经济上相当于一种租赁模型，用户通过按期支付的方式支付存储费用。

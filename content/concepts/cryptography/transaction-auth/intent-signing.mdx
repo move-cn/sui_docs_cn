@@ -1,25 +1,25 @@
 ---
-title: Intent Signing
+title: 意图签名
 ---
 
-In Sui, an intent is a compact struct that serves as the domain separator for a message that a signature commits to. The data that the signature commits to is an intent message. All signatures in Sui must commit to an intent message, instead of the message itself.
+在 Sui 中，意图是一个紧凑的结构，作为签名所承诺的消息的域分隔符。签名承诺的数据是一个意图消息。在 Sui 中，所有的签名都必须承诺一个意图消息，而不是消息本身。
 
-## Motivation
+## 动机
 
-In previous releases, Sui used a special `Signable` trait that attached the Rust struct name as a prefix to the serialized data. This is not ideal because it's:
- * **Not compact:** The prefix `TransactionData::` is significantly larger than 1 byte.
- * **Not user-friendly:** Non-Rust applications need to maintain a list of Rust-struct names.
+在先前的版本中，Sui 使用了一个特殊的 `Signable` trait，它将 Rust 结构体名称作为前缀附加到序列化数据上。这不是理想的，因为它具有以下问题：
+ * **不紧凑：** 前缀 `TransactionData::` 比 1 字节大得多。
+ * **不友好：** 非 Rust 应用程序需要维护一个 Rust 结构体名称的列表。
 
-The intent signing standard provides a compact domain separator to the data being signed for both user signatures and authority signatures. It has several benefits, including:
+意图签名标准为被签名的数据提供了一个紧凑的域分隔符，适用于用户签名和权威签名。它具有多个优点，包括：
 
- * The intent scope is replaced by a u8 representation instead of a Rust struct tag name string.
- * In addition to the intent scope, other important domain separators can be committed as well (such as intent version and app id).
- * The data itself no longer needs to implement the `Signable` trait, it just needs to implement `Serialize`.
- * All signatures can adopt the same intent message structure, including both user signatures (only to commit to `TransactionData`) and authority signature (commits to all internal intent scopes such as `TransactionEffects`, `ProofOfPossession`, and `SenderSignedTransaction`).
+ * 意图范围被 u8 表示，而不是 Rust 结构标签名称字符串。
+ * 除了意图范围之外，还可以承诺其他重要的域分隔符（例如意图版本和应用程序 ID）。
+ * 数据本身不再需要实现 `Signable` trait，只需要实现 `Serialize`。
+ * 所有签名都可以采用相同的意图消息结构，包括用户签名（仅用于承诺 `TransactionData`）和权威签名（承诺所有内部意图范围，如 `TransactionEffects`、`ProofOfPossession` 和 `SenderSignedTransaction`）。
 
-## Structs
+## 结构体
 
-The `IntentMessage` struct consists of the intent and the serialized data value.
+`IntentMessage` 结构体由意图和序列化的数据值组成。
 
 ```rust
 pub struct IntentMessage<T> {
@@ -28,7 +28,7 @@ pub struct IntentMessage<T> {
 }
 ```
 
-To create an intent struct, include the `IntentScope` (what the type of the message is), `IntentVersion` (what version the network supports), and `AppId` (what application that the signature refers to).
+要创建一个意图结构体，请包括 `IntentScope`（消息类型的标识）、`IntentVersion`（网络支持的版本）和 `AppId`（签名所涉及的应用程序）。
 
 ```rust
 pub struct Intent {
@@ -38,17 +38,17 @@ pub struct Intent {
 }
 ```
 
-To see a detailed definition for each field, see each enum definition [in the source code](https://github.com/MystenLabs/sui/blob/0dc1a38f800fc2d8fabe11477fdef702058cf00d/crates/sui-types/src/intent.rs).
+要查看每个字段的详细定义，请参阅[源代码中的每个枚举定义](https://github.com/MystenLabs/sui/blob/0dc1a38f800fc2d8fabe11477fdef702058cf00d/crates/sui-types/src/intent.rs)。
 
-The serialization of an `Intent` is a 3-byte array where each field is represented by a byte.
+`Intent` 的序列化是一个包含每个字段一个字节的 3 字节数组。
 
-The serialization of an `IntentMessage<T>` is the 3 bytes of the intent concatenated with the BCS serialized message.
+`IntentMessage<T>` 的序列化是意图的 3 字节与 BCS 序列化的消息拼接而成。
 
-## User Signature
+## 用户签名
 
-To create a user signature, construct an intent message first, and create the signature over the 32-byte Blake2b hash of the BCS serialized value of the intent message of the transaction data (`intent || message`).
+要创建用户签名，首先构建一个意图消息，然后在交易数据的意图消息的 BCS 序列化值的 32 字节 Blake2b 哈希上创建签名（`intent || message`）。
 
-Here is an example in Rust:
+以下是一个 Rust 示例：
 
 ```rust
 let intent = Intent::default();
@@ -56,7 +56,7 @@ let intent_msg = IntentMessage::new(intent, data);
 let signature = Signature::new_secure(&intent_msg, signer);
 ```
 
-Here is an example in TypeScript:
+这是一个 TypeScript 的示例：
 
 ```typescript
 const intentMessage = messageWithIntent(
@@ -66,24 +66,24 @@ const intentMessage = messageWithIntent(
 const signature = await this.signData(intentMessage);
 ```
 
-Under the hood, the `new_secure` method in Rust and the `signData` method in TypesScript does the following: 
- 1. Serializes the intent message as the 3-byte intent concatenated with the BCS serialized bytes of the transaction data. 
- 1. Applies Blake2b hash to get the 32-byte digest
- 1. Passes the digest to the signing API for each corresponding scheme of the signer. The supported signature schemes are pure Ed25519, ECDSA Secp256k1 and ECDSA Secp256r1. See [Sui Signatures](./signatures.mdx#signature-requirements) for requirements of each scheme. 
+在底层，Rust 中的 `new_secure` 方法和 TypeScript 中的 `signData` 方法执行以下操作：
+ 1. 将意图消息序列化为包含 3 字节意图和交易数据的 BCS 序列化字节的连接。
+ 1. 应用 Blake2b 哈希以获取 32 字节摘要。
+ 1. 将摘要传递给签名 API，对应于签名者的每个支持的方案。支持的签名方案有纯 Ed25519、ECDSA Secp256k1 和 ECDSA Secp256r1。请查看[Sui签名](./signatures.mdx#signature-requirements)以获取每种方案的要求。
 
-## Authority Signature
+## 权威签名
 
-The authority signature is created using the protocol key. The data that it commits to is also an intent message `intent || message`. See all available intent scopes [in the source code](https://github.com/MystenLabs/sui/blob/0dc1a38f800fc2d8fabe11477fdef702058cf00d/crates/sui-types/src/intent.rs#L66)
+使用协议密钥创建权威签名。它所提交的数据也是一个意图消息 `intent || message`。请在[源代码中](https://github.com/MystenLabs/sui/blob/0dc1a38f800fc2d8fabe11477fdef702058cf00d/crates/sui-types/src/intent.rs#L66)查看所有可用的意图范围。
 
-### How to Generate Proof of Possession for an Authority
+### 如何为权威生成拥有证明
 
-When an authority request to join the network, the protocol public key and its proof of possession (PoP) are required to be submitted. PoP is required to prevent [rogue key attack](https://crypto.stanford.edu/~dabo/pubs/papers/BLSmultisig.html).
+当权威请求加入网络时，需要提交协议公钥及其拥有证明（PoP）。PoP 是为了防止[恶意密钥攻击](https://crypto.stanford.edu/~dabo/pubs/papers/BLSmultisig.html)。
 
-The proof of possession is a BLS signature created using the authority's protocol private key, committed over the following message: `intent || pubkey || address || epoch`. Here `intent` is serialized to `[5, 0, 0]` representing an intent with scope as "Proof of Possession", version as "V0" and app_id as "Sui". `pubkey` is the serialized public key bytes of the authority's BLS protocol key. `address` is the account address associated with the authority's account key. `epoch` is serialized to `[0, 0, 0, 0, 0, 0, 0, 0]`. 
+拥有证明是使用权威的协议私钥创建的 BLS 签名，提交的消息是：`intent || pubkey || address || epoch`。这里 `intent` 被序列化为 `[5, 0, 0]`，表示意图的范围为“拥有证明”，版本为“V0”和 app_id 为“Sui”。`pubkey` 是权威的 BLS 协议密钥的序列化公钥字节。`address` 是与权威帐户密钥关联的帐户地址。`epoch` 被序列化为 `[0, 0, 0, 0, 0, 0, 0, 0]`。
 
-To generate a proof of possession in Rust, see implementation at `fn generate_proof_of_possession`. For test vectors, see `fn test_proof_of_possession`. 
+要在 Rust 中生成拥有证明，请参见 `fn generate_proof_of_possession` 的实现。有关测试向量，请参见 `fn test_proof_of_possession`。
 
-# Implementation
+# 实现
 
 1. [Struct and enum definitions](https://github.com/MystenLabs/sui/blob/0dc1a38f800fc2d8fabe11477fdef702058cf00d/crates/sui-types/src/intent.rs)
 2. [Test](https://github.com/MystenLabs/sui/blob/d009e82fa35bda4f2b3e7a86a9529d36c32a8159/crates/sui-types/src/unit_tests/intent_tests.rs)

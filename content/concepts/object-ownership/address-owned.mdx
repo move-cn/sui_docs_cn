@@ -3,41 +3,42 @@ title: Address-Owned Objects
 description: Address-owned objects are owned by a Sui 32-byte address, which can either be an account address or an object ID. Learn how to create and access these objects.
 ---
 
-An address-owned object is owned by a specific 32-byte address that is either an account address (derived from a particular signature scheme) or an object ID. An address-owned object is accessible only to its owner and no others.
+地址拥有的对象是由特定的 32 字节地址拥有的，这个地址可以是一个账户地址（由特定的签名方案衍生）或一个对象 ID。地址拥有的对象只能被它的所有者访问，其他人无法访问。
 
-As the owner (of the address that owns) an address-owned objects, you can transfer it to different addresses. Because only a single owner can access these objects, you can execute transactions that use only owned objects in parallel with other transactions that don't have any objects in common without needing to go through consensus.
+作为地址拥有者（拥有地址的人）可以将对象转移到不同的地址。由于只有单个所有者可以访问这些对象，你可以执行仅使用拥有的对象的事务，而不需要与不共享任何对象的其他事务进行共识。
 
-## Creating address-owned objects
+## 创建地址拥有的对象
 
-You can use one of the following functions (defined in the [transfer module](https://github.com/MystenLabs/sui/blob/main/crates/sui-framework/packages/sui-framework/sources/transfer.move)) to create address-owned objects.
+你可以使用以下函数之一（定义在[传输模块](https://github.com/MystenLabs/sui/blob/main/crates/sui-framework/packages/sui-framework/sources/transfer.move)中）来创建地址拥有的对象。
 
 ```move
 public fun transfer<T: key>(obj: T, recipient: address)
 public fun public_transfer<T: key + store>(obj: T, recipient: address)
 ```
 
-You should use the `sui::transfer::transfer` function if you are defining a [custom transfer policy](../dynamic-fields/transfers/custom-rules.mdx) for the object. Use the `sui::transfer::public_transfer` function to create an address-owned object if the object has the `store` capability.
+你应该使用 `sui::transfer::transfer` 函数来定义对象的[自定义转移策略](../dynamic-fields/transfers/custom-rules.mdx)。如果对象具有 `store` 能力，则使用 `sui::transfer::public_transfer` 函数来创建地址拥有的对象。
 
-After you declare an object as address-owned, its ownership can change over the life of that object - either by adding it as a dynamic object field, transferring it to a different address, or making it immutable. Importantly though, after you create an object and set its ownership, it cannot be shared.
+在将对象声明为地址拥有之后，对象的所有权可以在其生命周期内发生变化 - 通过将其添加为动态对象字段、将其转移到不同的地址或使其不可变。但重要的是，在创建对象并设置其所有权后，它不能被共享。
 
-## Accessing address-owned objects
+## 访问地址拥有的对象
 
-You can access address-owned objects in two different ways, depending on whether or not the address owner of the object corresponds to an object ID.
+你可以以两种不同的方式访问地址拥有的对象，这取决于对象的地址所有者是否对应于对象 ID。
 
-If the address owner of the object corresponds to an object ID, then you must access and dynamically authenticate it during the execution of the transaction using the mechanisms defined in [Transfer to Object](../dynamic-fields/transfers/transfer-to-object.mdx).
+如果对象的地址所有者对应于对象 ID，则在事务执行期间，你必须使用 [传输到对象](../dynamic-fields/transfers/transfer-to-object.mdx) 中定义的机制访问并动态验证它。
 
-If the address owner of the object is a signature-derived address (an account address), then you can use and access it directly as an owned object during the execution of a transaction that address signs. Other addresses cannot access owned objects in any way in a transaction - even to just read the object.
+如果对象的地址所有者是一个由签名衍生的地址（账户地址），则在事务执行期间，你可以直接将其用作拥有的对象，该地址进行签名。其他地址无法以任何方式在事务中访问拥有的对象 - 即使只是读取对象。
 
-## When to use address-owned objects
+## 何时使用地址拥有的对象
 
-Use address-owned objects in cases where you want or need only a single owner for the object at any point in time. When designing, you should generally prefer address-owned objects over shared objects as address-owned objects whenever it is reasonable or possible to do so. Owned objects do not need to be sequenced through consensus, and are therefore less prone to throughput bottlenecks if the object is being used extensively.
+在只在任何时刻都希望或需要一个对象的单个所有者的情况下使用地址拥有的对象。在设计时，通常应在合理或可能的情况下优先选择地址拥有的对象，而不是共享对象。拥有的对象不需要通过共识进行排序，因此如果对象被广泛使用，它们更不容易出现吞吐量瓶颈。
 
-## Example
+## 示例
 
-An example of an object that is frequently address-owned is that of a [Coin object](https://github.com/MystenLabs/sui/blob/main/crates/sui-framework/packages/sui-framework/sources/coin.move). If address `0xA11CE` had a coin `C` with 100 SUI and wanted to pay address `0xB0B` 100 SUI, `0xA11CE` could do so by transferring `C` to `0xB0B`.
+一个经常被地址拥有的对象的示例是[Coin 对象](https://github.com/MystenLabs/sui/blob/main/crates/sui-framework/packages/sui-framework/sources/coin.move)。如果地址 `0xA11CE` 拥有一个币 `C`，其中有 100 SUI，并且想要支付地址 `0xB0B` 100 SUI，`0xA11CE` 可以通过将 `C` 转移到 `0xB0B` 来实现。
 
 ```move
 sui::transfer::public_transfer(C, @0xB0B);
 ```
 
-This results in `C` having a new address owner of `0xB0B`, and `0xB0B` can later use that 100 SUI coin.
+这导致 `C` 具有新的地址所有者 `0xB0B`，并且 `0xB0B` 以后可以使用这 100 个 SUI 币。
+

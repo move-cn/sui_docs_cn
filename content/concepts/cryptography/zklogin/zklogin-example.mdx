@@ -1,32 +1,32 @@
 ---
-title: zkLogin Example
-description: An example that breaks down the logic behind each step of zkLogin.
+title: zkLogin示例
+description: 一个分解Sui zkLogin每个步骤逻辑的示例。
 ---
 
-The Sui community created an example to facilitate a comprehensive understanding of each step involved in Sui zkLogin for developers.
+Sui社区创建了一个示例，以便为开发人员提供Sui zkLogin涉及的每个步骤的全面理解。
 
-- [Sui zkLogin Example](https://sui-zklogin.vercel.app/)
+- [Sui zkLogin示例](https://sui-zklogin.vercel.app/)
 
-![ZKLogin Overview](./images/overview.png "ZKLogin Overview")
-This example breaks down the complete process of Sui zkLogin into seven steps, as follows:
+![ZKLogin概览](./images/overview.png "ZKLogin概览")
+这个示例将Sui zkLogin的完整过程分解为七个步骤，如下：
 
-1. Generate ephemeral key pair
-1. Fetch JWT
-1. Decode JWT
-1. Generate salt
-1. Generate user Sui address
-1. Fetch ZK proof
-1. Assemble zkLogin signature
+1. 生成临时密钥对
+1. 获取JWT
+1. 解码JWT
+1. 生成盐
+1. 生成用户Sui地址
+1. 获取ZK证明
+1. 组装zkLogin签名
 
-Each step includes corresponding code snippets, providing instructions on how to obtain the required data for each step.
+每个步骤都包括相应的代码片段，提供了如何获取每个步骤所需数据的说明。
 
-## Operating environment
+## 操作环境
 
-The example runs in Sui Devnet. All data the user generates is stored locally on the client-side (browser). The acquisition of the zero-knowledge proof (ZK proof) is done through a call to the [Mysten Labs-maintained proving service](../zklogin.mdx#call-the-mysten-labs-maintained-proving-service). Therefore, running the example does not require an additional deployed backend server (or a Docker container).
+该示例在Sui Devnet中运行。用户生成的所有数据都存储在客户端（浏览器）的本地。获取零知识证明（ZK证明）是通过调用[Mysten Labs维护的证明服务](../zklogin.mdx#call-the-mysten-labs-maintained-proving-service)完成的。因此，运行示例不需要额外部署的后端服务器（或Docker容器）。
 
-## Storage locations for key data
+## 密钥数据的存储位置
 
-The following table lists the storage location for key data the example uses:
+以下表列出了示例使用的关键数据的存储位置：
 
 | Data | Storage location |
 | --- | --- |
@@ -35,23 +35,23 @@ The following table lists the storage location for key data the example uses:
 | User salt | `window.localStorage` | 
 | Max epoch | `window.localStorage` | 
 
-Because the user salt is stored long-term in the browser's `localStorage`, as long as the `localStorage` is not cleared manually, you can use the same JWT (in this example, logging in with the same Google account) to access the corresponding zkLogin address generated from the current salt value at any time.
+因为用户盐值(Salt)长期存储在浏览器的 `localStorage` 中，只要不手动清除 `localStorage`，你可以随时使用相同的JWT（在此示例中，使用相同的Google帐户登录）访问从当前盐值生成的相应zkLogin地址。
 
-:::caution
+:::注意
 
-Changing browsers or devices results in the inability to access previously generated Sui zkLogin addresses, even when using the same JWT.
+更改浏览器或设备会导致无法访问以前生成的Sui zkLogin地址，即使使用相同的JWT。
 
 :::
 
-## Troubleshooting
+## 故障排除
 
-- **ZK Proof request failure:**
-  - This might occur because of inconsistencies in the creation of multiple randomness or user salts, causing request failures. Click the **Reset Button** in the top right corner of the UI to restart the entire process.
+- **ZK证明请求失败：**
+  - 这可能是由于创建多个随机性或用户盐时存在不一致，导致请求失败。点击UI右上角的 **Reset按钮** 重新启动整个过程。
 
-- **Request test tokens failure:**
-  - This is because you have surpassed the faucet server request frequency limitations. 
-  - You can go to Sui [#devnet-faucet](https://discord.com/channels/916379725201563759/971488439931392130) or [#testnet-faucet](https://discord.com/channels/916379725201563759/1037811694564560966) Discord channels to claim test coins.
+- **请求测试令牌失败：**
+  - 这是因为你超过了faucet服务器请求频率限制。
+  - 你可以访问Sui的 [#devnet-faucet](https://discord.com/channels/916379725201563759/971488439931392130) 或 [#testnet-faucet](https://discord.com/channels/916379725201563759/1037811694564560966) Discord频道来获取测试币。
 
-- Any suggestions are welcome on the project's GitHub repo through raised issues, and of course, pull requests are highly appreciated.
+- 对于项目的GitHub仓库，欢迎提出任何建议或问题，当然，我们非常感谢拉取请求。
 
-- For more FAQs about zkLogin, you can check [zkLogin FAQ](../zklogin.mdx#faq).
+- 有关zkLogin的更多常见问题解答，请查看 [zkLogin FAQ](../zklogin.mdx#faq)。

@@ -1,25 +1,25 @@
 ---
 title: Sui Indexer
-description: Sui Indexer is an off-Full node data service that serves data from the Sui protocol, including both data directly generated from chain and derivative data.
+description: Sui Indexer 是一个离线 Full 节点数据服务，提供来自 Sui 协议的数据，包括直接从链上生成的数据和衍生数据。
 ---
 
-Sui Indexer is an off-Full node data service that serves data from the Sui protocol, including both data directly generated from chain and derivative data.
+Sui Indexer 是一个离线 Full 节点数据服务，提供来自 Sui 协议的数据，包括直接从链上生成的数据和衍生数据。
 
-![Indexer architecture](./images/indexer-arch.png)
+![Indexer 架构](./images/indexer-arch.png)
 
-## Functions 
+## 功能 
 
-Sui Indexer provides three main functionalities:
-- Ingest data from a Full node to a relational database. Data on Full nodes is stored as BCS bytes in embedded RocksDB, thus the query capabilities are very limited. The indexer pulls checkpoint blob data, schematizing them into various tables like objects, transactions, and so on with proper indices.
-- Serve online transaction processing (OLTP) RPC requests. With data in relational databases, Sui indexer spins a stateless reader binary as JSON RPC server with an [interface](/references/sui-api).
-- Analytical indexer. Other than OLTP data ingestion and requests, indexer also supports some analytical data ingestion like transactions per second (TPS) and daily active user (DAU) metrics.
+Sui Indexer 提供三个主要功能：
+- 从 Full 节点摄取数据到关系数据库。Full 节点上的数据以 BCS 字节形式存储在嵌入式 RocksDB 中，因此查询能力非常有限。索引器拉取检查点 blob 数据，将其模式化为各种表，如对象、交易等，并建立适当的索引。
+- 提供在线事务处理（OLTP）RPC 请求。使用关系数据库中的数据，Sui 索引器会启动一个无状态的读取器二进制文件作为 JSON RPC 服务器，具有 [接口](/references/sui-api)。
+- 分析索引器。除了 OLTP 数据摄取和请求之外，索引器还支持一些分析数据摄取，如每秒交易数（TPS）和每日活跃用户（DAU）指标。
 
-## Run an indexer
+## 运行索引器
 
-Refer to the [Sui Indexer README](https://github.com/MystenLabs/sui/tree/main/crates/sui-indexer) in the `crates/sui-indexer` directory of the Sui repo to run an indexer with a local or managed Postgres-compatible database. 
+请参考 [Sui Indexer README](https://github.com/MystenLabs/sui/tree/main/crates/sui-indexer)，在 Sui 存储库的 `crates/sui-indexer` 目录中运行一个具有本地或托管的兼容 Postgres 数据库的索引器。
 
-## Future enahancements
+## 未来增强
 
-Two planned enahncements for Sui indexer are:
-- Expand Sui indexer to be able to run on MySQL compatible DB
-- Encapsulate the deployment steps into a `docker-compose`-like script for easier initial setup.
+Sui 索引器的两个计划增强功能是：
+- 扩展 Sui 索引器，使其能够在兼容 MySQL 的数据库上运行
+- 将部署步骤封装到类似 `docker-compose` 的脚本中，以便更轻松地进行初始设置。

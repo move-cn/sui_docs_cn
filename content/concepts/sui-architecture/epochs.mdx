@@ -1,28 +1,28 @@
 ---
-title: Epochs and Reconfiguration
+title: 纪元和重新配置
 draft: true
 ---
 
-In a simplified view, epochs are to the Sui network what individual days are to a calendar. Reconfiguration, then, is a process at the end of each epoch where that day's activity is tallied and the next day's parameters are set.
+在简化的视图中，对于 Sui 网络而言，纪元就像是对日历的个别天数。然后，重新配置是在每个纪元结束时对当天活动进行总结并设置下一天参数的过程。
 
-## Epoch
+## 纪元
 
-An epoch is a duration of time where the Sui validator set and their stakes remain unchanged. On both Mainnet and Testnet, an epoch is about 24 hours. This timeframe allows validators to process transactions efficiently without worrying about ad hoc validator changes during the middle of an epoch.
+纪元是一段时间，其中 Sui 验证器集合及其质押保持不变。在 Mainnet 和 Testnet 上，一个纪元约为 24 小时。这个时间框架允许验证器在纪元中途无需担心自发验证器更改的情况下高效地处理交易。
 
-Epoch values are included in the metadata of transactions on the Sui network, but the average user is unaffected by its value. The only time a user might need to know about epochs is in the case of expiring transactions, where a transaction is only valid if executed before a set epoch. See [Transactions](../transactions.mdx) for more information about transactions on Sui.
+纪元值包含在 Sui 网络上的交易元数据中，但普通用户对其值不受影响。用户可能需要了解纪元的唯一时刻是在交易到期的情况下，其中交易仅在在设置的纪元之前执行时有效。有关 Sui 上交易的更多信息，请参见 [Transactions](../transactions.mdx)。
 
-## Reconfiguration
+## 重新配置
 
-Reconfiguration is a critical process occurring at the end of each epoch. It involves several key steps to adjust the network for the upcoming epoch:
+重新配置是在每个纪元结束时发生的关键过程。它涉及调整网络以适应即将到来的纪元的多个关键步骤：
 
-1. **Finalizing transactions and checkpoints**
-    - The network reaches consensus on the final set of transactions and checkpoints for the current epoch. This ensures all validators have an identical state at epoch conclusion.
-    - **Synchronous moment:** This is the only fully synchronous event in the network, crucial for maintaining consistency.
-1. **Distribution of gas rewards**
-    - Computation gas fees are distributed to the validator staking reward pool, from which stakers can withdraw.
-    - Storage fees are allocated to a storage fund, playing a vital role in the Sui tokenomics, as explaiend in [Tokenomics](../tokenomics.mdx).
-1. **Validator set change**
-    - Any pending staking and unstaking requests during the epoch are finalized and reflected in validators stake distribution.
-    - Any pending validator change requests are also processed, including adding new validators and removing exixting validators. This is the sole opportunity for altering the validator set and stake distribution.
-1. **Protocol upgrade**
-    - If agreed upon by 2f+1 validators, the network might upgrade to a new protocol version, encompassing new features, bug fixes, and updates to Move framework libraries.
+1. **完成交易和检查点**
+    - 网络就当前纪元的最终交易和检查点达成共识。这确保在纪元结束时所有验证器具有相同的状态。
+    - **同步时刻：** 这是网络中唯一的完全同步事件，对于保持一致性至关重要。
+1. **分发 gas 奖励**
+    - 计算 gas 费用被分发给验证器的质押奖励池，质押者可以从中提取。
+    - 存储费用分配给存储基金，在 Sui 代币经济中发挥着重要作用，如 [Tokenomics](../tokenomics.mdx) 中所解释的那样。
+1. **验证器集合更改**
+    - 纪元期间的任何待处理的质押和赎回请求都会在验证器质押分配中最终化并反映出来。
+    - 任何待处理的验证器更改请求也会被处理，包括添加新的验证器和删除现有的验证器。这是更改验证器集合和质押分配的唯一机会。
+1. **协议升级**
+    - 如果 2f+1 个验证器达成一致意见，网络可能会升级到新的协议版本，包括新功能、错误修复和 Move 框架库的更新。

@@ -1,18 +1,18 @@
 ---
 title: Gas Smashing
-description: Sui optimizes coin management by combining multiple coins into a single object to pay for gas fees.
+description: Sui通过将多个代币合并成一个对象来优化代币管理，以支付气费。
 ---
 
-Every transaction on Sui has a gas fee associated with its execution that must be paid to successfully execute the transaction. Gas smashing enables you to pay for this gas fee using multiple coins instead of just one. This mechanism is especially helpful in scenarios where you might have a number of coins with smaller denominations, or if you simply want to minimize the number of SUI coins under your account. Gas smashing is generally a useful tool for coin management, especially when coupled with the `GasCoin` programmable transaction block (PTB) argument. 
+在Sui上的每笔交易都与其执行相关联的气费，必须支付才能成功执行交易。Gas smashing使你能够使用多个代币而不仅仅是一个代币来支付这笔气费。这种机制在你可能有许多面额较小的代币的情况下特别有帮助，或者如果你只是想将你账户下的SUI代币数量最小化。Gas smashing通常是代币管理的有用工具，尤其是与`GasCoin`可编程交易块（PTB）参数一起使用时。
 
-## Smashing gas
+## Gas smashing
 
-Gas smashing happens automatically in a transaction if you provide multiple coins to pay for the gas fee. When Sui executes a transaction, Sui combines, or "smashes", all of the coins you provide to pay for the gas into a single coin. The smashing occurs regardless of coin amounts or the gas budget provided with the transaction (as long as it is within the minimum and maximum gas budgets). Sui deducts the gas fee from the single coin regardless of the execution status of the transaction. In particular, this means that even if the transaction fails to execute for some reason (such as an execution error) the coins that you provided as gas coins remain smashed after the transaction's execution.
+如果你提供多个代币来支付气费，Gas smashing将在交易中自动发生。当Sui执行交易时，Sui将你提供的所有代币合并或“smash”以支付气费，将它们合并为一个单一的代币。这种合并发生在交易中提供的代币金额或交易中提供的气费预算之间（只要它在最小和最大气费预算之间）。Sui从单一代币中扣除气费，而不考虑交易的执行状态。特别地，这意味着即使交易由于某种原因（例如执行错误）未能执行，你提供的作为气费代币的代币在交易执行后仍然被smash。
 
-Gas smashing is an efficient way to perform coin management, and to combine many smaller coins into one single coin that you can use to not only pay for gas fees, but also for other operations in the transaction that smashes the coins. In particular, you can use gas smashing to combine multiple coins to pay for the gas fee of the PTB, and then that same PTB can withdraw from the `GasCoin`. A special argument is available in PTBs that references the coin used to pay gas after Sui deducts the gas fee from it, which you can use to transfer the remaining SUI to another address. Because gas smashing happens automatically in a transaction if you provide multiple gas coins, you can combine multiple coins as part of other transactions to perform coin management in parallel with non-coin-management specific transactions.
+Gas smashing是进行代币管理的高效方式，可以将许多较小的代币合并成一个单一的代币，你可以使用该代币不仅支付气费，还可以用于交易中合并代币的其他操作。特别是，你可以使用gas smashing合并多个代币以支付PTB的气费，然后相同的PTB可以从`GasCoin`中提取。PTB中提供了一个特殊的参数，该参数引用Sui从中扣除气费后用于支付gas的代币，你可以使用它将剩余的SUI转移到另一个地址。由于在交易中提供了多个气费代币，Gas smashing会自动发生，因此你可以将多个代币合并为其他交易的一部分，以与非代币管理特定交易并行进行代币管理。
 
-Sui has a maximum of 256 coins that you can smash in a single PTB - the transaction is not processed if the number of gas coins exceeds this amount. Additionally, when you smash gas coins, Sui deletes all but the first coin. Because of this, there is often a storage rebate associated with the deletion of these coins. As with other storage rebates, you can't use the resulting refund to pay for the gas fee of the transaction (and isn't credited to the coin until after the execution of the transaction), but it might result in a refund after the execution of the transaction. This refund, along with the remaining balance after the transaction's gas fee, resides in the first gas coin you provide in the transaction after execution. 
+Sui在单个PTB中最多可以smash 256个代币 - 如果gas代币数量超过此数量，则不处理该交易。此外，在smash gas代币时，Sui会删除所有代币，除了第一个代币。由于这个原因，通常与删除这些代币相关联的存储回扣。与其他存储回扣一样，你不能使用所得的退款支付交易的气费（直到交易执行后才记入代币），但它可能在交易执行后导致退款。此退款与交易的气费余额一起存储在交易执行后提供的第一个gas代币中。
 
-## Running out of gas with a refund
+## 在有退款的情况下耗尽气体
 
-Because coins are smashed regardless of the execution status, storage rebates can lead to seemingly odd cases where a transaction can both run out of gas and end up with a negative gas and storage fee (you get a refund from the transaction). As an example of how this might happen, take a transaction `T` that has a gas budget of `5000`, and you provide coins `C1`, `C2`, `C3`, `C4`, `C5` with values of `1000`, `2000`, `3000`, `4000`, and `5000` to pay for gas. If the storage rebate for a coin object is `2000`, and the gas fee for `T` execution is more than the provided gas budget of `5000` (so, `T` runs out of gas), this results in an execution status of `OutOfGas`. The `C1` coin has a balance of `1000` + `2000` + `3000` + `4000` + `5000` - `5000` + `2000` * `4` = `15000` - `5000` + `8000` = `18000` and `T` ends up with a negative gas and storage fee (a refund) of `3000`. 
+由于代币无论执行状态如何都会被smash，存储回扣可能导致看似奇怪的情况，即交易既可能耗尽气体，又可能以负气体和存储费（从交易中获得退款）结束。作为可能发生这种情况的示例，考虑具有气体预算为`5000`的交易`T`，并且你提供值为`1000`、`2000`、`3000`、`4000`和`5000`的代币`C1`、`C2`、`C3`、`C4`、`C5`来支付气体。如果代币对象的存储回扣为`2000`，并且`T`执行的气体费用超过了提供的`5000`气体预算（因此`T`耗尽气体），则其执行状态为`OutOfGas`。`C1`代币的余额为`1000` + `2000` + `3000` + `4000` + `5000` - `5000` + `2000` * `4` = `15000` - `5000` + `8000` = `18000`，并且`T`最终以负气体和存储费（即`3000`的退款）结束。

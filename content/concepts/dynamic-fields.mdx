@@ -1,32 +1,32 @@
 ---
-title: Dynamic (Object) Fields
-description: Dynamic fields and dynamic object fields on Sui are added and removed dynamically, affect gas only when accessed, and store heterogeneous values.
+title: 动态（对象）字段
+description: 在 Sui 上，动态字段和动态对象字段是动态添加和移除的，只在访问时影响 gas，并存储异构值。
 ---
 
-There are various ways to use object fields to store primitive data and other objects (wrapping), but there are a few limitations to these:
+有多种方法可以使用对象字段存储原始数据和其他对象（封装），但是存在一些限制：
 
-1. Object's have a finite set of fields keyed by identifiers that are fixed when you publish its module (limited to the fields in the `struct` declaration).
-2. An object can become very large if it wraps several other objects. Larger objects can lead to higher gas fees in transactions. In addition, there is an upper bound on object size.
-3. There are use cases where you need to store a collection of objects of heterogeneous types. Because the Move `vector` type must be instantiated with one single type `<T>`, it is not suitable for this.
+1. 对象具有有限的由标识符键入的字段集，在发布其模块时是固定的（限于 `struct` 声明中的字段）。
+2. 如果一个对象包装了多个其他对象，它可能变得非常庞大。更大的对象可能导致交易中的 gas 费用更高。此外，对象大小存在一个上限。
+3. 存在需要存储异构类型对象集合的用例。由于 Move `vector` 类型必须实例化为一个单一类型 `<T>`，因此不适用于这种情况。
 
-Fortunately, Sui provides *dynamic fields* with arbitrary names (not just identifiers), added and removed on-the-fly (not fixed at publish), which only affect gas when they are accessed, and can store heterogeneous values. Use the libraries in this topic to interact with this kind of field.
+幸运的是，Sui 提供了带有任意名称的*动态字段*（不仅仅是标识符），可以在运行时添加和删除（不在发布时固定），只在访问时影响 gas，并且可以存储异构值。使用本主题中的库与这种类型的字段进行交互。
 
-### Fields versus object fields
+### 字段与对象字段
 
-There are two flavors of dynamic field -- "fields" and "object fields" -- which differ based on how you store their values:
+有两种动态字段的类型 -- "字段" 和 "对象字段" -- 它们根据存储值的方式有所不同：
 
-- **Fields** can store any value that has `store`, however an object stored in this kind of field is considered wrapped and is not accessible via its ID by external tools (explorers, wallets, and so on) accessing storage.
-- **Object field** values must be objects (have the `key` ability, and `id: UID` as the first field), but are still accessible at their ID to external tools.
+- **字段** 可以存储任何具有 `store` 的值，但是存储在这种字段中的对象被视为已封装，并且无法通过其 ID 由外部工具（探测器、钱包等）访问存储。
+- **对象字段** 的值必须是对象（具有 `key` 能力，并且 `id: UID` 是第一个字段），但仍然可以通过其 ID 由外部工具访问。
 
-The modules for interacting with these fields can be found at [`dynamic_field`](https://github.com/MystenLabs/sui/tree/main/crates/sui-framework/packages/sui-framework/sources/dynamic_field.move) and [`dynamic_object_field`](https://github.com/MystenLabs/sui/tree/main/crates/sui-framework/packages/sui-framework/sources/dynamic_object_field.move) respectively.
+与这些字段进行交互的模块可以在 [`dynamic_field`](https://github.com/MystenLabs/sui/tree/main/crates/sui-framework/packages/sui-framework/sources/dynamic_field.move) 和 [`dynamic_object_field`](https://github.com/MystenLabs/sui/tree/main/crates/sui-framework/packages/sui-framework/sources/dynamic_object_field.move) 找到。
 
-### Field names
+### 字段名称
 
-Unlike an object's regular fields where names must be Move identifiers, dynamic field names can be any value that has `copy`, `drop`, and `store`. This includes all Move primitives (integers, Booleans, byte strings), and structs whose contents all have `copy`, `drop`, and `store`.
+与对象的常规字段不同，对象字段的名称必须是 Move 标识符，动态字段的名称可以是任何具有 `copy`、`drop` 和 `store` 的值。这包括所有 Move 原语（整数、布尔值、字节字符串）和其内容具有 `copy`、`drop` 和 `store` 的结构体。
 
-### Adding dynamic fields
+### 添加动态字段
 
-Add dynamic fields with the following APIs:
+使用以下 API 添加动态字段：
 
 ```move
 module sui::dynamic_field {
@@ -52,9 +52,9 @@ public fun add<Name: copy + drop + store, Value: key + store>(
 }
 ```
 
-These functions add a field with name `name` and value `value` to `object`. To see it in action, consider these code snippets:
+这些函数将一个具有名称 `name` 和值 `value` 的字段添加到 `object`。为了看到其运行情况，请考虑以下代码片段：
 
-First, define two object types for the parent and the child:
+首先，为父对象和子对象定义两个对象类型：
 
 ```move
 struct Parent has key {
@@ -67,7 +67,7 @@ struct Child has key, store {
 }
 ```
 
-Next, define an API to add a `Child` object as a dynamic field of a `Parent` object:
+接下来，定义一个将 `Child` 对象作为 `Parent` 对象的动态字段添加的 API：
 
 ```move
 use sui::dynamic_object_field as ofield;
@@ -77,16 +77,16 @@ public fun add_child(parent: &mut Parent, child: Child) {
 }
 ```
 
-This function takes the `Child` object by value and makes it a dynamic field of `parent` with name `b"child"` (a byte string of type `vector<u8>`). This call results in the following ownership relationship:
+此函数将 `Child` 对象按值获取，并将其作为 `parent` 的具有名称 `b"child"`（一种 `vector<u8>` 类型的字节字符串）的动态字段。此调用导致以下所有权关系：
 
-1. Sender address (still) owns the `Parent` object.
-2. The `Parent` object owns the `Child` object, and can refer to it by the name `b"child"`.
+1. 发送方地址（仍然）拥有 `Parent` 对象。
+2. `Parent` 对象拥有 `Child` 对象，并且可以通过名称 `b"child"` 引用它。
 
-It is an error to overwrite a field (attempt to add a field with the same `<Name>` type and value as one that is already defined), and a transaction that does this fails.  You can modify fields in-place by borrowing them mutably and you can overwrite them safely (such as to change its value type) by removing the old value first.
+覆盖字段是错误的（尝试添加与已定义的具有相同 `<Name>` 类型和值的字段），并且执行此操作的交易将失败。你可以通过可变引用对其进行原地修改，也可以通过首先删除旧值来安全地覆盖它们（例如更改其值类型）。
 
-### Accessing dynamic fields
+### 访问动态字段
 
-You can reference dynamic fields by reference using the following APIs:
+你可以使用以下 API 引用动态字段：
 
 ```move
 module sui::dynamic_field {
@@ -104,15 +104,15 @@ public fun borrow_mut<Name: copy + drop + store, Value: store>(
 }
 ```
 
-Where `object` is the UID of the object the field is defined on and `name` is the field's name.
+其中 `object` 是字段所定义的对象的 UID，`name` 是字段的名称。
 
 :::info
 
-`sui::dynamic_object_field` has equivalent functions for object fields, but with the added constraint `Value: key + store`.
+`sui::dynamic_object_field` 具有等效的对象字段函数，但具有额外的约束 `Value: key + store`。
 
 :::
 
-To use these APIs with the `Parent` and `Child` types defined earlier:
+要使用这些 API，可与之前定义的 `Parent` 和 `Child` 类型一起使用：
 
 ```move
 use sui::dynamic_object_field as ofield;
@@ -129,23 +129,23 @@ public fun mutate_child_via_parent(parent: &mut Parent) {
 }
 ```
 
-The first function accepts a mutable reference to the `Child` object directly, and you can call it with `Child` objects that haven't been added as fields to `Parent` objects.
+第一个函数接受对 `Child` 对象的可变引用，你可以使用尚未添加为 `Parent` 对象字段的 `Child` 对象调用它。
 
-The second function accepts a mutable reference to the `Parent` object and accesses its dynamic field using `borrow_mut`, to pass to `mutate_child`. This can only be called on `Parent` objects that have a `b"child"` field defined. A `Child` object that has been added to a `Parent` *must* be accessed via its dynamic field, so it can only by mutated using `mutate_child_via_parent`, not `mutate_child`, even if its ID is known.
+第二个函数接受对 `Parent` 对象的可变引用，并使用 `borrow_mut` 访问其动态字段，以传递给 `mutate_child`。这仅可在已定义 `b"child"` 字段的 `Parent` 对象上调用。已添加到 `Parent` 的 `Child` 对象 *必须* 通过其动态字段访问，因此只能使用 `mutate_child_via_parent` 进行修改，而不能使用 `mutate_child`，即使知道其 ID。
 
 :::tip
 
-A transaction fails if it attempts to borrow a field that does not exist.
+如果尝试借用不存在的字段，交易将失败。
 
 :::
 
-The `<Value>` type passed to `borrow` and `borrow_mut` must match the type of the stored field, or the transaction aborts.
+传递给 `borrow` 和 `borrow_mut` 的 `<Value>` 类型必须与存储字段的类型匹配，否则交易将中止。
 
-You must access dynamic object field values through these APIs.  A transaction that attempts to use those objects as inputs (by value or by reference), is rejected for having invalid inputs.
+必须通过这些 API 访问动态对象字段的值。尝试将这些对象用作输入（按值或按引用）的交易将因为无效输入而被拒绝。
 
-### Removing a dynamic field
+### 移除动态字段
 
-Similar to unwrapping an object held in a regular field, you can remove a dynamic field, exposing its value:
+类似于取消包装常规字段中的对象，你可以移除动态字段，公开其值：
 
 ```move
 module sui::dynamic_field {
@@ -158,15 +158,15 @@ public fun remove<Name: copy + drop + store, Value: store>(
 }
 ```
 
-This function takes a mutable reference to the ID of the `object` the field is defined on, and the field's `name`.  If a field with a `value: Value` is defined on `object` at `name`, it is removed and `value` returned, otherwise it aborts.  Future attempts to access this field on `object` will fail.
+此函数接受对 `object` 的 ID 和字段的 `name` 的可变引用。如果在 `object` 的 `name` 处定义了一个具有 `value: Value` 的字段，则将其移除并返回 `value`，否则将中止。将来尝试在 `object` 上访问此字段将失败。
 
 :::tip
 
-`sui::dynamic_object_field` has an equivalent function for object fields.
+`sui::dynamic_object_field` 具有等效的对象字段函数。
 
 :::
 
-The value that is returned can be interacted with just like any other value (because it is any other value). For example, removed dynamic object field values can then be `delete`-d or `transfer`-ed to an address (back to the sender):
+返回的值可以像任何其他值一样进行交互（因为它就是任何其他值）。例如，已删除的动态对象字段值可以通过 `delete` 或 `transfer` 转移到地址（返回给发送方）：
 
 ```move
 use sui::dynamic_object_field as ofield;
@@ -188,10 +188,11 @@ public fun reclaim_child(parent: &mut Parent, ctx: &mut TxContext): Child {
 }
 ```
 
-Similar to borrowing a field, a transaction that attempts to remove a non-existent field, or a field with a different `Value` type, fails.
+类似于借用字段，尝试删除不存在的字段或具有不同 `Value` 类型的字段的交易将失败。
 
-### Deleting an object with dynamic fields
+### 删除具有动态字段的对象
 
-It is possible to delete an object that has (potentially non-`drop`) dynamic fields still defined on it. Because field values can be accessed only via the dynamic field's associated object and field name, deleting an object that has dynamic fields still defined on it renders them all inaccessible to future transactions. This is true regardless of whether the field's value has the `drop` ability. This might not be a concern when adding a small number of statically known additional fields to an object, but is particularly undesirable for on-chain collection types that could be holding unboundedly many key-value pairs as dynamic fields.
+可以删除仍在其上定义（可能是非 `drop`）动态字段的对象。由于字段值只能通过动态字段的关联对象和字段名称访问，因此删除仍在其上定义动态字段的对象将使它们对未来交易全部不可访问。这一点与字段的值是否具有 `drop` 能力无关。当向对象添加少量静态已知的附加字段时，可能不会引起担忧，但对于可能包含无限多键值对作为动态字段的链上集合类型来说，这是特别不希望看到的情况。
 
-Sui provides `Table` and `Bag` collections built using dynamic fields, but with additional support to count the number of entries they contain to protect against accidental deletion when non-empty. To learn more, see [Tables and Bags](./dynamic-fields/tables-bags.mdx).
+Sui 提供了使用动态字段构建的 `Table` 和 `Bag` 集合，但还提供了额外的支持，以计算它们包含的条目数量，以防在非空时意外删除。要了解更多信息，请参阅 [Tables and Bags](./dynamic-fields/tables-bags.mdx)。
+

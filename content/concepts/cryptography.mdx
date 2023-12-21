@@ -1,15 +1,15 @@
 ---
-title: Cryptography
+title: 加密学
 ---
 
-Cryptographic agility is core to Sui. The system supports multiple cryptography algorithms and primitives and can switch between them rapidly. With Sui, you can choose the right cryptography solution for your system and implement the latest algorithms as they become available.
+密码学的灵活性是Sui的核心。该系统支持多种密码算法和原语，并能够快速切换其中。使用Sui，你可以为你的系统选择合适的密码解决方案，并在最新算法推出时实施它们。
 
-Sui defines its cryptography primitives, such as public key, signature, aggregated signature, and hash functions, under one unified type alias or enum wrapper that is shared across the entire repository. Making changes to these primitives affects all of an application's components. You can quickly update application cryptography and be assured of uniform security.
+Sui定义了其密码原语，如公钥、签名、聚合签名和哈希函数，都在一个统一的类型别名或枚举包装器下，这在整个存储库中是共享的。对这些原语进行更改会影响应用程序的所有组件。你可以快速更新应用程序的密码学，并确保统一的安全性。
 
-## Transaction authentication
+## 交易身份验证
 
-Transaction authentication features on Sui provide security against unauthorized access to on-chain data. See [Transaction Authentication](./cryptography/transaction-auth.mdx) for an overview of related topics.
+Sui上的交易身份验证功能提供了对链上数据的未经授权访问的安全性。请参阅 [交易身份验证](./cryptography/transaction-auth.mdx) 以获取相关主题的概述。
 
 ## zkLogin
 
-zkLogin is a Sui primitive that enables you to send transactions from a Sui address using an OAuth credential, without publicly linking the two. See [zkLogin](./cryptography/zklogin.mdx) for a description of the primitive and how to implement it.
+zkLogin是Sui的一个原语，使你能够使用OAuth凭据从Sui地址发送交易，而不会公开地将两者关联。请参阅 [zkLogin](./cryptography/zklogin.mdx) 以了解有关该原语以及如何实施它的描述。

@@ -1,16 +1,15 @@
 ---
-title: Table and Bag
-description: Sui provides `Table` and `Bag` collections built using dynamic fields, but with additional support to count the number of entries they contain to protect against accidental deletion when non-empty.
+title: 表格和袋子
+description: Sui 提供了使用动态字段构建的 `Table` 和 `Bag` 集合，但是还提供了额外的支持，以计算它们包含的条目数，以防止在非空时意外删除。
 ---
 
-You can extend existing objects using [dynamic fields](../dynamic-fields.mdx). Note that it's possible to delete an object that still has (potentially non-drop) dynamic fields. This might not be a concern when adding a small number of statically known additional fields to an object, but is particularly undesirable for on-chain collection types that could be holding unboundedly many key-value pairs as dynamic fields.
+你可以使用[动态字段](../dynamic-fields.mdx)扩展现有对象。请注意，可以删除仍然具有（可能是非 `drop` 的）动态字段的对象。当向对象添加少量静态已知的附加字段时，这可能不是一个问题，但对于可能包含作为动态字段的键值对的无限多个链上集合类型而言，这是非常不希望的。
 
-This topic describes two such collections -- Table and Bag -- built using dynamic fields, but with additional support to count the number of entries they contain, and protect against accidental deletion when non-empty.
+本主题介绍了两个这样的集合——表格和袋子——使用动态字段构建，但具有额外的支持，以计算它们包含的条目数，并在非空时防止意外删除。
 
-The types and function discussed in this section are built into the Sui framework in modules [`table`](https://github.com/MystenLabs/sui/tree/main/crates/sui-framework/packages/sui-framework/sources/table.move) and [`bag`](https://github.com/MystenLabs/sui/tree/main/crates/sui-framework/packages/sui-framework/sources/bag.move). As with dynamic fields, there is also an `object_` variant of both: `ObjectTable` in [`object_table`](https://github.com/MystenLabs/sui/tree/main/crates/sui-framework/packages/sui-framework/sources/object_table.move) and `ObjectBag` in [`object_bag`](https://github.com/MystenLabs/sui/tree/main/crates/sui-framework/packages/sui-framework/sources/object_bag.move). The relationship between `Table` and `ObjectTable`, and `Bag` and `ObjectBag` are the same as between a field and an object field: The former can hold any `store` type as a value, but objects stored as values are hidden when viewed from external storage. The latter can only store objects as values, but keeps those objects visible at their ID in external storage.
+本节讨论的类型和函数已构建到 Sui 框架的模块中，分别为 [`table`](https://github.com/MystenLabs/sui/tree/main/crates/sui-framework/packages/sui-framework/sources/table.move) 和 [`bag`](https://github.com/MystenLabs/sui/tree/main/crates/sui-framework/packages/sui-framework/sources/bag.move)。与动态字段一样，还有两者的 `object_` 变体：`ObjectTable` 在 [`object_table`](https://github.com/MystenLabs/sui/tree/main/crates/sui-framework/packages/sui-framework/sources/object_table.move) 中，`ObjectBag` 在 [`object_bag`](https://github.com/MystenLabs/sui/tree/main/crates/sui-framework/packages/sui-framework/sources/object_bag.move) 中。`Table` 和 `ObjectTable` 之间的关系，以及 `Bag` 和 `ObjectBag` 之间的关系与字段和对象字段之间的关系相同：前者可以将任何 `store` 类型作为值，但在从外部存储查看时隐藏了作为值存储的对象。后者只能将对象作为值存储，但在外部存储中以其 ID 保持这些对象可见。
 
-
-### Tables
+### 表格
 
 ```move
 module sui::table {
@@ -24,9 +23,9 @@ public fun new<K: copy + drop + store, V: store>(
 }
 ```
 
-`Table<K, V>` is a *homogeneous* map, meaning that all its keys have the same type as each other (`K`), and all its values have the same type as each other as well (`V`). It is created with `sui::table::new`, which requires access to a `&mut TxContext` because `Table`s are objects themselves, which can be transferred, shared, wrapped, or unwrapped, just like any other object.
+`Table<K, V>` 是一个*同质*映射，这意味着所有其键都具有相同的类型（`K`），而所有其值也都具有相同的类型（`V`）。它通过 `sui::table::new` 创建，这需要对 `&mut TxContext` 的访问，因为 `Table` 本身也是对象，可以像任何其他对象一样进行传输、共享、封装或解封。
 
-See `sui::object_table::ObjectTable` for the object-preserving version of `Table`.
+有关 `Table` 的保留对象版本，请参阅 `sui::object_table::ObjectTable`。
 
 ### Bags
 
@@ -40,17 +39,17 @@ public fun new(ctx: &mut TxContext): Bag;
 }
 ```
 
-`Bag` is a *heterogeneous* map, so it can hold key-value pairs of arbitrary types (they don't need to match each other). Note that the `Bag` type does not have any type parameters for this reason. Like `Table`, `Bag` is also an object, so creating one with `sui::bag::new` requires supplying a `&mut TxContext` to generate an ID.
+`Bag` 是一个*异质*映射，因此它可以容纳任意类型的键值对（它们不需要匹配）。请注意，由于这个原因，`Bag` 类型没有任何类型参数。与 `Table` 一样，`Bag` 也是一个对象，因此使用 `sui::bag::new` 创建一个需要提供 `&mut TxContext` 以生成 ID。
 
-See `sui::bag::ObjectBag` for the object-preserving version of `Bag`.
+有关 `Bag` 的保留对象版本，请参阅 `sui::bag::ObjectBag`。
 
 ---
 
-The following sections explain the collection APIs. They use `sui::table` as the basis for code examples, with explanations where other modules differ.
+以下部分解释了集合的 API。它们以 `sui::table` 为代码示例的基础，其中对其他模块有差异的地方进行了解释。
 
-### Interacting with collections
+### 与集合交互
 
-All collection types come with the following functions, defined in their respective modules:
+所有集合类型都提供了以下函数，定义在它们各自的模块中：
 
 ```move
 module sui::table {
@@ -79,19 +78,19 @@ public fun remove<K: copy + drop + store, V: store>(
 }
 ```
 
-These functions add, read, write, and remove entries from the collection, respectively, and all accept keys by value. `Table` has type parameters for `K` and `V` so it is not possible to call these functions with different instantiations of `K` and `V` on the same instance of `Table`, however `Bag` does not have these type parameters, and so does permit calls with different instantiations on the same instance.
+这些函数分别向集合添加、读取、写入和移除条目，并且都接受按值传递的键。`Table` 具有类型参数 `K` 和 `V`，因此不可能在相同的 `Table` 实例上使用 `K` 和 `V` 的不同实例调用这些函数，但是 `Bag` 没有这些类型参数，因此允许在相同实例上使用不同实例进行调用。
 
 :::info
 
-Like with dynamic fields, it is an error to attempt to overwrite an existing key, or access or remove a non-existent key.
+与动态字段一样，尝试覆盖现有键、访问或移除不存在的键都是错误的。
 
 :::
 
-The extra flexibility of `Bag`'s heterogeneity means the type system doesn't statically prevent attempts to add a value with one type, and then borrow or remove it at another type. This pattern fails at runtime, similar to the behavior for dynamic fields.
+`Bag` 的异构性的额外灵活性意味着类型系统不会在静态上阻止尝试以一种类型添加值，然后以另一种类型借用或删除它。这种模式在运行时失败，类似于对动态字段的行为。
 
-### Querying length
+### 查询长度
 
-It is possible to query all collection types for their length and check whether they are empty using the following family of functions:
+可以使用以下一组函数查询所有集合类型的长度，并检查它们是否为空：
 
 ```move
 module sui::table {
@@ -107,11 +106,11 @@ public fun is_empty<K: copy + drop + store, V: store>(
 }
 ```
 
-`Bag` has these functions, but they are not generic on `K` and `V` because `Bag` does not have these type parameters.
+`Bag` 有这些函数，但它们不是关于 `K` 和 `V` 的泛型，因为 `Bag` 没有这些类型参数。
 
-### Querying for containment
+### 查询包含性
 
-Tables can be queried for key containment with:
+可以使用以下函数查询表格中是否包含键：
 
 ```move
 module sui::table {
@@ -124,7 +123,7 @@ public fun contains<K: copy + drop + store, V: store>(
 }
 ```
 
-The equivalent functions for `Bag` are:
+对于 `Bag` 的等效函数是：
 
 ```move
 module sui::bag {
@@ -139,11 +138,11 @@ public fun contains_with_type<K: copy + drop + store, V: store>(
 }
 ```
 
-The first function tests whether `bag` contains a key-value pair with key `k: K`, and the second function additionally tests whether its value has type `V`.
+第一个函数测试 `bag` 是否包含键为 `k: K` 的键值对，第二个函数还会测试其值是否具有类型 `V`。
 
-### Clean-up
+### 清理
 
-Collection types protect against accidental deletion when they might not be empty. This protection comes from the fact that they do not have `drop`, so must be explicitly deleted, using this API:
+集合类型防止在可能不为空时意外删除。这种保护来自于它们没有 `drop` 的事实，因此必须显式删除，使用以下 API：
 
 ```move
 module sui::table {
@@ -155,7 +154,7 @@ public fun destroy_empty<K: copy + drop + store, V: store>(
 }
 ```
 
-This function takes the collection by value. If it contains no entries, it is deleted, otherwise the call fails. `sui::table::Table` also has a convenience function:
+此函数按值接收集合。如果它不包含任何条目，则将其删除，否则调用将失败。`sui::table::Table` 也有一个便利函数：
 
 ```move
 module sui::table {
@@ -167,17 +166,17 @@ public fun drop<K: copy + drop + store, V: drop + store>(
 }
 ```
 
-You can call the convenience function only for tables where the value type also has `drop` ability, which allows it to delete tables whether they are empty or not.
+只能为具有 `drop` 能力的值类型的表格调用此便利函数，这使得它能够删除表格，无论它们是否为空。
 
-Note that `drop` is not called implicitly on eligible tables before they go out of scope. It must be called explicitly, but it is guaranteed to succeed at runtime.
+请注意，合适的表格在离开范围之前不会隐式调用 `drop`。它必须显式调用，但保证在运行时成功。
 
-`Bag` and `ObjectBag` cannot support `drop` because they could be holding a variety of types, some of which may have `drop` and some which may not.
+`Bag` 和 `ObjectBag` 无法支持 `drop`，因为它们可以包含各种类型，其中一些可能具有 `drop`，而另一些可能没有。
 
-`ObjectTable` does not support `drop` because its values must be objects, which cannot be dropped (because they must contain an `id: UID` field and `UID` does not have `drop`).
+`ObjectTable` 不支持 `drop`，因为它的值必须是对象，而对象不能被丢弃（因为它们必须包含一个 `id: UID` 字段，而 `UID` 没有 `drop`）。
 
-### Equality
+### 相等性
 
-Equality on collections is based on identity, for example, an instance of a collection type is only considered equal to itself and not to all collections that hold the same entries:
+对集合的相等性基于标识，例如，集合类型的实例仅被视为与自身相等，而不与包含相同条目的所有集合相等：
 
 ```move
 let t1 = sui::table::new<u64, u64>(ctx);
@@ -187,4 +186,4 @@ assert!(&t1 == &t1, 0);
 assert!(&t1 != &t2, 1);
 ```
 
-This is unlikely to be the definition of equality that you want.
+这可能不是你想要的相等性定义。

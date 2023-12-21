@@ -24,7 +24,7 @@ pnpm start
 
 > 如果在本地运行站点时出现错误，提示没有 `open-rpc` 规范，请先运行 `pnpm build`。它将准备文件并修复该问题。
 
-网站部署后会监视 `content` 目录中文件的更新（以及站点源文件），并更新 UI 以匹配您所做的任何保存。
+网站部署后会监视 `content` 目录中文件的更新（以及站点源文件），并更新 UI 以匹配你所做的任何保存。
 
 完成更改后，再次运行 `pnpm build`，这将构建静态站点并将文件放置在 `site\build` 中。在提交更改进行审查之前运行此命令很重要，因为构建将在诸如坏的内部链接之类的错误上失败，并将错误原因显示到控制台。开发预览会忽略此类错误，以提供更灵活的环境。
 
@@ -32,9 +32,9 @@ Sui Foundation 无法提供本地构建文档站点的支持。如果遇到问�
 
 ## 拉取请求
 
-Sui使用Vercel来托管其文档站点。Vercel为每个提交到Sui仓库的拉取请求构建文档的预览。您可以在 Vercel 机器人的 PR 注释部分找到指向此预览的链接。点击 **Visit Preview** 链接以验证您的更改是否按您的期望进行。
+Sui使用Vercel来托管其文档站点。Vercel为每个提交到Sui仓库的拉取请求构建文档的预览。你可以在 Vercel 机器人的 PR 注释部分找到指向此预览的链接。点击 **Visit Preview** 链接以验证你的更改是否按你的期望进行。
 
-如果您想在准备好进行审查之前查看Vercel预览，那么[请将您的 PR 标记为草稿](https://github.blog/2019-02-14-introducing-draft-pull-requests/)。
+如果你想在准备好进行审查之前查看Vercel预览，那么[请将你的 PR 标记为草稿](https://github.blog/2019-02-14-introducing-draft-pull-requests/)。
 
 ## 贡献
 

@@ -1,21 +1,21 @@
----
-title: Upgrading Packages
-description: Sui provides a method of upgrading your packages while still retaining their immutable properties.
----
+# 升级包
 
-Sui smart contracts are immutable package objects consisting of a collection of Move modules. Because the packages are immutable, transactions can safely access smart contracts without full consensus (fastpath transactions). If someone could change these packages, they would become [shared objects](/concepts/object-ownership/shared.mdx#shared), which would require full consensus before completing a transaction.
+## 描述
+Sui 提供一种升级包的方法，同时保留其不可变属性。
 
-The inability to change package objects, however, becomes a problem when considering the iterative nature of code development. Builders require the ability to update their code and pull changes from other developers while still being able to reap the benefits of fastpath transactions. Fortunately, the Sui network provides a method of upgrading your packages while still retaining their immutable properties.
+Sui 智能合约是不可变的包对象，由一组 Move 模块组成。由于这些包是不可变的，交易可以安全地访问智能合约而无需完全共识（快速路径交易）。如果有人能够更改这些包，它们将变成[共享对象](/concepts/object-ownership/shared.mdx#shared)，这将在完成交易之前需要完全共识。
 
-## Upgrade considerations
+然而，无法更改包对象在考虑代码开发的迭代性质时会成为一个问题。构建者需要能够更新其代码并从其他开发人员那里拉取更改，同时仍然能够享受快速路径交易的好处。幸运的是，Sui 网络提供了一种升级包的方法，同时仍然保留其不可变属性。
 
-There are some details of the process that you should consider before upgrading your packages.
+## 升级考虑事项
 
-For example, [module initializers](../init.mdx) do not re-run with package upgrades. When you publish your initial package, Move runs the `init` function you define for the package once (and only once) at the time of the publish event. Any `init` functions you might include in subsequent versions of your package are ignored.
+在升级包之前，有一些过程细节需要考虑。
 
-As alluded to previously, all packages on the Sui network are immutable. Because of this fact, you cannot delete old packages from the chain. As a result, there is nothing that prevents other packages from accessing the methods and types defined in the old versions of your upgraded packages. By default, users can choose to keep using the old version of a package, as well. As a package developer, you must be aware of and account for this possibility.
+例如，[模块初始化程序](../init.mdx)在包升级时不会重新运行。当您发布初始包时，Move 会在发布事件时运行您为包定义的 `init` 函数一次（仅一次）。在随后版本的包中可能包含的任何 `init` 函数都将被忽略。
 
-For example, you might define an `increment` function in your original package:
+正如前文所提到的，Sui 网络上的所有包都是不可变的。由于这个事实，您无法从链上删除旧包。因此，没有任何阻止其他包访问已升级包中定义的方法和类型的机制。用户默认情况下也可以选择继续使用包的旧版本。作为包开发者，您必须意识到并考虑到这种可能性。
+
+例如，您可能在原始包中定义一个 `increment` 函数：
 
 ```move
 public fun increment(c: &mut Counter) {
@@ -23,7 +23,7 @@ public fun increment(c: &mut Counter) {
 }
 ```
 
-Then, your package upgrade might add an emit event to the `increment` function:
+然后，您的包升级可能会向 `increment` 函数添加一个发射事件：
 
 ```move
 struct Progress has copy, drop {
@@ -39,17 +39,17 @@ public fun increment(c: &mut Counter) {
 }
 ```
 
-If there is a mix of callers for both the old and upgraded `increment` function, then the process fails because the old function is not aware of the `Progress` event.
+如果对旧的和升级后的 `increment` 函数都有调用者，那么该过程会失败，因为旧函数不知道 `Progress` 事件。
 
-Similar to mismatched function definitions, you might also run into issues maintaining dynamic fields that need to remain in sync with a struct's original fields. To address these issues, you can introduce a new type as part of the upgrade and port users over to it, breaking backwards compatibility. For example, if you're using owned objects to demonstrate proof, like proof of ownership, and you develop a new version of your package to address problematic code, you can introduce a new type in the upgraded package. You can then add a function to your package that trades old objects for new ones. Because your logic only recognizes objects with the new type, you effectively force users to update.
+类似于不匹配的函数定义，您可能还会遇到需要与结构体的原始字段保持同步的动态字段维护的问题。为了解决这些问题，您可以在升级的一部分引入新类型，并将用户迁移到新类型上，从而破坏向后兼容性。例如，如果您正在使用拥有对象来演示证明，比如所有权证明，而您开发了新版本的包以解决问题代码，您可以在升级包中引入新类型。然后，您可以向包中添加一个将旧对象交换为新对象的函数。由于您的逻辑仅识别具有新类型的对象，您有效地强制用户进行更新。
 
-Another example of having users update to the latest package is when you have a bookkeeping shared object in your package that you discover has flawed logic so is not functioning as expected. As in the previous example, you want users to use only the object defined in the upgraded package with the correct logic, so you add a new type and migration function to your package upgrade. This process requires a couple of transactions, one for the upgrade and another that you call from the upgraded package to set up the new shared object that replaces the existing one. To protect the setup function, you would need to create an `AdminCap` object or similar as part of your package to make sure you, as the package owner, are the only authorized initiator of that function. Perhaps even more useful, you might include a flag in the shared object that allows you, as the package owner, to toggle the enabled state of that shared object. You can add a check for the enabled state to prevent access to that object from the on-chain public while you perform the migration. Of course, you would probably create this flag only if you expected to perform this migration at some point in the future, not because you're intentionally developing objects with flawed logic.
+另一个让用户更新到最新包的例子是，当您的包中有一个记账的共享对象，您发现它的逻辑存在缺陷，因此无法按预期工作。与前面的例子一样，您希望用户仅使用在具有正确逻辑的升级包中定义的对象，因此您在包升级中添加了新类型和迁移函数。该过程需要进行两个事务，一个用于升级，另一个从升级包中调用，用于设置替换现有对象的新共享对象。为了保护设置函数，您需要创建一个作为包的一部分的 `AdminCap` 对象或类似对象，以确保您作为包的所有者是唯一授权发起该函数的人。甚至更有用的是，您可以在共享对象中包含一个标志，允许您作为包的所有者切换该共享对象的启用状态。您可以添加一个检查已启用状态的条件，以防止在执行迁移时从链上公开访问该对象。当然，您可能仅在预期将来执行此迁移时才会创建此标志，而不是因为您有意开发具有缺陷逻辑的对象。
 
-### Versioned shared objects
+### 版本化的共享对象
 
-When you create packages that involve shared objects, you need to think about upgrades and versioning from the start given that **all prior versions of a package still exist on-chain**. A useful pattern is to introduce versioning to the shared object and using a version check to guard access to functions in the package. This enables you to limit access to the shared object to only the latest version of a package.
+当您创建涉及共享对象的包时，您需要从一开始就考虑升级和版本控制，因为**链上仍然存在包的所有先前版本**。一个有用的模式是为共享对象引入版本控制，并使用版本检查来保护对包中函数的访问。这使您能够将对共享对象的访问限制为包的最新版本。
 
-Considering the earlier `counter` example, which might have started life as follows:
+考虑先前的 `counter` 示例，它可能是这样开始的：
 
 ```move
 module example::counter {
@@ -75,14 +75,14 @@ module example::counter {
 }
 ```
 
-To ensure that upgrades to this package can limit access of the shared object to the latest version of the package, you need to:
+为确保对该包的升级可以将对共享对象的访问限制为包的最新版本，您需要：
 
-1. Track the current version of the module in a constant, `VERSION`.
-2. Track the current version of the shared object, `Counter`, in a new `version` field.
-3. Introduce an `AdminCap` to protect privileged calls, and associate the `Counter` with its `AdminCap` with a new field (you might already have a similar type for shared object administration, in which case you can re-use that). This cap is used to protect calls to migrate the shared object from version to version.
-4. Guard the entry of all functions that access the shared object with a check that its `version` matches the package `VERSION`.
+1. 在一个常量 `VERSION` 中跟踪模块的当前版本。
+2. 在一个新的 `version` 字段中跟踪共享对象 `Counter` 的当前版本。
+3. 引入一个 `AdminCap` 以保护特权调用，并通过一个新字段将 `Counter` 与其 `AdminCap` 关联（如果您已经有一个类似的用于共享对象管理的类型，那么可以重用该类型）。该 cap 用于保护从版本到版本迁移共享对象的调用。
+4. 通过检查其 `version` 是否与包的 `VERSION` 匹配来保护所有访问共享对象的函数的入口。
 
-An upgrade-aware `counter` module that incorporates all these ideas looks as follows:
+一个考虑到所有这些想法的具有升级意识的 `counter` 模块如下所示：
 
 ```move
 module example::counter {
@@ -136,12 +136,12 @@ module example::counter {
 }
 ```
 
-To upgrade a module using this pattern requires making two extra changes, on top of any implementation changes your upgrade requires:
+要使用这种模式升级模块，除了升级所需的任何实现更改之外，还需要进行两个额外的更改：
 
-1. Bump the `VERSION` of the package.
-2. Introduce a `migrate` function to upgrade the shared object.
+1. 提升包的 `VERSION`。
+2. 引入一个 `migrate` 函数以升级共享对象。
 
-The following module is an upgraded `counter` that emits `Progress` events as originally discussed, but also provides tools for an admin (`AdminCap` holder) to prevent accesses to the counter from older package versions:
+以下模块是一个升级的 `counter`，如最初讨论的那样发出 `Progress` 事件，但也提供了工具供管理员（`AdminCap` 持有者）使用，以防止从旧包版本访问计数器：
 
 ```move
 module example::counter {
@@ -210,58 +210,58 @@ module example::counter {
 }
 ```
 
-Upgrading to this version of the package requires performing the package upgrade, and calling the `migrate` function in a follow-up transaction.  Note that the `migrate` function:
+要升级到这个包的版本，需要执行包升级，并在随后的事务中调用 `migrate` 函数。请注意，`migrate` 函数：
 
-- Is an `entry` function and **not `public`**.  This allows it to be entirely changed (including changing its signature or removing it entirely) in later upgrades.
-- Accepts an `AdminCap` and checks that its ID matches the ID of the counter being migrated, making it a privileged operation.
-- Includes a sanity check that the version of the module is actually an upgrade for the object. This helps catch errors such as failing to bump the module version before upgrading.
+- 是一个 `entry` 函数，**不是 `public`**。这使得它可以在后续升级中完全更改（包括更改其签名或完全删除）。
+- 接受一个 `AdminCap` 并检查其 ID 是否与要迁移的计数器的 ID 匹配，使其成为一个特权操作。
+- 包括一个健全性检查，验证模块的版本是否确实是对象的升级。这有助于捕获诸如在升级之前未提升模块版本等错误。
 
-After a successful upgrade, calls to `increment` on the previous version of the package aborts on the version check, while calls on the later version should succeed.
+升级成功后，在先前版本的包上调用 `increment` 将由于版本检查而中止，而在后来的版本上应该成功。
 
-### Extensions
+### 扩展
 
-This pattern forms the basis for upgradeable packages involving shared objects, but you can extend it in a number of ways, depending on your package's needs:
+这种模式构成了涉及共享对象的可升级包的基础，但您可以根据包的需求以多种方式进行扩展：
 
-- The version constraints can be made more expressive:
-  - Rather than using a single `u64`, versions could be specified as a `String`, or a pair of upper and lower bounds.
-  - You can control access to specific functions or sets of functions by adding and removing marker types as dynamic fields on the shared object.
-- The `migrate` function could be made more sophisticated (modifying other fields in the shared object, adding/removing dynamic fields, migrating multiple shared objects simultaneously).
-- You can implement large migrations that need to run over multiple transactions in a three phase set-up:
-  - Disable general access to the shared object by setting its version to a sentinel value (e.g. `U64_MAX`), using an `AdminCap`-guarded call.
-  - Run the migration over the course of multiple transactions (e.g. if a large volume of objects need to be moved, it is best to do this in batches, to avoid hitting transaction limits).
-  - Set the version of the shared object back to a usable value.
+- 版本约束可以更具表现力：
+  - 而不是使用单个 `u64`，版本可以被指定为一个 `String`，或者一个上下界的对。
+  - 您可以通过将标记类型添加到共享对象的动态字段上来控制对特定函数或函数集的访问。
+- `migrate` 函数可以变得更复杂（修改共享对象中的其他字段，添加/删除动态字段，同时迁移多个共享对象）。
+- 您可以实现需要在多个事务中运行的大型迁移的三阶段设置：
+  - 通过设置其版本为一个标志值（例如 `U64_MAX`）使用 `AdminCap` 保护调用，禁用对共享对象的一般访问。
+  - 在多个事务中运行迁移（例如，如果需要移动大量对象，则最好分批处理以避免达到事务限制）。
+  - 将共享对象的版本设置回可用的值。
 
-## Upgrade requirements
+## 升级要求
 
-To upgrade a package, your package must satisfy the following requirements:
-- You must have an `UpgradeTicket` for the package you want to upgrade. The Sui network issues `UpgradeCap`s when you publish a package, then you can issue `UpgradeTicket`s as the owner of that `UpgradeCap`. The Sui Client CLI handles this requirement automatically.
-- Your changes must be layout-compatible with the previous version.
-    - Existing `public` function signatures and struct layouts must remain the same.
-    - You can add new structs and functions.
-    - You can remove generic type constraints from existing functions (public or otherwise).
-    - You can change function implementations.
-    - You can change non-`public` function signatures, including `friend` and `entry` function signatures.
+要升级包，您的包必须满足以下要求：
+- 您必须拥有要升级的包的 `UpgradeTicket`。当您发布包时，Sui 网络会发出 `UpgradeCap`，然后您可以作为该 `UpgradeCap` 的所有者发出 `UpgradeTicket`。Sui 客户端 CLI 会自动处理此要求。
+- 您的更改必须与先前版本的布局兼容。
+    - 现有的 `public` 函数签名和结构布局必须保持不变。
+    - 您可以添加新的结构和函数。
+    - 您可以从现有函数（公共或其他）中删除通用类型约束。
+    - 您可以更改函数实现。
+    - 您可以更改非 `public` 函数签名，包括 `friend` 和 `entry` 函数签名。
 
 :::info
 
-If you have a package with a dependency, and that dependency is upgraded, your package does not automatically depend on the newer version. You must explicitly upgrade your own package to point to the new dependency.
+如果您的包有一个依赖项，并且该依赖项已升级，则您的包不会自动依赖于新版本。您必须显式将自己的包升级到新的依赖项。
 
 :::
 
-## Upgrading
+## 升级
 
-Use the `sui client upgrade` command to upgrade packages that meet the previous requirements, providing values for the following flags:
+使用 `sui client upgrade` 命令升级满足前述要求的包，为以下标志提供值：
 
-- `--gas-budget`: The maximum number of gas units that can be expended before the network cancels the transaction.
-- `--cap`: The ID of the `UpgradeCap`. You receive this ID as a return from the publish command.
+- `--gas-budget`：在网络取消事务之前可以花费的最大燃气单元数。
+- `--cap`：`UpgradeCap` 的 ID。您可以在发布命令的返回中获得此 ID。
 
-Developers upgrading packages using Move code have access to types and functions to define custom upgrade policies. For example, a Move developer might want to disallow upgrading a package, regardless of the current package owner. The [`make_immutable` function](https://github.com/MystenLabs/sui/blob/main/crates/sui-framework/docs/package.md#0x2_package_make_immutable) is available to them to create this behavior. More advanced policies using available types like `UpgradeTicket` and `Upgrade Receipt` are also possible. For an example, see this [custom upgrade policy](https://github.com/MystenLabs/sui/issues/2045#:~:text=Implement%20a%20custom%20upgrade%20policy) on GitHub.
+使用 Move 代码升级包的开发人员可以访问类型和函数，以定义自定义升级策略。例如，Move 开发人员可能希望禁止升级包，而不考虑当前包所有者是谁。他们可以使用 [`make_immutable` 函数](https://github.com/MystenLabs/sui/blob/main/crates/sui-framework/docs/package.md#0x2_package_make_immutable) 来创建此行为。还可以使用可用的类型（如 `UpgradeTicket` 和 `Upgrade Receipt`）实现更高级的策略。有关示例，请参见 GitHub 上的这个[自定义升级策略](https://github.com/MystenLabs/sui/issues/2045#:~:text=Implement%20a%20custom%20upgrade%20policy)。
 
-When you use the Sui Client CLI, the `upgrade` command handles generating the upgrade digest, authorizing the upgrade with the `UpgradeCap` to get an `UpgradeTicket`, and updating the `UpgradeCap` with the `UpgradeReceipt` after a successful upgrade. To learn more about these processes, see the Move documentation for the [package module](https://github.com/MystenLabs/sui/blob/main/crates/sui-framework/docs/package.md).
+在使用 Sui 客户端 CLI 时，`upgrade` 命令会处理生成升级摘要、使用 `UpgradeCap` 授权升级以获得 `UpgradeTicket`，并在成功升级后使用 `UpgradeReceipt` 更新 `UpgradeCap`。要了解有关这些过程的更多信息，请参阅 Move 文档中的[package 模块](https://github.com/MystenLabs/sui/blob/main/crates/sui-framework/docs/package.md)。
 
-## Example
+## 示例
 
-You develop a package named `sui_package`. Its manifest looks like the following:
+您开发了一个名为 `sui_package` 的包。其清单如下：
 
 ```toml
 [package]
@@ -272,12 +272,12 @@ version = "0.0.0"
 sui_package = "0x0"
 ```
 
-When your package is ready, you publish it:
+当你的包准备好后，你可以发布它：
 
 ```shell
 sui client publish --gas-budget <GAS-BUDGET-AMOUNT>
 ```
-And receive the response:
+并收到回应：
 
 ```shell
 INCLUDING DEPENDENCY Sui
@@ -370,13 +370,13 @@ Array [
 ]
 ```
 
-The result includes an **Object changes** section with two pieces of information you need for upgrading, an `UpgradeCap` ID and your package ID.
+结果包括一个**对象更改**部分，其中包含升级所需的两个信息，一个 `UpgradeCap` ID 和您的包 ID。
 
-You can identify the different objects using the `Object.objectType` value in the response. The `UpgradeCap` entry has a value of `String("0x2::package::UpgradeCap")` and the `objectType` for the package reads `String("<PACKAGE-ID>::sui_package::<MODULE-NAME>")`
+您可以使用响应中的 `Object.objectType` 值来识别不同的对象。`UpgradeCap` 条目的值为 `String("0x2::package::UpgradeCap")`，包的 `objectType` 为 `String("<PACKAGE-ID>::sui_package::<MODULE-NAME>")`。
 
-To make sure your other packages can use this package as a dependency, you must update the manifest (Move.toml file) for your package to include this information.
+为确保您的其他包可以将此包用作依赖项，您必须更新包的清单（Move.toml 文件）以包含此信息。
 
-Update the alias address and add a new `published-at` entry in the `[package]` section, both pointing to the value of the on-chain ID:
+更新别名地址并在 `[package]` 部分中添加一个新的 `published-at` 条目，两者都指向链上 ID 的值：
 
 ```toml
 [package]
@@ -388,9 +388,9 @@ published-at = "<ORIGINAL-PACKAGE-ID>"
 sui_package = "<ORIGINAL-PACKAGE-ID>"
 ```
 
-The `published-at` value allows the Move compiler to verify dependencies against on-chain versions of those packages.
+`published-at` 值允许 Move 编译器根据这些包的链上版本验证依赖关系。
 
-After a while, you decide to upgrade your `sui_package` to include some requested features. Before running the `upgrade` command, you need to edit the manifest again. In the `[addresses]` section, you update the `sui_package` address value to `0x0` again so the validator issues a new address for the upgrade package. You can leave the `published-at` value the same, because it is only read by the toolchain when publishing a dependent package. The saved manifest now resembles the following:
+过了一段时间，您决定升级您的 `sui_package` 以包含一些请求的功能。在运行 `upgrade` 命令之前，您需要再次编辑清单。在 `[addresses]` 部分中，将 `sui_package` 地址值再次更新为 `0x0`，以便验证器为升级包发行一个新地址。您可以保持 `published-at` 值不变，因为在发布依赖包时，此值仅由工具链读取。保存的清单现在类似于以下内容：
 
 ```toml
 [package]
@@ -402,13 +402,13 @@ published-at = "<ORIGINAL-PACKAGE-ID>"
 sui_package = "0x0"
 ```
 
-With the new manifest and code in place, it's time to use the `sui client upgrade` command to upgrade your package. Pass the `UpgradeCap` ID (the `<UPGRADE-CAP-ID>` value from the example) to the `--upgrade-capability` flag.
+具有新清单和代码后，现在是使用 `sui client upgrade` 命令升级您的包的时候了。将 `UpgradeCap` ID（示例中的 `<UPGRADE-CAP-ID>` 值）传递给 `--upgrade-capability` 标志：
 
 ```shell
 sui client upgrade --gas-budget <GAS-BUDGET-AMOUNT> --upgrade-capability <UPGRADE-CAP-ID>
 ```
 
-The console alerts you if the new package doesn't satisfy [requirements](#requirements), otherwise the compiler publishes the upgraded package to the network and returns its result:
+如果新包不符合 [requirements](#requirements)，控制台会向您发出警告，否则编译器会将升级后的包发布到网络并返回结果：
 
 ```shell
 INCLUDING DEPENDENCY Sui
@@ -493,8 +493,7 @@ Array [
 
 ```
 
-The result provides a new ID for the upgraded package. As was the case before the upgrade, you need to include that information in your manifest so any of your other packages that depend on your `sui_package` know where to find the on-chain bytecode for verification. Edit your manifest once again to provide the upgraded package ID for the `published-at` value, and return the original `sui_package` ID value in the `[addresses]` section:
-
+结果提供了升级包的新 ID。与升级之前一样，您需要在清单中包含该信息，以便依赖于您的 `sui_package` 的任何其他包都知道在哪里找到链上的字节码进行验证。再次编辑清单，为 `published-at` 值提供升级包的 ID，并在 `[addresses]` 部分中返回原始的 `sui_package` ID 值：
 
 ```toml
 [package]
@@ -506,4 +505,5 @@ published-at = "<UPGRADED-PACKAGE-ID>"
 sui_package = "<ORIGINAL-PACKAGE-ID>"
 ```
 
-The `published-at` value changes with every upgrade. The ID for the `sui_package` in the `[addresses]` section always points to the original package ID after upgrading. You must always change that value back to `0x0`, however, before running the `upgrade` command so the validator knows to create a new ID for the upgrade.
+`published-at` 值在每次升级时都会更改。在 `[addresses]` 部分中，`sui_package` 的 ID 始终指向升级后的原始包 ID。然而，在运行 `upgrade` 命令之前，您必须始终将该值更改回 `0x0`，以便验证器知道为升级创建一个新的 ID。
+

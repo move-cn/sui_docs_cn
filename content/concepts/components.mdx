@@ -1,57 +1,55 @@
 ---
-title: Sui Components
+title: Sui 的组成部分
 ---
 
-The name Sui, pronounced swē in English, is derived from a Japanese word for the element of water. You can see this influence in the name of the blockchain, its native token elements (SUI and MIST), and the imagery used in its branding. 
+Sui 这个名称在英语中发音为 `swē`，源自日语中表示水元素的一个词汇。你可以在区块链的名称、其本地代币元素 (SUI和MIST) ，以及其品牌形象中看到这种影响。
 
-When you read about Sui in this documentation, it's referencing all the pieces of the system that comprise the blockchain. This includes the blockchain itself, its various networks (Mainnet, for example), the activity on the blockchain (transaction blocks), the distributed entities that verify this activity (validators), and the Full nodes that execute transaction blocks. The documentation refers to the entirety of these elements as the Sui platform, or simply Sui.
+在本文档中，当提到Sui时，指的是构成该区块链系统的所有部分。这包括区块链本身、其各种网络（例如Mainnet）、区块链上的活动（交易块）、验证此活动的分布式实体（验证器）以及执行交易块的全节点。文档将所有这些元素的整体称为Sui平台，或简称Sui。
 
-## The Sui blockchain
+## Sui 区块链
 
-Sui is defined as a Layer 1 protocol blockchain. In basic terms, this means that Sui performs its own consensus and validation for transaction blocks (activity) on its networks using its own native token (SUI, in this case). Ethereum (ETH) and Bitcoin (BTC) are other examples of Layer 1 blockchains. 
+Sui被定义为Layer 1协议的区块链。简而言之，这意味着Sui在其网络上使用自己的本地代币（在这种情况下是SUI）执行交易块（活动）的一致性和验证。以太坊（ETH）和比特币（BTC）是Layer 1区块链的其他示例。
 
-Layer 2 blockchains, by contrast, leverage the infrastructure of Layer 1 networks, relying on the Layer 1 blockchain to finalize transaction blocks. Polygon (MATIC) is an example of a Layer 2 blockchain that extends Ethereum.
+相比之下，Layer 2区块链利用Layer 1网络的基础设施，依赖于Layer 1区块链来完成交易块。Polygon (MATIC) 是扩展以太坊的Layer 2区块链的一个示例。
 
-## SUI tokens
+## SUI 代币
 
-The native token for Sui is SUI. Whenever the documentation mentions SUI (all uppercase letters), it's referring to this token. Transaction blocks on Sui often deal with small fractions of the value of one SUI. To make these transaction blocks easier to work with, Sui provides MIST. It takes one billion MIST to equal one SUI. 
+Sui的本地代币是SUI。每当文档提到SUI（全大写字母），都指的是这个代币。Sui上的交易块通常涉及到一个SUI值的小部分。为了更方便地处理这些交易块，Sui提供了MIST。一亿MIST等于一个SUI。
 
-There is a cost associated with everything, and blockchain transactions are no exception. It costs money to provide computational power to process transaction blocks and store their results. The term for the cost of processing transaction blocks is "gas". You pay for gas and the cost of storing data with a blockchain's native tokens, in this case, SUI (or MIST).
+一切都有成本，区块链交易也不例外。提供计算能力来处理交易块并存储其结果是需要花费的。处理交易块的成本术语是“gas”。你使用区块链的本地代币，这种情况下是SUI（或MIST），支付gas和存储数据的成本。
 
-To learn more about the tokenomics of Sui, see the following topics:
+要了解有关Sui代币经济学的更多信息，请参阅以下主题：
 
-- [Sui Tokenomics](./tokenomics.mdx)
-- [Sui Token](./tokenomics/sui-token.mdx)
-- [Gas in Sui](./tokenomics/gas-in-sui.mdx)
-- [Sui Storage Fund](./tokenomics/storage-fund.mdx)
+- [Sui 代币经济学](./tokenomics.mdx)
+- [Sui 代币](./tokenomics/sui-token.mdx)
+- [Sui 中的 Gas](./tokenomics/gas-in-sui.mdx)
+- [Sui 存储基金](./tokenomics/storage-fund.mdx)
 
-## Delegated proof-of-stake consensus
+## 委托权益证明共识
 
-Sui uses a delegated proof-of-stake (DPoS) consensus mechanism to validate on-chain transaction blocks. This means that validators on the Sui network must have a certain amount of SUI secured on Sui Mainnet, either with their own funds or in partnership with Sui Foundation, to prove their interest in the security of the blockchain. This approach aligns the interest of all validators with that of Sui users (an efficient, secure blockchain), without the high energy-resource demands of earlier blockchains. 
+Sui使用委托权益证明（DPoS）共识机制来验证链上的交易块。这意味着Sui网络上的验证器必须在Sui Mainnet上拥有一定数量的SUI，可以是他们自己的资金，也可以是与Sui基金会合作，以证明他们对区块链安全性的兴趣。这种方法使所有验证器的兴趣与Sui用户的兴趣（高效、安全的区块链）保持一致，而无需像早期区块链那样对能源资源的高需求。
 
-To learn more about consensus on Sui, see the following guides and topics:
+要了解有关Sui共识的更多信息，请参阅以下指南和主题：
 
-- [Validator Committee](guides/operator/validator-committee.mdx)
-- [Sui Full Node Data Management](guides/operator/data-management.mdx) 
-  
+- [验证器委员会](guides/operator/validator-committee.mdx)
+- [Sui全节点数据管理](guides/operator/data-management.mdx)
 
+## Sui 网络
 
-## Sui networks
+Sui有几个网络可用，每个网络都具有不同的用途。
 
-Sui has several networks available, each serving a different purpose.
+- **Mainnet：** 处理生产交易块的网络。当你交易SUI或最终基于法定货币的NFT时，你是在Sui的Mainnet网络上进行的。
+- **Testnet：** 作为一个分阶段网络，提供质量保证，确保对Sui的任何计划更改不会对性能产生不利影响。开发人员可以使用此网络在将其代码投入生产之前测试其代码。
+- **Devnet：** 一个更不稳定的网络，用于开发新功能。开发人员可以利用此网络编写针对Sui最新计划功能的代码。
+- **Localnet：** 你可以在本地计算机上运行Sui网络。在受控制的环境中，使用本地网络进行开发提供了一种优化的工作流程。
 
-- **Mainnet:** The network that processes production transaction blocks. When you trade SUI or NFTs that are ultimately based on fiat currency, you are doing so on the Mainnet network of Sui.
-- **Testnet:** Staging network to provide quality assurance that any planned changes to Sui do not adversely impact performance. Developers can use this network to test their code before placing it in production.
-- **Devnet:** A more unstable network that is used to develop new features. Developers can leverage this network to code against the latest planned features of Sui.
-- **Localnet:** You can run a Sui network on your local computer. Developing on a local network provides an optimized workflow in an environment you control. 
+要了解有关这些网络以及如何与它们交互的更多信息，请参阅以下指南：
 
-To learn more about these networks and how to interact with them, see the following guides:
-
-- [Create a Local Sui Network](guides/developer/getting-started/local-network.mdx)
-- [Connect to Sui](guides/developer/getting-started/connect.mdx)
+- [创建本地Sui网络](guides/developer/getting-started/local-network.mdx)
+- [连接到Sui](guides/developer/getting-started/connect.mdx)
 
 ## Move
 
-The Move language provides the logic for all activity on Sui, like trading NFTs, playing Sui-integrated games (dApps), and all other transaction-based events. The Sui platform uses a concept novel to earlier blockchains, where blocks on the chain are actually objects that define assets rather than simple key-value stores that define addresses. The increased programmability inherent with objects required a more robust logic engine to maximize the benefits of this new approach to blockchain technology. 
+Move语言为Sui上的所有活动提供逻辑，如交易NFT、玩Sui集成的游戏（dApps）以及所有其他基于交易的事件。Sui平台采用了早期区块链不同的概念，其中链上的块实际上是定义资产的对象，而不是定义地址的简单键值存储。对象固有的增强可编程性要求更强大的逻辑引擎，以最大程度地发挥这种区块链技术的新方法的好处。
 
-To learn more about Move, see [Move Concepts](./sui-move-concepts.mdx).
+要了解有关Move的更多信息，请参阅 [Move概念](./sui-move-concepts.mdx)。

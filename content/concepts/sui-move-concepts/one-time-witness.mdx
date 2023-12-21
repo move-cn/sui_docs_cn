@@ -1,17 +1,17 @@
 ---
-title: One-Time Witness
-description: A one-time witness is a special type that is guaranteed to have at most one instance.
+title: 一次性见证
+description: 一次性见证是一种特殊类型，保证最多只有一个实例。
 ---
 
-A one-time witness (OTW) is a special type that is guaranteed to have at most one instance.  It is useful for limiting certain actions to only happen once (for example, creating a coin).  In Move, a type is considered a OTW if:
+一次性见证 (OTW) 是一种特殊类型，保证最多只有一个实例。它对于将某些操作限制为仅发生一次很有用（例如，创建一个代币）。在 Move 中，如果一个类型满足以下条件，则被视为 OTW：
 
-- Its name is the same as its module's names, all uppercased.
-- It has the `drop` ability and only the `drop` ability.
-- It has no fields, or a single `bool` field.
+- 它的名称与其模块的名称相同，全部大写。
+- 它具有 `drop` 能力，且仅具有 `drop` 能力。
+- 它没有字段，或者只有一个 `bool` 字段。
 
-The only instance of this type is passed to its module's `init` function when the package containing it is published.
+此类型的唯一实例在包含它的包发布时传递给其模块的 `init` 函数。
 
-To check whether a type could be used as a OTW, pass an instance of it to `sui::types::is_one_time_witness`.
+要检查类型是否可以用作 OTW，请将其实例传递给 `sui::types::is_one_time_witness`。
 
 ```move
 module examples::mycoin {
@@ -26,7 +26,7 @@ module examples::mycoin {
 }
 ```
 
-The following example illustrates how you could use a OTW:
+以下示例说明了如何使用一次性见证 (OTW)：
 
 ```move
 /// This example illustrates how One Time Witness works.

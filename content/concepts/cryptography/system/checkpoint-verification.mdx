@@ -1,51 +1,51 @@
 ---
-title: Checkpoint Verification
-description: On the Sui network, checkpoints define the history of the blockchain. Checkpoint verification is how Full nodes and other clients guarantee their state is exactly the same as the Sui network.
+title: 检查点验证
+description: 在 Sui 网络上，检查点定义了区块链的历史。检查点验证是全节点和其他客户端确保其状态与 Sui 网络完全相同的方式。
 ---
 
-On the Sui network, checkpoints define the history of the blockchain. They are quite similar to the concept of blocks used by traditional blockchains like Bitcoin or Ethereum. The Sui blockchain, however, forms checkpoints after transaction execution has already happened to provide a certified history of the chain, instead of being formed before execution.
+在 Sui 网络上，检查点定义了区块链的历史。它们与传统区块链（如比特币或以太坊）使用的区块概念非常相似。然而，Sui 区块链在事务执行后形成检查点，以提供链的已认证历史，而不是在执行之前形成。
 
-Checkpoints contain:
+检查点包含：
 
-- The cryptographic hash of the previous checkpoint.
-- A list of all the transaction digests (and the corresponding transaction effects digests) that are included in the checkpoint.
-- A set of signatures from a quorum (more than 2/3rds) of the validators that formed the committee at the time the checkpoint was created.
+- 上一个检查点的密码哈希。
+- 包含在检查点中的所有事务摘要（以及相应的事务效果摘要）的列表。
+- 在创建检查点时形成委员会的验证者中超过 2/3 的验证者的签名集。
 
-Both validators and Full nodes consume checkpoints to remain synchronized with the network.
+验证者和全节点都使用检查点来保持与网络同步。
 
-## Checkpoint verification
+## 检查点验证
 
-For Full nodes and validators to trust a checkpoint, they must first verify it. Verification ensures that the checkpoint is a true checkpoint that the Sui validator committee created.
+为了使全节点和验证者信任检查点，它们必须首先验证它。验证确保检查点是由 Sui 验证者委员会创建的真实检查点。
 
-Checkpoint verification requires two interdependent pieces:
+检查点验证需要两个相互依赖的部分：
 
-1. Assuming that the Full node (or other client) has the public keys of the validator committee that created the checkpoint, it can check the signatures on the checkpoint for validity.
+1. 假设全节点（或其他客户端）具有创建检查点的验证者委员会的公钥，它可以检查检查点上的签名的有效性。
 
-    Checkpoints are signed by the aggregated BLS signatures of a quorum of the committee.
-    If the signatures are valid, the client now knows that the checkpoint was created by the validator committee, and not by some other party.
+    检查点由委员会的聚合 BLS 签名签名。
+    如果签名有效，则客户端现在知道检查点是由验证者委员会创建的，而不是由其他某方创建的。
 
-1. By validating checkpoints, the client can determine the make-up of the committee, because the final checkpoint of each epoch contains the validator committee (including the public keys) of the next epoch.
+1. 通过验证检查点，客户端可以确定委员会的组成，因为每个时期的最终检查点包含下个时期的验证者委员会（包括公钥）。
 
-These pieces seem to create a circular dependency issue. The client needs to know the committee to verify checkpoints, which in turn allows it to learn what the committee is for each epoch. To solve this problem, the process is bootstrapped by starting from the genesis checkpoint, which is the earliest checkpoint in a Sui network. The genesis checkpoint contains the initial validator committee, which allows a client to verify all checkpoints in the history by using the following process:
+这些部分似乎会创建循环依赖问题。客户端需要知道委员会以验证检查点，反过来，它可以了解每个时期的委员会是什么。为了解决这个问题，该过程是通过从创世检查点开始引导的，创世检查点是 Sui 网络中最早的检查点。创世检查点包含初始验证者委员会，这允许客户端通过以下过程验证历史上的所有检查点：
 
-1. The client obtains the genesis checkpoint from some trusted source.
-1. The client loads the initial committee from the genesis checkpoint.
-1. The client uses the state sync network or Sui archive to obtain the next checkpoint.
-1. The client verifies the signatures on the checkpoint using the current committee's public keys, and verifies that the checkpoint's previous checkpoint hash is equal to the hash of the previous checkpoint that the client validated.
-1. If the checkpoint is invalid, an error is raised.
-1. Otherwise, the client checks if the checkpoint is the last one of the current epoch.
-    - If so, load the next committee from it, and use that committee as the current committee.
-    - If not, return to step 3 and continue.
+1. 客户端从某个可信的源获得创世检查点。
+1. 客户端加载创世检查点中的初始委员会。
+1. 客户端使用状态同步网络或 Sui 存档获取下一个检查点。
+1. 客户端使用当前委员会的公钥验证检查点上的签名，并验证检查点的上一个检查点哈希等于客户端验证的上一个检查点的哈希。
+1. 如果检查点无效，则引发错误。
+1. 否则，客户端检查检查点是否是当前时期的最后一个。
+    - 如果是，从中加载下一个委员会，并将该委员会用作当前委员会。
+    - 如果不是，返回到步骤 3 并继续。
 
-This allows the client to eventually verify all checkpoints up to the present time.
+这允许客户端最终验证直到当前时间的所有检查点。
 
-## What do checkpoints commit to?
+## 检查点承诺了什么？
 
-After a client verifies a checkpoint, what can it do with that information?
+在客户端验证了检查点后，它可以对该信息执行什么操作？
 
-As mentioned earlier, a checkpoint contains a list of transactions so a Full node, for instance, can begin fetching and executing those transactions. Because the transactions are identified by their digest (a cryptographic hash), the client can be sure that the transactions it executes have not been altered.
+如前所述，检查点包含了事务列表，因此全节点可以开始获取和执行这些事务。由于事务由其摘要（密码哈希）标识，因此客户端可以确保它执行的事务未被更改。
 
-Additionally, the checkpoint contains the effects digests of each transaction. The effects digest is the cryptographic hash of the `TransactionEffects`, which is itself a structure that lists all of the inputs and outputs of a transaction. It includes the digests of all objects that were written by the transaction.
-This allows a Full node to verify that it has obtained the same execution results as those that the validators attested to when signing the checkpoint.
+此外，检查点还包含每个事务的效果摘要。效果摘要是 `TransactionEffects` 的密码哈希，它本身是一个列出事务的所有输入和输出的结构。它包括由事务编写的所有对象的摘要。
+这使得全节点可以验证它已经获得了与验证者在签署检查点时所证明的执行结果相同的结果。
 
-By executing checkpoints, and verifying transaction outputs, a Full node can build up the entire state of the Sui network (that is, the collection of objects in the network) and trust that every byte of every object is correct.
+通过执行检查点并验证事务输出，全节点可以构建起 Sui 网络的整个状态（即网络中的所有对象），并相信每个对象的每个字节都是正确的。

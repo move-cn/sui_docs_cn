@@ -1,16 +1,16 @@
 ---
 title: 连接到 Sui 网络
-description: 除了 Mainnet 外，Sui 还提供了 Testnet、Devnet 和本地网络供您进行开发。您还可以配置自定义的 RPC 端点。
+description: 除了 Mainnet 外，Sui 还提供了 Testnet、Devnet 和本地网络供你进行开发。你还可以配置自定义的 RPC 端点。
 ---
 
-Sui 提供 Mainnet、Devnet 和 Testnet 网络。您可以使用其中一个测试网络，Devnet 或 Testnet，来尝试在该网络上运行的 Sui 版本。您还可以启动一个[本地 Sui 网络](./local-network.mdx)进行本地开发。
+Sui 提供 Mainnet、Devnet 和 Testnet 网络。你可以使用其中一个测试网络，Devnet 或 Testnet，来尝试在该网络上运行的 Sui 版本。你还可以启动一个[本地 Sui 网络](./local-network.mdx)进行本地开发。
 
 Sui Testnet 和 Devnet 网络包括：
 
 - 由 Mysten Labs 操作的四个验证节点。客户端通过此端点发送交易和读取请求：`https://fullnode.<SUI-NETWORK-VERSION>.sui.io:443`，使用 [JSON-RPC](/references/sui-api/json-rpc-format.mdx)。
 - 用于浏览交易历史的公共网络 [Sui Explorer](https://suiexplorer.com/)。
 
-您可以通过 Sui [devnet-faucet](https://discordapp.com/channels/916379725201563759/971488439931392130) 和 [testnet-faucet](https://discord.com/channels/916379725201563759/1037811694564560966) Discord 频道申请测试 SUI 代币，具体取决于您使用的网络版本。如果连接到 Localnet，请使用 cURL 从您的 [本地 faucet](./local-network.mdx#use-the-local-faucet) 请求代币。这些网络上的代币没有财务价值。Mainnet 没有 faucet 服务。
+你可以通过 Sui [devnet-faucet](https://discordapp.com/channels/916379725201563759/971488439931392130) 和 [testnet-faucet](https://discord.com/channels/916379725201563759/1037811694564560966) Discord 频道申请测试 SUI 代币，具体取决于你使用的网络版本。如果连接到 Localnet，请使用 cURL 从你的 [本地 faucet](./local-network.mdx#use-the-local-faucet) 请求代币。这些网络上的代币没有财务价值。Mainnet 没有 faucet 服务。
 
 在 Discord 频道 [#announcements](https://discord.com/channels/916379725201563759/925109817834631189) 中查看有关 Sui 的公告。
 
@@ -21,14 +21,14 @@ Sui Testnet 和 Devnet 网络包括：
 Sui 提供以下工具与 Sui 网络进行交互：
 
 - [Sui 命令行界面 (CLI)](/references/cli/client.mdx)
-  - 创建和管理您的私钥
+  - 创建和管理你的私钥
   - 创建示例 NFT
   - 调用和发布 Move 模块
 - [Sui Explorer](https://github.com/MystenLabs/sui/blob/main/apps/explorer/README.md) 用于查看网络上的交易和对象
 
 ## 环境设置
 
-首先，[安装 Sui](./sui-install.mdx#install-binaries)。安装 Sui 后，通过 Discord 请求您正在使用的网络的 [SUI 测试代币](#request-gas-tokens)：[Devnet](https://discordapp.com/channels/916379725201563759/971488439931392130) 或 [Testnet](https://discord.com/channels/916379725201563759/1037811694564560966)。如果连接到 Localnet，请使用 cURL 从 [本地 faucet](./local-network.mdx#use-the-local-faucet) 请求代币。
+首先，[安装 Sui](./sui-install.mdx#install-binaries)。安装 Sui 后，通过 Discord 请求你正在使用的网络的 [SUI 测试代币](#request-gas-tokens)：[Devnet](https://discordapp.com/channels/916379725201563759/971488439931392130) 或 [Testnet](https://discord.com/channels/916379725201563759/1037811694564560966)。如果连接到 Localnet，请使用 cURL 从 [本地 faucet](./local-network.mdx#use-the-local-faucet) 请求代币。
 
 要检查 Sui 是否已安装，请运行以下命令：
 
@@ -50,7 +50,7 @@ which sui
 sui client
 ```
 
-如果在控制台中收到 `sui-client` 的帮助输出，说明您已经有了一个 client.yaml 文件。请参阅 [连接到自定义 RPC 端点](#connect-to-a-custom-rpc-endpoint) 以添加新的环境别名或切换当前活动的网络。
+如果在控制台中收到 `sui-client` 的帮助输出，说明你已经有了一个 client.yaml 文件。请参阅 [连接到自定义 RPC 端点](#connect-to-a-custom-rpc-endpoint) 以添加新的环境别名或切换当前活动的网络。
 
 第一次启动 Sui 客户端时，如果没有 client.yaml 文件，控制台会显示以下消息：
 
@@ -80,7 +80,7 @@ Select key scheme to generate keypair (0 for ed25519, 1 for secp256k1, 2 for sec
 
 按下 0，1 或 2 选择密钥方案，然后按下 Enter。
 
-Sui 将返回类似以下的消息（取决于您选择的密钥方案），其中包含地址和地址的 12 个单词的恢复短语：
+Sui 将返回类似以下的消息（取决于你选择的密钥方案），其中包含地址和地址的 12 个单词的恢复短语：
 
 ```
 Generated new keypair for address with scheme "ed25519" [0xb9c83a8b40d3263c9ba40d551514fbac1f8c12e98a4005a0dac072d3549c2442]
@@ -106,7 +106,7 @@ localnet => http://0.0.0.0:9000 (active)
 devnet => https://fullnode.devnet.sui.io:443
 ```
 
-要添加一个自定义RPC端点的新别名，请运行以下命令。使用您安装的值替换 `<` `>` 中的值
+要添加一个自定义RPC端点的新别名，请运行以下命令。使用你安装的值替换 `<` `>` 中的值
 
 ```shell
 sui client new-env --alias <ALIAS> --rpc <RPC-SERVER-URL>

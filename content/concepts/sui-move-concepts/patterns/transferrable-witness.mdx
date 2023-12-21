@@ -1,10 +1,10 @@
 ---
-title: Transferrable Witness
+title: 可转让见证模式
 ---
 
-The transferrable witness pattern is based on a combination of capability and witness patterns. Because you should be careful with the witness pattern, you should allow only authorized users to spawn it (ideally only once). Some scenarios, however, require type authorization by module X to be used in another module Y. Or, possibly, there's a case where authorization should be performed after some time.
+可转让见证模式是基于能力和见证模式的结合。由于见证模式需要谨慎使用，你应该只允许经授权的用户生成它（最好只允许一次）。然而，某些场景需要模块X的类型授权可在另一个模块Y中使用。或者，可能存在需要在一段时间后执行授权的情况。
 
-For these rather rare scenarios, a storable witness is a good solution.
+对于这些相当罕见的场景，可存储见证是一个不错的解决方案。
 
 ```move
 module examples::transferable_witness {

@@ -1,8 +1,8 @@
 ---
-title: Wrapped Objects
+title: 包装对象
 ---
 
-In many programming languages, you organize data structures in layers by nesting complex data structures in another data structure. In Move, you can organize data structures by putting a field of `struct` type in another, like the following:
+在许多编程语言中，你通过将复杂数据结构嵌套到另一个数据结构中来组织数据结构。在 Move 中，你可以通过将 `struct` 类型的字段放入另一个中来组织数据结构，如下所示：
 
 ```move
 struct Foo has key {
@@ -15,11 +15,11 @@ struct Bar has store {
 }
 ```
 
-To embed a struct type in a Sui object struct (with a `key` ability), the struct type must have the `store` ability.
+要将结构类型嵌入 Sui 对象结构（具有 `key` 能力），该结构类型必须具有 `store` 能力。
 
-In the preceding example, `Bar` is a normal struct, but it is not a Sui object since it doesn't have the `key` ability.
+在前面的例子中，`Bar` 是一个普通结构，但它不是一个 Sui 对象，因为它没有 `key` 能力。
 
-The following code turns `Bar` into an object, which you can still wrap in `Foo`:
+以下代码将 `Bar` 转换为对象，然后你仍然可以将其包装在 `Foo` 中：
 
 ```move
 struct Bar has key, store {
@@ -28,23 +28,23 @@ struct Bar has key, store {
 }
 ```
 
-Now `Bar` is also a Sui object type. If you put a Sui object of type `Bar` into a Sui object of type `Foo`, the object type `Foo` wraps the object type `Bar`. The object type `Foo` is the wrapper or wrapping object.
+现在 `Bar` 也是 Sui 对象类型。如果将类型为 `Bar` 的 Sui 对象放入类型为 `Foo` 的 Sui 对象中，那么类型为 `Foo` 的对象将包装类型为 `Bar` 的对象。类型为 `Foo` 的对象是包装对象。
 
-There are some interesting consequences of wrapping a Sui object into another. When an object is wrapped, the object no longer exists independently on-chain. You can no longer look up the object by its ID. The object becomes part of the data of the object that wraps it. Most importantly, you can no longer pass the wrapped object as an argument in any way in Sui Move calls. The only access point is through the wrapping object.
+将 Sui 对象包装到另一个对象中有一些有趣的后果。当一个对象被包装时，该对象不再独立存在于链上。你不能通过其 ID 查找对象。该对象成为包装它的对象的数据的一部分。最重要的是，你不能再以任何方式将被包装的对象作为参数传递给 Sui Move 调用。唯一的访问点是通过包装对象。
 
-It is not possible to create circular wrapping behavior, where A wraps B, B wraps C, and C also wraps A.
+不能创建循环包装行为，即 A 包装 B，B 包装 C，C 也包装 A。
 
-At some point, you can then take out the wrapped object and transfer it to an address, modify it, delete it, or freeze it. This is called **unwrapping**. When an object is **unwrapped**, it becomes an independent object again, and can be accessed directly on-chain. There is also an important property about wrapping and unwrapping: the object's ID stays the same across wrapping and unwrapping.
+在某个时刻，你可以将被包装的对象取出并转移到地址、修改、删除或冻结。这称为**解包**。当一个对象**解包**时，它再次成为独立的对象，并且可以直接在链上访问。关于包装和解包有一个重要的属性：对象的 ID 在包装和解包之间保持不变。
 
-There are a few ways to wrap a Sui object into another Sui object, and their use cases are typically different. This section describes three different ways to wrap a Sui object with typical use cases.
+有几种方法可以将 Sui 对象包装到另一个 Sui 对象中，它们的使用情况通常是不同的。本节介绍了三种不同的包装 Sui 对象的方式，以及它们的典型用例。
 
-### Direct wrapping
+### 直接包装
 
-If you put a Sui object type directly as a field in another Sui object type (as in the preceding example), it is called _direct wrapping_. The most important property achieved through direct wrapping is that the wrapped object cannot be unwrapped unless the wrapping object is destroyed. In the preceding example, to make `Bar` a standalone object again, unpack (and hence delete) the `Foo` object. Direct wrapping is the best way to implement object locking, which is to lock an object with constrained access. You can unlock it only through specific contract calls.
+如果将 Sui 对象类型直接作为另一个 Sui 对象类型的字段（就像前面的例子中那样），则称为 _直接包装_。通过直接包装实现的最重要的属性是，除非销毁包装对象，否则无法解包被包装的对象。在前面的例子中，要使 `Bar` 再次成为独立对象，需要解包（因此删除）`Foo` 对象。直接包装是实现对象锁定的最佳方法，即使用受限访问锁定对象。只有通过特定的合同调用才能解锁它。
 
-The following example implementation of a trusted swap demonstrates how to use direct wrapping. Assume there is an NFT-style `Object` type that has `scarcity` and `style`. In this example, `scarcity` determines how rare the object is (presumably the more scarce the higher its market value), and `style` determines the object content/type or how it's rendered. If you own some of these objects and want to trade your objects with others, you want to make sure it's a fair trade. You are willing to trade an object only with another one that has identical `scarcity`, but want a different `style` (so that you can collect more styles).
+以下是如何使用直接包装实现信任交换的示例实现。假设有一种 NFT 风格的 `Object` 类型，具有 `scarcity` 和 `style`。在此示例中，`scarcity` 决定对象有多稀有（可能越稀有市值越高），而 `style` 决定对象的内容/类型或其呈现方式。如果你拥有一些这些对象并希望与其他人交换对象，则希望确保这是一次公平的交易。你只愿意与具有相同 `scarcity` 的其他对象交换，但希望 `style` 不同（以便你可以收集更多的样式）。
 
-First, define such an object type:
+首先，定义这样的对象类型：
 
 ```move
 struct Object has key, store {
@@ -54,7 +54,7 @@ struct Object has key, store {
 }
 ```
 
-In a real application, you might make sure that there is a limited supply of the objects, and there is a mechanism to mint them to a list of owners. For simplicity and demonstration purposes, this example simplifies creation:
+在实际应用中，你可能会确保对象的供应有限，并存在一种机制将它们铸造到一组所有者的列表中。为了简单起见和演示目的，此示例简化了创建过程：
 
 ```move
 public fun new(scarcity: u8, style: u8, ctx: &mut TxContext): Object {
@@ -63,11 +63,11 @@ public fun new(scarcity: u8, style: u8, ctx: &mut TxContext): Object {
 
 ```
 
-You can also enable a swap/trade between your object and others' objects. For example, define a function that takes two objects from two addresses and swaps their ownership. But this doesn't work in Sui. Only object owners can send a transaction to mutate the object. So one person cannot send a transaction that would swap their own object with someone else's object.
+你还可以启用对象与他人对象之间的交换/交易。例如，定义一个函数，该函数接受两个地址的两个对象并交换它们的所有权。但是，在 Sui 中这是行不通的。只有对象所有者可以发送事务来改变对象。因此，一个人无法发送交易以交换他们自己的对象与其他人的对象。
 
-Another common solution is to send your object to a pool - such as an NFT marketplace or a staking pool - and perform the swap in the pool (either right away, or later when there is demand). Other chapters explore the concept of shared objects that can be mutated by anyone, and show how it enables anyone to operate in a shared object pool. This chapter focuses on how to achieve the same effect using owned objects. Transactions using only owned objects are faster and less expensive (in terms of gas) than using shared objects, since they do not require consensus in Sui.
+另一个常见的解决方案是将你的对象发送到一个池中，例如一个 NFT 市场或一个质押池，并在池中执行交换（可以立即执行，或者在有需求时执行）。其他章节探讨了可以由任何人改变的共享对象的概念，并展示了如何使用共享对象池使任何人能够操作。本章重点介绍如何使用拥有的对象实现相同的效果。仅使用拥有的对象的交易比使用共享对象更快且更便宜（从燃气费的角度来看），因为它们在 Sui 中不需要共识。
 
-To swap objects, the same address must own both objects. Anyone who wants to swap their object can send their objects to the third party, such as a site that offers swapping services, and the third party helps perform the swap and send the objects to the appropriate owner. To ensure that you retain custody of your objects (such as coins and NFTs) and not give full custody to the third party, use direct wrapping. To define a wrapper object type:
+要交换对象，相同的地址必须拥有这两个对象。想要交换其对象的任何人都可以将它们的对象发送给第三方，例如提供交换服务的站点，第三方将帮助执行交换并将对象发送到适当的所有者。为确保你保留对你的对象（如硬币和 NFTs）的控制权，并且不将完全的控制权交给第三方，请使用直接封装。定义一个包装器对象类型：
 
 ```move
 struct SwapRequest has key {
@@ -78,7 +78,7 @@ struct SwapRequest has key {
 }
 ```
 
-`SwapRequest` defines a Sui object type, wraps the `object` to swap, and tracks the original `owner` of the object. You might need to also pay the third party some fee for this swap. To define an interface to request a swap by someone who owns an `Object`:
+`SwapRequest` 定义了一个 Sui 对象类型，封装了要交换的 `object`，并跟踪该对象的原始 `owner`。你可能还需要向第三方支付一些费用来执行此交换。要定义一个由拥有一个 `Object` 的人请求交换的接口：
 
 ```move
 public fun request_swap(
@@ -101,66 +101,66 @@ public fun request_swap(
 
 ```
 
-In the preceding function, you must pass the object by value so that it's fully consumed and wrapped into `SwapRequest` to request swapping an `object`. The example also provides a fee (in the type of `Coin<SUI>`) and checks that the fee is sufficient. The example turns `Coin` into `Balance` when it's put into the `wrapper` object. This is because `Coin` is a Sui object type and used only to pass around as Sui objects (such as transaction inputs or objects sent to addresses). For coin balances that need to be embedded in other structs, use `Balance` instead because to avoid the overhead of carrying around an unnecessary `UID` field.
+在上述函数中，你必须按值传递对象，以便完全使用它并将其包装到 `SwapRequest` 中，以请求交换一个 `object`。示例还提供了一笔费用（以 `Coin<SUI>` 类型表示），并检查该费用是否足够。示例在将 `Coin` 放入 `wrapper` 对象时将其转换为 `Balance`。这是因为 `Coin` 是一个 Sui 对象类型，仅用于作为 Sui 对象传递（例如作为事务输入或发送到地址的对象）。对于需要嵌入其他结构体的币余额，请使用 `Balance`，以避免携带不必要的 `UID` 字段的开销。
 
-The wrapper object is then sent to the service operator, with the address specified in the call as `service`.
+然后，将包装对象发送到服务运营商，地址在调用中指定为 `service`。
 
-The function interface for the function that the service operator can call to perform a swap between two objects sent from two addresses resembles:
+服务运营商可以调用的执行两个地址发送的两个对象之间交换的函数的函数接口如下：
 
 ```move
 public fun execute_swap(s1: SwapRequest, s2: SwapRequest): Balance<SUI>;
 ```
 
-Where `s1` and `s2` are two wrapped objects that were sent from different object owners to the service operator. Both wrapped objects are passed by value because they eventually need to be [unpacked](https://move-book.com/advanced-topics/struct.html#destructing-structures).
+其中 `s1` 和 `s2` 是从不同对象所有者发送到服务运营商的两个包装对象。两个包装对象都是按值传递的，因为最终需要对它们进行[拆包](https://move-book.com/advanced-topics/struct.html#destructing-structures)。
 
-First, unpack the two object to obtain the inner fields:
+首先，解包这两个对象以获取内部字段：
 
 ```move
 let SwapRequest {id: id1, owner: owner1, object: o1, fee: fee1} = s1;
 let SwapRequest {id: id2, owner: owner2, object: o2, fee: fee2} = s2;
 ```
 
-Then, check that the swap is legitimate (the two objects have identical scarcity and different styles):
+然后，检查交换是否合法（两个对象具有相同的稀缺性但不同的样式）：
 
 ```move
 assert!(o1.scarcity == o2.scarcity, EBadSwap);
 assert!(o1.style != o2.style, EBadSwap);
 ```
 
-To perform the actual swap:
+执行实际的交换：
 
 ```move
 transfer::transfer(o1, owner2);
 transfer::transfer(o2, owner1);
 ```
 
-The preceding code sends `o1` to the original owner of `o2`, and sends `o2` to the original owner of `o1`. The service can then delete the wrapping `SwapRequest` objects:
+上述代码将 `o1` 发送给 `o2` 的原始所有者，并将 `o2` 发送给 `o1` 的原始所有者。然后，服务可以删除包装的 `SwapRequest` 对象：
 
 ```move
 object::delete(id1);
 object::delete(id2);
 ```
 
-Finally, the service merges together the `fee1` and `fee2`, and returns it.  The service provider can then turn it into a coin, or merge it into some larger pool where it collects all fees:
+最后，服务合并 `fee1` 和 `fee2`，并将其返回。然后，服务提供商可以将其转换为硬币，或将其合并到某个更大的池中，以收集所有费用：
 
 ```move
 balance::join(&mut fee1, fee2);
 fee1
 ```
 
-After this call, the two objects are swapped and the service provider takes the service fee.
+完成此调用后，两个对象已交换，服务提供商收取了服务费。
 
-Since the contract defined only one way to deal with `SwapRequest` - `execute_swap` - there is no other way the service operator can interact with `SwapRequest` despite its ownership.
+由于合同仅定义了处理 `SwapRequest` 的一种方式 - `execute_swap` - 除了所有权之外，服务运营商无法以其他方式与 `SwapRequest` 交互。
 
-Find the full source code in the [trusted_swap](https://github.com/MystenLabs/sui/blob/main/examples/move/trusted_swap) example.
+在 [trusted_swap](https://github.com/MystenLabs/sui/blob/main/examples/move/trusted_swap) 示例中查看完整的源代码。
 
-To view a more complex example of how to use direct wrapping, see the [escrow](https://github.com/MystenLabs/sui/tree/main/examples/move/escrow) example.
+要查看如何使用直接封装的更复杂示例，请参阅 [escrow](https://github.com/MystenLabs/sui/tree/main/examples/move/escrow) 示例。
 
-### Wrapping through `Option`
+### 通过 `Option` 进行封装
 
-When Sui object type `Bar` is directly wrapped into `Foo`, there is not much flexibility: a `Foo` object must have a `Bar` object in it, and to take out the `Bar` object you must destroy the `Foo` object. However, for more flexibility, the wrapping type might not always have the wrapped object in it, and the wrapped object might be replaced with a different object at some point.
+当 Sui 对象类型 `Bar` 直接封装到 `Foo` 中时，灵活性不太大：`Foo` 对象必须包含其中的 `Bar` 对象，而要取出 `Bar` 对象，必须销毁 `Foo` 对象。然而，为了更灵活，封装类型可能并不总是包含其中的封装对象，并且封装对象可能在某个时候被替换为不同的对象。
 
-To demonstrate this use case, design a simple game character: A warrior with a sword and shield. A warrior might have a sword and shield, or might not have either. The warrior should be able to add a sword and shield, and replace the current ones at any time. To design this, define a `SimpleWarrior` type:
+为了演示这种用例，设计一个简单的游戏角色：一个拥有剑和盾牌的战士。战士可能有剑和盾牌，也可能一个都没有。战士应该能够随时添加剑和盾牌，并替换当前的剑和盾牌。为了设计这个，定义一个 `SimpleWarrior` 类型：
 
 ```move
 struct SimpleWarrior has key {
@@ -170,7 +170,7 @@ struct SimpleWarrior has key {
 }
 ```
 
-Each `SimpleWarrior` type has an optional `sword` and `shield` wrapped in it, defined as:
+每个 `SimpleWarrior` 类型都包含一个可选的 `sword` 和 `shield`，定义如下：
 
 ```move
 struct Sword has key, store {
@@ -184,7 +184,7 @@ struct Shield has key, store {
 }
 ```
 
-When you create a new warrior, set the `sword` and `shield` to `none` to indicate there is no equipment yet:
+创建新的战士时，将 `sword` 和 `shield` 设置为 `none`，表示尚未装备任何装备：
 
 ```move
 public fun create_warrior(ctx: &mut TxContext) {
@@ -197,7 +197,7 @@ public fun create_warrior(ctx: &mut TxContext) {
 }
 ```
 
-You can then define functions to equip new swords or new shields:
+然后，你可以定义函数来装备新的剑或新的盾牌：
 
 ```move
 public fun equip_sword(warrior: &mut SimpleWarrior, sword: Sword, ctx: &mut TxContext) {
@@ -209,19 +209,19 @@ public fun equip_sword(warrior: &mut SimpleWarrior, sword: Sword, ctx: &mut TxCo
 }
 ```
 
-The function in the preceding example passes a `warrior` as a mutable reference of `SimpleWarrior`, and passes a `sword` by value to wrap it into the `warrior`.
+在上述示例中，该函数将 `warrior` 作为 `SimpleWarrior` 的可变引用传递，并将 `sword` 按值传递以将其包装到 `warrior` 中。
 
-Note that because `Sword` is a Sui object type without `drop` ability, if the warrior already has a sword equipped, the warrior can't drop that sword. If you call `option::fill` without first checking and taking out the existing sword, an error occurs. In `equip_sword`, first check whether there is already a sword equipped. If so, remove it out and send it back to the sender. To a player, this returns an equipped sword to their inventory when they equip the new sword.
+请注意，因为 `Sword` 是一个没有 `drop` 能力的 Sui 对象类型，如果战士已经装备了一把剑，那么战士无法放下那把剑。如果在首先检查并取出现有剑之前调用 `option::fill`，则会发生错误。在 `equip_sword` 中，首先检查是否已经装备了剑。如果是这样，将其移除并发送回发送者。对于玩家而言，这在他们装备新剑时将已装备的剑返回到其库存中。
 
-Find the source code in the [simple_warrior](https://github.com/MystenLabs/sui/tree/main/examples/move/simple_warrior) example.
+在 [simple_warrior](https://github.com/MystenLabs/sui/tree/main/examples/move/simple_warrior) 示例中查找源代码。
 
-To view a more complex example, see [hero](https://github.com/MystenLabs/sui/tree/main/examples/move/hero).
+要查看更复杂的示例，请参阅 [hero](https://github.com/MystenLabs/sui/tree/main/examples/move/hero)。
 
-### Wrapping through `vector`
+### 通过 `vector` 进行封装
 
-The concept of wrapping objects in a vector field of another Sui object is very similar to wrapping through `Option`: an object can contain 0, 1, or many of the wrapped objects of the same type.
+在另一个 Sui 对象的矢量字段中封装对象的概念与通过 `Option` 进行封装非常相似：一个对象可以包含 0、1 或多个相同类型的封装对象。
 
-Wrapping through vector resembles:
+通过矢量进行封装的方式类似于：
 
 ```move
 struct Pet has key, store {
@@ -235,4 +235,4 @@ struct Farm has key {
 }
 ```
 
-The preceding example wraps a vector of `Pet` in `Farm`, and can be accessed only through the `Farm` object.
+上述示例在 `Farm` 中封装了一个 `Pet` 的矢量，只能通过 `Farm` 对象访问。

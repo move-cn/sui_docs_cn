@@ -1,28 +1,28 @@
 ---
-title: Package Upgrades
-description: A Move package on Sui includes one or more modules that define that package's interaction with on-chain objects. Upgrading on-chain packages provides a way to improve your code or add features without affecting packages that use your published modules.
+title: 包的升级
+description: 在 Sui 上的 Move 包包括一个或多个定义该包与链上对象交互的模块。升级链上包提供了一种在不影响使用你已发布模块的包的情况下改进代码或添加功能的方式。
 ---
 
-A Move package on Sui includes one or more modules that define that package's interaction with on-chain objects. You develop the logic for those modules using Move, which you then compile into an object. Finally, you publish your package object onto a Sui network. On chain, anyone can view your package contents and the logic it employs to manipulate other on-chain objects using a Sui network explorer.
+在 Sui 上的 Move 包包括一个或多个定义该包与链上对象交互的模块。你使用 Move 开发这些模块的逻辑，然后将其编译成对象。最后，你将包对象发布到 Sui 网络上。在链上，任何人都可以查看你的包内容以及它使用的逻辑来操作其他链上对象，通过 Sui 网络资源浏览器。
 
-## Packages are immutable
+## 包是不可变的
 
-After you publish a package object on chain to a network, it lives there forever. You cannot directly change the code of an on-chain package object. After a package object appears on chain, other packages can use the modules that the original package provides. Bad actors aside, imagine if someone changed the logic in their on-chain package to correct unintentional behavior that was overlooked during development. This would cause a ripple effect, changing the logic of every package that uses that module to perform in ways the developers might have never intended.
+在将包对象发布到网络上之后，它将永远存在。你无法直接更改链上包对象的代码。在包对象出现在链上之后，其他包可以使用原始包提供的模块。撇开恶意行为者，想象一下如果有人更改了他们链上包中的逻辑以纠正在开发过程中被忽视的意外行为，这将引发连锁反应，更改了每个使用该模块的包的逻辑，可能是开发人员从未打算的方式。
 
-## Upgrading packages
+## 升级包
 
-While you can't manipulate on-chain packages directly, you do have the ability to upgrade them. Upgrading on-chain packages provides a way to improve your code or add features without affecting packages that use the original package. When you upgrade a package, you're creating a new object on chain instead of modifying the original package. See [Upgrading Packages](./packages/upgrade.mdx) to learn more about the process.
+尽管无法直接操作链上包，但你确实有升级它们的能力。升级链上包提供了一种改进代码或添加功能而不影响使用原始包的包的方法。当你升级包时，你是在链上创建一个新对象，而不是修改原始包。请参阅[升级包](./packages/upgrade.mdx)以了解更多有关该过程的信息。
 
-## Using Sui Client CLI to upgrade packages
+## 使用 Sui Client CLI 升级包
 
-The [Sui Client CLI](/references/cli/client.mdx) `upgrade` command offers an approachable way to upgrade packages when the CLI active address owns the `UpgradeCap` object associated with those packages.
+[Sui Client CLI](/references/cli/client.mdx) 的 `upgrade` 命令为你提供了一种途径，可以在 CLI 活跃地址拥有与这些包相关联的 `UpgradeCap` 对象时升级包。
 
-Using the Sui CLI is useful to get started with upgrades, or in the early stages of package development, but protecting the ability to upgrade a package on chain using a single key can pose a security risk for several reasons:
+使用 Sui CLI 对于开始升级或包开发的早期阶段非常有用，但使用单个密钥保护链上包的升级能力可能会因以下几个原因而带来安全风险：
 
 {@include: ../../snippets/upgrade-single-key-risk.mdx}
 
-### Making packages immutable
+### 使包不可变
 
-You can make a package _immutable_ when it goes live to mitigate the single-key risk using the Move `sui::package::make_immutable` function to destroy its `UpgradeCap`. Making the package immutable, however, prevents future bug fixes and new features, which might not be practical or desired.
+你可以在上线时通过使用 Move 的 `sui::package::make_immutable` 函数销毁其 `UpgradeCap` 来使包 _不可变_，以减轻单个密钥风险。然而，使包不可变会阻止未来的错误修复和新功能，这可能并不实际或不受欢迎。
 
-To protect your package from single-key risk on chain, see [Custom Upgrade Policies](./packages/custom-policies.mdx).
+要在链上保护你的包免受单个密钥风险，请参阅[自定义升级策略](./packages/custom-policies.mdx)。

@@ -1,12 +1,12 @@
 ---
 title: 安装 Sui
-description: 在您的系统上安装 Sui 框架及其所需的先决条件，包括 Sui 命令行界面，以便与 Sui 网络进行交互。
+description: 在你的系统上安装 Sui 框架及其所需的先决条件，包括 Sui 命令行界面，以便与 Sui 网络进行交互。
 ---
 
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
-安装 Sui 的最快方式是使用每个版本附带的二进制文件。如果您需要更多对安装过程的控制，可以从源代码进行安装。为了充分利用容器化，您可以使用 sui 存储库的 `docker` 文件夹中的 Docker 镜像。
+安装 Sui 的最快方式是使用每个版本附带的二进制文件。如果你需要更多对安装过程的控制，可以从源代码进行安装。为了充分利用容器化，你可以使用 sui 存储库的 `docker` 文件夹中的 Docker 镜像。
 
 ## 支持的操作系统 {#supported-operating-systems}
 
@@ -18,7 +18,7 @@ Sui 支持以下操作系统：
 
 ## 使用 Homebrew 安装 {#install-homebrew}
 
-如果您使用 [Homebrew](https://brew.sh/)，您可以使用以下命令安装 Sui：
+如果你使用 [Homebrew](https://brew.sh/)，你可以使用以下命令安装 Sui：
 
 ```bash
 brew tap mystenlabs/tap
@@ -27,14 +27,14 @@ brew install mystenlabs/tap/sui
 
 ## 从二进制文件安装 {#install-binaries}
 
-每个 Sui 版本都提供了一组适用于多个操作系统的二进制文件。您可以从 GitHub 下载这些二进制文件并使用它们安装 Sui。
+每个 Sui 版本都提供了一组适用于多个操作系统的二进制文件。你可以从 GitHub 下载这些二进制文件并使用它们安装 Sui。
 
 1. 转到 https://github.com/MystenLabs/sui。
 1. 在右侧窗格中，找到 **Releases** 部分。
 
     ![GitHub 中的 Sui 发行版](./images/releases.png)
 1. 单击标记为 **Latest** 的发行版，打开发行版的页面。
-1. 在发行版的 **Assets** 部分，选择与您的操作系统相对应的 .tgz 压缩文件。
+1. 在发行版的 **Assets** 部分，选择与你的操作系统相对应的 .tgz 压缩文件。
 1. 双击下载的文件。如果文件没有自动展开，请手动解压文件。
 1. 打开展开的文件夹，双击适当的二进制文件进行安装，以 sui-`<OS>`-`<ARCHITECTURE>` 开头：
 
@@ -45,29 +45,29 @@ brew install mystenlabs/tap/sui
     - sui-test-validator-`<OS>`-`<ARCHITECTURE>`: 在本地网络上运行开发的测试验证器。
     - sui-tool-`<OS>`-`<ARCHITECTURE>`: 为 Sui 提供实用工具。
 
-    Sui 二进制文件需要一些时间来下载和安装文件，因此请确保您为其完成分配足够的时间。实际完成时间取决于您的网络连接和计算机规格。
+    Sui 二进制文件需要一些时间来下载和安装文件，因此请确保你为其完成分配足够的时间。实际完成时间取决于你的网络连接和计算机规格。
 
 ### 确认安装 {#confirm-the-installation}
 
-要确认 Sui 安装正确，请键入 `sui` 并按 Enter 键。您应该看到有关已安装的 Sui 版本的消息以及有关使用 Sui 命令的帮助信息。
+要确认 Sui 安装正确，请键入 `sui` 并按 Enter 键。你应该看到有关已安装的 Sui 版本的消息以及有关使用 Sui 命令的帮助信息。
 
 ## 从源代码安装
 
 按照本主题中的说明安装与 Sui 网络交互所需的 Rust crates（包），包括 Sui CLI。
 
-要从源代码安装 Sui，首先需要为您的操作系统安装其[先决条件](#prerequisites)。在安装支持技术之后，您可以从[源代码安装 Sui 二进制文件](#install-sui-binaries-from-source)。
+要从源代码安装 Sui，首先需要为你的操作系统安装其[先决条件](#prerequisites)。在安装支持技术之后，你可以从[源代码安装 Sui 二进制文件](#install-sui-binaries-from-source)。
 
-您还可以下载[源代码](./sui-environment)以本地访问文件。
+你还可以下载[源代码](./sui-environment)以本地访问文件。
 
 ## 先决条件 {#prerequisites}
 
-您的系统需要以下先决条件才能成功安装 Sui。
+你的系统需要以下先决条件才能成功安装 Sui。
 
 ### Rust 和 Cargo {#rust-and-cargo}
 
 Sui 在所有支持的操作系统上都需要 Rust 和 Cargo（Rust 的包管理器）。安装 Rust 的建议方法是使用 `rustup` 并使用 cURL。
 
-安装说明中的一些其他命令还需要运行 cURL。如果无法运行 cURL 命令来安装 Rust，请在安装 Rust 之前查看以下部分中有关为您的操作系统安装 cURL 的说明。
+安装说明中的一些其他命令还需要运行 cURL。如果无法运行 cURL 命令来安装 Rust，请在安装 Rust 之前查看以下部分中有关为你的操作系统安装 cURL 的说明。
 
 在 macOS 或 Linux 上使用以下命令安装 Rust 和 Cargo：
 
@@ -75,7 +75,7 @@ Sui 在所有支持的操作系统上都需要 Rust 和 Cargo（Rust 的包管�
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 ```
 
-如果您使用的是 Windows 11，请查看[Rust安装程序](https://www.rust-lang.org/tools/install)上 Rust 网站的相关信息。安装程序会检查是否存在 C++ 构建工具，并在必要时提示您安装它们。选择最符合您环境的选项，并按照安装向导中的说明操作。
+如果你使用的是 Windows 11，请查看[Rust安装程序](https://www.rust-lang.org/tools/install)上 Rust 网站的相关信息。安装程序会检查是否存在 C++ 构建工具，并在必要时提示你安装它们。选择最符合你环境的选项，并按照安装向导中的说明操作。
 
 有关其他安装选项，请参阅[安装 Rust](https://www.rust-lang.org/tools/install)。
 
@@ -89,7 +89,7 @@ rustup update stable
 
 ### 操作系统的额外先决条件
 
-选择适当的选项卡以查看您系统的要求。
+选择适当的选项卡以查看你系统的要求。
 
 <Tabs groupId="operating-systems">
 
@@ -109,7 +109,7 @@ Linux 操作系统所需的先决条件包括：
 
 :::info
 
-Linux 指南假定使用 APT 软件包管理器的发行版。您可能需要调整说明以使用其他软件包管理器。
+Linux 指南假定使用 APT 软件包管理器的发行版。你可能需要调整说明以使用其他软件包管理器。
 
 :::
 
@@ -176,9 +176,9 @@ sudo apt-get install gcc
 sudo apt-get install libssl-dev
 ```
 
-如果您使用的 Linux 版本不支持 `libssl-dev`, 请在 [ROS Index](https://index.ros.org/d/libssl-dev/) 上找到一个等效的包。
+如果你使用的 Linux 版本不支持 `libssl-dev`, 请在 [ROS Index](https://index.ros.org/d/libssl-dev/) 上找到一个等效的包。
 
-（可选）如果您安装了 OpenSSL，还可能需要安装 `pkg-config`：
+（可选）如果你安装了 OpenSSL，还可能需要安装 `pkg-config`：
 
 ```bash
 sudo apt-get install pkg-config
@@ -192,7 +192,7 @@ sudo apt-get install pkg-config
 sudo apt-get install libclang-dev
 ```
 
-如果您使用的 Linux 版本不支持 `libclang-dev`, 请在 [ROS Index](https://index.ros.org/d/libclang-dev/) 上找到一个等效的包。
+如果你使用的 Linux 版本不支持 `libclang-dev`, 请在 [ROS Index](https://index.ros.org/d/libclang-dev/) 上找到一个等效的包。
 
 #### libpq-dev {#libpq-dev}
 
@@ -202,7 +202,7 @@ sudo apt-get install libclang-dev
 sudo apt-get install libpq-dev
 ```
 
-如果您使用的 Linux 版本不支持 `libpq-dev`, 请在 [ROS Index](https://index.ros.org/d/libclang-dev/) 上找到一个等效的包。
+如果你使用的 Linux 版本不支持 `libpq-dev`, 请在 [ROS Index](https://index.ros.org/d/libclang-dev/) 上找到一个等效的包。
 
 #### build-essential {#build-essential}
 
