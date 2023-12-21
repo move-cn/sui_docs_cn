@@ -351,7 +351,7 @@ curl -X POST $PROVER_URL -H 'Content-Type: application/json' \
 
 为了避免在前端应用中可能出现的CORS错误，建议将此调用委托给后端服务。
 
-响应可以映射到zkLogin SDK的 `getZkLoginSignature` 方法的输入参数类型。
+响应可以映射到 zkLogin SDK 的 `getZkLoginSignature` 方法的输入参数类型。
 
 ```typescript
 const proofResponse = await post('/your-internal-api/zkp/get', zkpRequestPayload);
@@ -363,11 +363,12 @@ export type PartialZkLoginSignature = Omit<
 const partialZkLoginSignature = proofResponse as PartialZkLoginSignature;
 ```
 
-### Run the proving service in your backend
+### 在你的后端运行证明服务
 
-1. Download two images from from Docker Hub [repository](https://hub.docker.com/repository/docker/mysten/zklogin/general) that are tagged as `prover` and `prover-fe`.
-
+1. 从  Docker Hub [仓库](https://hub.docker.com/repository/docker/mysten/zklogin/general) 下载标记为  `prover` 和 `prover-fe` 的两个镜像。
 1. Download the [Groth16 proving key zkey file](https://docs.circom.io/getting-started/proving-circuits/) that will be later used as an argument to run the prover. There are zkeys available for Mainnet and Testnet, as well as a test zkey for Devnet. See [the Ceremony section](#ceremony) for more details on how the main proving key is generated. Please install [git lfs](https://git-lfs.com/) which is needed before downloading the zkey.
+下载 Groth16 证明密钥 zkey 文件，从 [Groth16 proving key zkey 文件链接](https://docs.circom.io/getting-started/proving-circuits/) 下载该文件，稍后将用作运行 prover 的参数。有适用于 Mainnet 和 Testnet 的 zkeys，以及用于 Devnet 的测试 zkey。有关主证明密钥生成的详细信息，请参阅 [仪式部分](#仪式)。在下载 zkey 前，请安装 [git lfs](https://git-lfs.com/)，这是必需的。
+
 
 	- Main zkey (for Mainnet and Testnet)
 		```bash
@@ -378,7 +379,7 @@ const partialZkLoginSignature = proofResponse as PartialZkLoginSignature;
 		wget -O - https://raw.githubusercontent.com/sui-foundation/zklogin-ceremony-contributions/main/download-test-zkey.sh | bash
 		```
 
-	- To verify the download contains the correct zkey file, you can run the following command to check the Blake2b hash: `b2sum ${file_name}.zkey`.
+	- 验证下载是否包含正确的 zkey 文件，可以运行以下命令检查 Blake2b 哈希：`b2sum ${file_name}.zkey`。
 
 		| Network | zkey file name | Hash |
 		| ------------ | ----------   | -------- |
@@ -386,6 +387,8 @@ const partialZkLoginSignature = proofResponse as PartialZkLoginSignature;
 		| Devnet | `zkLogin-test.zkey` | `686e2f5fd969897b1c034d7654799ee2c3952489814e4eaaf3d7e1bb539841047ae8ee5fdcdaca5f4ddd76abb5a8e8eb77b44b693a2ba9d4be57e94292b26ce2` |
 
 1. Run `prover` at `PORT1` with the downloaded zkey. This needs to be run on Linux-based machines (amd64). Further, we recommended using at least 16 vcpu, preferably an AMD cpu and at least 16gb ram for production use. Whereas 8 vcpu, 8gb ram works for testing (but its not fast).
+# 在 `PORT1` 上使用下载的 zkey 运行 `prover`
+在 Linux-based 机器（amd64）上运行此命令。建议在生产环境中使用至少 16 vcpu，最好是 AMD cpu，并且至少需要 16GB RAM。而在测试环境中，8 vcpu 和 8GB RAM 可以工作（但速度较慢）。
 
 	```bash
 	docker run \
@@ -396,7 +399,7 @@ const partialZkLoginSignature = proofResponse as PartialZkLoginSignature;
 	<prover-image>
 	```
 
-1. Run `prover-fe` at `PORT2`:
+1. 在 `PORT2` 上运行 `prover-fe`
 
 	```bash
 	docker run \
@@ -407,22 +410,23 @@ const partialZkLoginSignature = proofResponse as PartialZkLoginSignature;
 		<prover-fe-image> 8080
 	```
 
-1. Expose the `prover-fe` service appropriately and keep the prover service internal.
-1. To call the proving service, the following two endpoints are supported:
-   - `/ping`: To test if the service is up. Running `curl http://localhost:PORT2/ping` should return `pong`.
-   - `/v1`: The request and response are the same as the Mysten Labs maintained service.
+1. 将 `prover-fe` 服务适当地暴露，同时将 prover 服务保持为内部服务。
+1. 调用证明服务的两个支持的端点：
+   - `/ping`：用于测试服务是否正常运行。运行 `curl http://localhost:PORT2/ping` 应返回 `pong`。
+   - `/v1`：请求和响应与 Mysten Labs 维护的服务相同。
 
-A few things to note:
 
-- If you want to compile the prover from scratch (for performance reasons), please see our fork of [rapidsnark](https://github.com/MystenLabs/rapidsnark#compile-prover-in-server-mode). You'd need to compile and launch the prover in server mode.
+一些建议注意事项：
 
-- Setting `DEBUG=*` turns on all logs in the prover-fe service some of which may contain PII. Consider using DEBUG=zkLogin:info,jwks in production environments.
+- 如果出于性能原因，您想从头开始编译 prover，请查看我们对 [rapidsnark](https://github.com/MystenLabs/rapidsnark#compile-prover-in-server-mode) 的分支。您需要编译并以服务器模式启动 prover。
 
-- If you are seeing the error message "Call to rapidsnark service took longer than 15s", consider increasing the timeout by setting the environment variable `PROVER_TIMEOUT` to a higher value. For example, `PROVER_TIMEOUT=30`.
+- 设置 `DEBUG=*` 会在 prover-fe 服务中打开所有日志，其中一些可能包含个人身份信息（PII）。在生产环境中，考虑使用 `DEBUG=zkLogin:info,jwks`。
 
-## Assemble the zkLogin signature and submit the transaction
+- 如果您看到错误消息 "Call to rapidsnark service took longer than 15s"，请考虑通过将环境变量 `PROVER_TIMEOUT` 设置为较高的值来增加超时时间。例如，`PROVER_TIMEOUT=30`。
 
-First, sign the transaction bytes with the ephemeral private key using the key pair generated previously. This is the same as [traditional KeyPair signing](https://sdk.mystenlabs.com/typescript/cryptography/keypairs). Make sure that the transaction `sender ` is also defined.
+## 组装 zkLogin 签名并提交交易
+
+首先，使用先前生成的密钥对，使用临时私钥对交易字节进行签名。这与 [传统的 KeyPair 签名](https://sdk.mystenlabs.com/typescript/cryptography/keypairs) 相同。确保交易中定义了 `sender`。
 
 ```typescript
  const ephemeralKeyPair = new Ed25519Keypair();
@@ -439,12 +443,11 @@ const { bytes, signature: userSignature } = await txb.sign({
 });
 ```
 
-Next, generate an address seed by combining `userSalt`, `sub` (subject ID), and `aud` (audience).
+接下来，通过组合 `userSalt`、`sub`（主题 ID）和 `aud`（受众）生成地址种子。
 
-Set the address seed and the partial zkLogin signature to be the `inputs` parameter.
+将地址种子和部分 zkLogin 签名设置为 `inputs` 参数。
 
-You can now serialize the zkLogin signature by combining the ZK proof (`inputs`),
-the `maxEpoch`, and the ephemeral signature (`userSignature`).
+现在，您可以通过组合 ZK 证明（`inputs`）、`maxEpoch` 和短暂签名（`userSignature`）来序列化 zkLogin 签名。
 
 ```typescript
 import { genAddressSeed, getZkLoginSignature } from "@mysten/zklogin";
@@ -461,7 +464,7 @@ const zkLoginSignature : SerializedSignature = getZkLoginSignature({
 });
 ```
 
-Finally, execute the transaction.
+最后，执行交易。
 
 ```typescript
 client.executeTransactionBlock({
@@ -470,94 +473,93 @@ client.executeTransactionBlock({
 });
 ```
 
-## Caching the ephemeral private key and ZK proof
+## 缓存短暂私钥和 ZK 证明
 
-As previously documented, each ZK proof is tied to an ephemeral key pair. So you can reuse the proof to sign any number of transactions until the ephemeral key pair expires (until the current epoch crosses `maxEpoch`).
+如先前记录的，每个 ZK 证明与一个短暂密钥对相关联。因此，您可以重用该证明来签署任意数量的交易，直到短暂密钥对过期（直到当前纪元超过 `maxEpoch` 为止）。
 
-You might want to cache the ephemeral key pair along with the ZKP for future uses.
+您可能希望缓存短暂密钥对以及 ZKP 供将来使用。
 
-However, the ephemeral key pair needs to be treated as a secret akin to a key pair in a traditional wallet. This is because if both the ephemeral private key and ZK proof are revealed to an attacker, then they can typically sign any transaction on behalf of the user (using the same process described previously).
+但是，短暂密钥对需要像传统钱包中的密钥对一样对待为机密信息。这是因为如果短暂私钥和 ZK 证明都被泄露给攻击者，那么它们通常可以代表用户签署任何交易（使用先前描述的相同过程）。
 
-Consequently, you should not store them persistently in an unsecure storage location, on any platform. For example, on browsers, use session storage instead of local storage to store the ephemeral key pair and the ZK proof.
+因此，您不应该在任何平台的不安全存储位置上持久存储它们。例如，在浏览器上，使用会话存储而不是本地存储来存储短暂密钥对和 ZK 证明。
 
+# zkLogin 工作原理
 
-# How zkLogin Works
+在简要概述中，zkLogin 协议依赖于以下内容：
 
-In rough sketches, the zkLogin protocol relies on the following:
+1. JWT 令牌是来自 OAuth 提供程序的已签名有效负载，包括一个名为 nonce 的用户定义字段。zkLogin 利用 [OpenID Connect OAuth 流程](https://openid.net/developers/how-connect-works/)，将 nonce 定义为公钥和到期时期。
+1. 钱包存储一个短暂 KeyPair，其中短暂公钥在 nonce 中定义。短暂私钥为短暂会话签署交易，消除了用户记忆的需要。
+   基于 JWT 令牌生成 Groth16 零知识证明，隐藏了隐私敏感字段。
+1. 提交具有短暂签名和 ZK 证明的交易上链。Sui 当局在验证短暂签名和证明后执行交易。
+1. 与基于公钥派生 Sui 地址不同，zkLogin 地址是从 `sub`（唯一标识每个提供程序的用户）、`iss`（标识提供程序）、`aud`（标识应用程序）和 `user_salt`（将 OAuth 标识符与链上地址解除链接的值）派生的。
 
-1. A JWT token is a signed payload from OAuth providers, including a user-defined field named nonce. zkLogin leverages [the OpenID Connect OAuth flow](https://openid.net/developers/how-connect-works/) by defining the nonce as a public key and an expiry epoch.
-1. The wallet stores an ephemeral KeyPair, where the ephemeral public key is defined in the nonce. The ephemeral private key signs transactions for a brief session, eliminating the need for user memorization.
-   The Groth16 zero-knowledge proof is generated based on the JWT token, concealing privacy-sensitive fields.
-1. A transaction is submitted on-chain with the ephemeral signature and the ZK proof. Sui authorities execute the transaction after verifying the ephemeral signature and the proof.
-1. Instead of deriving the Sui address based on a public key, the zkLogin address is derived from `sub` (that uniquely identifies the user per provider), `iss` (identifies the provider), `aud` (identifies the application) and `user_salt` (a value that unlinks the OAuth identifier with the on-chain address).
-
-## The complete zkLogin flow
+## 完整的 zkLogin 流程
 
 ![1](images/zklogin-flow.png 'zkLogin Complete Flow')
 
-(Step 0) We use Groth16 for our protocol's zkSNARK instantiation, requiring a singular generation of a structured common reference string (CRS) linked to the circuit. A ceremony is conducted to generate the CRS, which is used to produce the proving key in the ZK Proving Service, the verifying key in Sui Authority. See [the Ceremony section](#ceremony) for more details.
+(步骤 0) 我们在协议的 zkSNARK 实例化中使用 Groth16，需要生成与电路相关联的结构化公共参考字符串 (CRS)。进行仪式生成 CRS，用于在 ZK 证明服务中生成证明密钥和在 Sui 当局生成验证密钥。有关详细信息，请参阅 [仪式部分](#仪式)。
 
-(Step 1-3) The user begins by logging into an OpenID Provider (OP) to obtain a JWT token containing a defined nonce. In particular, the user generates an _ephemeral_ KeyPair `(eph_sk, eph_pk)` and embed `eph_pk`, along with expiry times (`max_epoch`) and randomness (`jwt_randomness`), into the nonce (see [definition](#notations)). After the user completes the OAuth login flow, an JWT token can be found in the redirect URL in the application.
+(步骤 1-3) 用户首先通过登录到 OpenID 提供程序 (OP) 来获取包含定义的 nonce 的 JWT 令牌。特别是，用户生成一个 _短暂_ KeyPair `(eph_sk, eph_pk)`，并将 `eph_pk` 与到期时间 (`max_epoch`) 和随机性 (`jwt_randomness`) 一起嵌入 nonce 中（参见 [definition](#notations)）。用户完成 OAuth 登录流程后，在应用程序的重定向 URL 中可以找到 JWT 令牌。
 
-(Step 4-5) The application frontend then sends the JWT token to a salt service. The salt service returns the unique `user_salt` based on `iss, aud, sub` upon validation of the JWT token.
+(步骤 4-5) 然后，应用程序前端将 JWT 令牌发送到 salt 服务。salt 服务在验证 JWT 令牌后，基于 `iss, aud, sub` 返回唯一的 `user_salt`。
 
-(Step 6-7) The user sends the ZK proving service the JWT token, user salt, ephemeral public key, jwt randomness, key claim name (i.e. `sub`). The proving service generates a Zero-Knowledge Proof that takes these as private inputs and does the following: (a) Checks the nonce is derived correctly [as defined](#notations) (b) Checks that key claim value matches the corresponding field in the JWT, (c) Verifies the RSA signature from OP on the JWT, and (d) the address is consistent with the key claim value and user salt.
+(步骤 6-7) 用户将 JWT 令牌、用户 salt、短暂公钥、jwt 随机性、密钥声明名称（即 `sub`）发送给 ZK 证明服务。证明服务生成一个零知识证明，将这些作为私有输入，并执行以下操作：(a) 检查 nonce 是否正确派生 [如定义](#notations) (b) 检查密钥声明值是否与 JWT 中的相应字段匹配，(c) 验证来自 OP 的 JWT 的 RSA 签名，以及 (d) 地址是否与密钥声明值和用户 salt 一致。
 
-(Step 8): The application computes the user address based on iss, aud, sub, aud. This step can be done independently as long as the application has a valid JWT token.
+(步骤 8): 应用程序基于 iss, aud, sub, aud 计算用户地址。只要应用程序具有有效的 JWT 令牌，可以独立执行此步骤。
 
-(Step 9-10) A transaction is signed using the ephemeral private key to generate an ephemeral signature. Finally, the user submits the transaction along with the ephemeral signature, ZK proof and other inputs to Sui.
+(步骤 9-10) 使用短暂私钥签署交易以生成短暂签名。最后，用户将交易与短暂签名、ZK 证明和其他输入一起提交给 Sui。
 
-(After Step 10) After submitted on chain, Sui Authorities verify the ZK proof against the provider JWKs from storage (agreed upon in consensus) and also the ephemeral signature.
+(步骤 10 之后) 在链上提交后，Sui 当局使用存储中的提供程序 JWK 验证 ZK 证明，并验证短暂签名。
 
-## Entities
+## 实体
 
-1. Application frontend: This describes the wallet or frontend application that supports zkLogin. This frontend is responsible for storing the ephemeral private key, directing users to complete the OAuth login flow, creating and signing a zkLogin transaction.
+1. 应用程序前端：描述支持 zkLogin 的钱包或前端应用程序。该前端负责存储短暂私钥，引导用户完成 OAuth 登录流程，创建和签署 zkLogin 交易。
 
-2. Salt Backup Service: This is a backend service responsible for returning a salt per unique user. See [integration guide](#integration-guide) for other strategies to maintain salt.
+2. Salt 备份服务：负责返回每个唯一用户的盐。有关维护盐的其他策略，请参阅 [集成指南](#integration-guide)。
 
-3. ZK Proving Service: This is a backend service responsible for generating ZK proofs based on JWT token, JWT randomness, user salt and max epoch. This proof is submitted on-chain along with the ephemeral signature for a zkLogin transaction.
+3. ZK 证明服务：负责基于 JWT 令牌、JWT 随机性、用户 salt 和最大纪元生成 ZK 证明的后端服务。此证明与 zkLogin 交易的短暂签名一起提交到链上。
 
-## Address definition
+## 地址定义
 
-The address is computed on the following inputs:
+地址是根据以下输入计算的：
 
-1. The address flag: `zk_login_flag = 0x05` for zkLogin address. This serves as a domain separator as a signature scheme defined in [crypto agility](./transaction-auth/signatures.mdx).
+1. 地址标志：`zk_login_flag = 0x05` 用于 zkLogin 地址。这充当 [密码敏捷性](./transaction-auth/signatures.mdx) 中定义的签名方案的域分隔符。
 
-1. `kc_name_F = hashBytesToField(kc_name, maxKCNameLen)`: Name of the key claim, e.g., `sub`. The sequence of bytes is mapped to a field element in BN254 using `hashBytesToField` (defined below).
+1. `kc_name_F = hashBytesToField(kc_name, maxKCNameLen)`：密钥声明的名称，例如 `sub`。使用 `hashBytesToField` 将字节序列映射到 BN254 中的字段元素（下文定义）。
 
-1. `kc_value_F = hashBytesToField(kc_value, maxKCValueLen)`: The value of the key claim mapped using `hashBytesToField`.
+1. `kc_value_F = hashBytesToField(kc_value, maxKCValueLen)`：密钥声明的值，使用 `hashBytesToField` 映射。
 
-1. `aud_F = hashBytesToField(aud, maxAudValueLen)`: The Relying Party (RP) identifier. See [definition](#terminology-and-notations).
+1. `aud_F = hashBytesToField(aud, maxAudValueLen)`：依赖方 (RP) 标识符。请参阅 [定义](#术语和符号)。
 
-1. `iss`: The OpenID Provider (OP) identifier. See [definition](#terminology-and-notations).
+1. `iss`：OpenID 提供程序 (OP) 标识符。请参阅 [定义](#术语和符号)。
 
-1. `user_salt`: A value introduced to unlink the OAuth identifier with the on-chain address.
+1. `user_salt`：用于解除 OAuth 标识符与链上地址的关联的值。
 
-Finally, we derive `zk_login_address = Blake2b_256(zk_login_flag, iss_L, iss, addr_seed)` where `addr_seed = Poseidon_BN254(kc_name_F, kc_value_F, aud_F, Poseidon_BN254(user_salt)`.
+最后，我们派生 `zk_login_address = Blake2b_256(zk_login_flag, iss_L, iss, addr_seed)`，其中 `addr_seed = Poseidon_BN254(kc_name_F, kc_value_F, aud_F, Poseidon_BN254(user_salt)`。
 
-## Terminology and notations
+## 术语和符号
 
-See below for all relevant OpenID terminology defined in [spec](https://openid.net/specs/openid-connect-core-1_0.html#Terminology) and how they are used in zkLogin, along with definitions for protocol details.
+下面是在 [规范](https://openid.net/specs/openid-connect-core-1_0.html#Terminology) 中定义的所有相关 OpenID 术语，以及它们在 zkLogin 中的使用，以及协议详细信息的定义。
 
-### OpenID provider (OP)
+### OpenID 提供程序 (OP)
 
-OAuth 2.0 authorization server that is capable of authenticating the end-user and providing claims to a relying party about the authentication event and the end-user. This is identified in the `iss` field in JWT token payload. Currently zkLogin supported OPs include Google, Facebook, and Twitch, and more compatible providers will be enabled in the future.
+能够对最终用户进行身份验证并向依赖方提供有关身份验证事件和最终用户的声明的 OAuth 2.0 授权服务器。在 JWT 令牌负载中通过 `iss` 字段标识。当前 zkLogin 支持的 OP 包括 Google、Facebook 和 Twitch，将来将启用更多兼容的提供程序。
 
-### Relying party (RP) or client
+### 依赖方 (RP) 或客户端
 
-OAuth 2.0 client application requiring end-user authentication and claims from an OpenID provider. This is assigned by OP when the developer creates the application. This is identified in the `aud` field in JWT token payload. This refers to any zkLogin enabled wallet or application.
+需要最终用户身份验证和来自 OpenID 提供程序的声明的 OAuth 2.0 客户端应用程序。由开发人员创建应用程序时由 OP 分配。在 JWT 令牌负载中通过 `aud` 字段标识。这指的是任何支持 zkLogin 的钱包或应用程序。
 
-### Subject identifier (sub)
+### 主题标识符 (sub)
 
-Locally unique and never reassigned identifier within the issuer for the end-user, which is intended to be consumed by the RP. Sui uses this as the key claim to derive user address.
+在颁发者内部唯一且永不重新分配的最终用户标识符，旨在由 RP 消耗。Sui 将其用作导出用户地址的密钥声明。
 
 ### JWK (JSON Web Key)
 
-A JSON data structure that represents a set of public keys for an OP. A public endpoint (e.g. https://www.googleapis.com/oauth2/v3/certs) can be queried to retrieve the valid public keys corresponding to `kid` for the provider. Upon matching with the `kid` in the header of a JWT token, the JWT token can be verified against the payload and its corresponding JWK. In Sui, all authorities call the JWK endpoints independently, and update the latest view of JWKs for all supported providers during protocol upgrades. The correctness of JWKs is guaranteed by the quorum (2f+1) of validator stake.
+表示 OP 的一组公钥的 JSON 数据结构。可以查询公共端点（例如 https://www.googleapis.com/oauth2/v3/certs）以检索与提供程序的 `kid` 对应的有效公钥。与 JWT 令牌头部中的 `kid` 匹配后，可以根据负载及其相应的 JWK 验证 JWT 令牌。在 Sui 中，所有当局独立调用 JWK 端点，并在协议升级期间更新所有支持的提供程序的最新 JWK 视图。JWK 的正确性由验证者的法定数量（2f+1）保证。
 
-### JWT Token (JSON Web Token)
+### JWT 令牌 (JSON Web Token)
 
-JWT token can be found in the redirect URL to RP after the user completes the OAuth login flow (i.e. `https://redirect.com?id_token=$JWT_TOKEN`). The JWT token contains a `header`, `payload` and a `signature`. The signature is an RSA signature that can be verified against `jwt_message = header + . + payload` and its JWK identified by `kid`. The `payload` contains a JSON of many claims that is a name, value pair. See below for the specific claims that are relevant to the zkLogin protocol.
+JWT 令牌可以在用户完成 OAuth 登录流程后在 RP 的重定向 URL 中找到（即 `https://redirect.com?id_token=$JWT_TOKEN`）。JWT 令牌包含一个 `header`、`payload` 和一个 `signature`。签名是可以根据 `jwt_message = header + . + payload` 及其由 `kid` 标识的 JWK 验证的 RSA 签名。`payload` 包含许多声明的 JSON，是名称-值对。请参阅下文，了解与 zkLogin 协议相关的特定声明。
 
 **Header**
 
