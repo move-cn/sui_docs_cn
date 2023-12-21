@@ -1,8 +1,8 @@
 ---
-title: Witness
+title: 见证者
 ---
 
-A witness is a type with `drop` that proves that its owner was present at the time of some privileged operation, for example having access to the "one-time witness" for a module proves that the code is being run at the time the module was first published. `Coin` uses this pattern to ensure its treasury is only created once.
+见证者是一种具有 `drop` 的类型，证明其所有者在某个特权操作发生的时候是存在的，例如拥有一个模块的“一次性见证者”表明代码是在该模块首次发布时运行的。`Coin` 使用此模式确保其财政只被创建一次。
 
 ```move
 /// Module that defines a generic type `Guardian<T>` which can only be
@@ -49,7 +49,7 @@ module examples::peace_guardian {
 }
 ```
 
-This pattern is used in these examples:
+这种模式在以下示例中被使用：
 
-- Liquidity pool
-- Regulated coin
+- 流动性池
+- 受监管的代币

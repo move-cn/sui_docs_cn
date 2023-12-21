@@ -1,20 +1,20 @@
 ---
-title: Immutable Objects
+title: 不可变对象
 ---
 
-Objects in Sui can have different types of ownership, with two broad categories: immutable objects and mutable objects. An immutable object is an object that can't be mutated, transferred, or deleted. Immutable objects have no owner, so anyone can use them.
+在 Sui 中，对象可以具有不同类型的所有权，分为两大类：不可变对象和可变对象。不可变对象是无法被改变、转移或删除的对象。不可变对象没有所有者，因此任何人都可以使用它们。
 
-## Create immutable object
+## 创建不可变对象
 
-To convert an object into an immutable object, call the `public_freeze_object` function from the [transfer module](https://github.com/MystenLabs/sui/blob/main/crates/sui-framework/packages/sui-framework/sources/transfer.move):
+要将对象转换为不可变对象，请调用[传输模块](https://github.com/MystenLabs/sui/blob/main/crates/sui-framework/packages/sui-framework/sources/transfer.move)中的 `public_freeze_object` 函数：
 
 ```move
 public native fun public_freeze_object<T: key>(obj: T);
 ```
 
-This call makes the specified object immutable. This is a non-reversible operation. You should freeze an object only when you are certain that you don't need to mutate it.
+此调用使指定的对象变为不可变。这是一种不可逆转的操作。只有在确信不需要对对象进行修改时，才应该将其冻结。
 
-You can see this function's use in one of the [color_object example module](https://github.com/MystenLabs/sui/blob/main/examples/move/color_object/sources/example.move) tests. The test creates a new (owned) `ColorObject`, then calls `public_freeze_object` to turn it into an immutable object.
+您可以在 [color_object 示例模块](https://github.com/MystenLabs/sui/blob/main/examples/move/color_object/sources/example.move) 的测试中看到此函数的使用。该测试创建一个新的（拥有的）`ColorObject`，然后调用 `public_freeze_object` 将其转换为不可变对象。
 
 ```move
 {
@@ -26,11 +26,11 @@ You can see this function's use in one of the [color_object example module](http
 };
 ```
 
-In the preceding test, you must already own a `ColorObject` to pass it in. At the end of this call, this object is frozen and can never be mutated. It is also no longer owned by anyone.
+在前面的测试中，您必须已经拥有一个 `ColorObject` 才能传递它。在此调用结束时，此对象将被冻结，并且永远无法被修改。它也不再属于任何人。
 
-The `transfer::public_freeze_object` function requires that you pass the object by value. If you are allowed to pass the object by a mutable reference, you could still mutate the object after the `public_freeze_object` call. This contradicts the fact that it should have become immutable.
+`transfer::public_freeze_object` 函数要求您通过值传递对象。如果允许通过可变引用传递对象，则仍然可以在 `public_freeze_object` 调用后修改对象。这与其应该已变为不可变的事实相矛盾。
 
-Alternatively, you can also provide an API that creates an immutable object at creation:
+或者，您还可以提供一个在创建时创建不可变对象的 API：
 
 ```move
 public fun create_immutable(red: u8, green: u8, blue: u8, ctx: &mut TxContext) {
@@ -39,31 +39,31 @@ public fun create_immutable(red: u8, green: u8, blue: u8, ctx: &mut TxContext) {
 }
 ```
 
-This function creates a new `ColorObject` and immediately makes it immutable before it has an owner.
+此函数创建一个新的 `ColorObject` 并在它有所有者之前立即使其不可变。
 
-## Use immutable object
+## 使用不可变对象
 
-After an object becomes immutable, the rules of who can use this object in Sui Move calls change:
-You can only pass an immutable object as a read-only, immutable reference to Sui Move entry functions as `&T`.
+在对象变为不可变后，在 Sui Move 调用中可以使用此对象的规则发生变化：
+只能将不可变对象作为对 Sui Move 入口函数的只读、不可变引用（`&T`）进行传递。
 
-Anyone can use immutable objects.
+任何人都可以使用不可变对象。
 
-Consider a function that copies the value of one object to another:
+考虑一个将一个对象的值复制到另一个对象的函数：
 
 ```move
 public fun copy_into(from: &ColorObject, into: &mut ColorObject);
 ```
 
-In this function, anyone can pass an immutable object as the first argument, `from`, but not the second argument.
-Because you can never mutate immutable objects, there's no data race, even when multiple transactions are using the same immutable object at the same time. Hence, the existence of immutable objects does not pose any requirement on consensus.
+在此函数中，任何人都可以将不可变对象作为第一个参数 `from` 进行传递，但不能作为第二个参数进行传递。
+因为您永远无法修改不可变对象，所以即使多个事务同时使用相同的不可变对象，也不会发生数据竞争。因此，不可变对象的存在不对共识提出任何要求。
 
-## Test immutable object
+## 测试不可变对象
 
-You can interact with immutable objects in unit tests using `test_scenario::take_immutable<T>` to take an immutable object wrapper from global storage, and `test_scenario::return_immutable` to return the wrapper back to the global storage.
+您可以使用 `test_scenario::take_immutable<T>` 在单元测试中与不可变对象交互，以从全局存储中获取一个不可变对象包装器，以及使用 `test_scenario::return_immutable` 将包装器返回到全局存储。
 
-The `test_scenario::take_immutable<T>` function is required because you can access immutable objects solely through read-only references. The `test_scenario` runtime keeps track of the usage of this immutable object. If the compiler does not return the object via `test_scenario::return_immutable` before the start of the next transaction, the test stops.
+`test_scenario::take_immutable<T>` 函数是必需的，因为您只能通过只读引用来访问不可变对象。`test_scenario` 运行时会跟踪对此不可变对象的使用情况。如果编译器在下一次事务开始之前未通过 `test_scenario::return_immutable` 返回对象，则测试将停止。
 
-To see it work in action:
+要看到其实际工作：
 
 ```move
 let sender1 = @0x1;
@@ -80,9 +80,9 @@ test_scenario::next_tx(scenario, sender1);
 };
 ```
 
-This test submits a transaction as `sender1`, which tries to create an immutable object.
+此测试以 `sender1` 身份提交一个事务，尝试创建一个不可变对象。
 
-The `has_most_recent_for_sender<ColorObject>` function no longer returns `true`, because the object is no longer owned. To take this object:
+`has_most_recent_for_sender<ColorObject>` 函数不再返回 `true`，因为对象不再拥有。要获取此对象：
 
 ```move
 // Any sender can work.
@@ -96,9 +96,9 @@ test_scenario::next_tx(scenario, sender2);
 };
 ```
 
-To show that this object is indeed not owned by anyone, start the next transaction with `sender2`. Note that it used `take_immutable` and succeeded. This means that any sender can take an immutable object. To return the object, call the `return_immutable` function.
+为了证明此对象确实没有任何所有者，以 `sender2` 身份开始下一个事务。请注意，它使用了 `take_immutable` 并成功。这意味着任何发件人都可以获取不可变对象。要返回对象，请调用 `return_immutable` 函数。
 
-To examine whether this object is immutable, add a function that tries to mutate a `ColorObject`:
+为了检查此对象是否为不可变对象，添加一个尝试修改 `ColorObject` 的函数：
 
 ```move
 public fun update(
@@ -111,11 +111,11 @@ public fun update(
 }
 ```
 
-As you have learned, the function fails when the `ColorObject` is immutable.
+正如您所了解的，当 `ColorObject` 是不可变时，该函数将失败。
 
-## On-chain interactions
+## 在链上进行交互
 
-First, view the objects you own:
+首先，查看您拥有的对象：
 
 ```shell
 export ADDR=`sui client active-address`
@@ -123,52 +123,53 @@ export ADDR=`sui client active-address`
 sui client objects $ADDR
 ```
 
-Publish the `ColorObject` code on-chain using the Sui Client CLI:
+使用 Sui Client CLI 将 `ColorObject` 代码发布到链上：
 
 ```shell
 sui client publish $ROOT/examples/move/color_object --gas-budget <GAS-AMOUNT>
 ```
 
-Set the package object ID to the `$PACKAGE` environment variable, if you have it set. Then create a new `ColorObject`:
+如果设置了 `$PACKAGE` 环境变量，请将包对象 ID 设置为它。然后创建一个新的 `ColorObject`：
 
 ```shell
 sui client call --gas-budget <GAS-AMOUNT> --package $PACKAGE --module "color_object" --function "create" --args 0 255 0
 ```
 
-Set the newly created object ID to `$OBJECT`. To view the objects in the current active address:
+将新创建的对象 ID 设置为 `$OBJECT`。要查看当前活动地址中的对象：
 
 ```shell
 sui client objects $ADDR
 ```
 
-You should see an object with the ID you used for `$OBJECT`. To turn it into an immutable object:
+您应该看到一个具有您在 `$OBJECT` 中使用的 ID 的对象。要将其变为不可变对象：
 
 ```shell
 sui client call --gas-budget <GAS-AMOUNT> --package $PACKAGE --module "color_object" --function "freeze_object" --args \"$OBJECT\"
 ```
 
-View the list of objects again:
+再次查看对象列表：
 
 ```shell
 sui client objects $ADDR
 ```
 
-`$OBJECT` is no longer listed. It's no longer owned by anyone. You can see that it's now immutable by querying the object information:
+`$OBJECT` 不再列出。它不再被任何人拥有。您可以通过查询对象信息来查看它现在是不可变的：
 
 ```shell
 sui client object $OBJECT
 ```
 
-The response includes:
+响应包括：
 
 ```shell
 Owner: Immutable
 ```
 
-If you try to mutate it:
+如果尝试对其进行修改：
 
 ```shell
 sui client call --gas-budget <GAS-AMOUNT> --package $PACKAGE --module "color_object" --function "update" --args \"$OBJECT\" 0 0 0
 ```
 
-The response indicates that you can't pass an immutable object to a mutable argument.
+响应表示您不能将不可变对象传递给可变参数。
+

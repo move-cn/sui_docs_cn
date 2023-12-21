@@ -1,22 +1,22 @@
 ---
-title: Programmable Transaction Blocks
-description: Programmable transaction blocks are a group of commands that complete a transaction on Sui.
+title: 可编程交易块
+description: 可编程交易块是在Sui上完成交易的一组命令。
 ---
 
-On Sui, a transaction is more than a basic record of the flow of assets. Transactions on Sui are composed of a number of commands that execute on inputs to define the result of the transaction. Termed programmable transaction blocks (PTBs), these groups of commands define all user transactions on Sui. PTBs allow a user to call multiple Move functions, manage their objects, and manage their coins in a single transaction--without publishing a new Move package. Designed with automation and transaction builders in mind, PTBs are a lightweight and flexible way of generating transactions. More intricate programming patterns, such as loops, are not supported, however, and in those cases you must publish a new Move package.
+在Sui上，交易不仅仅是资产流动的基本记录。Sui上的交易由一系列命令组成，这些命令在输入上执行以定义交易的结果。这些命令组被称为可编程交易块（PTBs），它们定义了Sui上的所有用户交易。PTBs允许用户在单个交易中调用多个Move函数，管理其对象和代币，而无需发布新的Move包。PTBs专为自动化和交易构建器而设计，是生成交易的轻量而灵活的方式。然而，不支持更复杂的编程模式，如循环，在这些情况下，您必须发布新的Move包。
 
-As mentioned, each PTB is comprised of individual transaction commands (sometimes referred to simply as transactions or commands). Each transaction command executes in order, and you can use the results from one transaction command in any subsequent transaction command. The effects, specifically object modifications or transfers, of all transaction commands in a block are applied atomically at the end of the transaction. If one transaction command fails, the entire block fails and no effects from the commands are applied.
+正如前面提到的，每个PTB由独立的交易命令（有时简称为交易或命令）组成。每个交易命令按顺序执行，您可以在任何后续交易命令中使用一个交易命令的结果。所有块中所有交易命令的效果，特别是对象修改或转移，在交易结束时以原子方式应用。如果一个交易命令失败，则整个块失败，不会应用来自命令的任何效果。
 
-A PTB can perform up to 1,024 unique operations in a single execution, whereas transactions on traditional blockchains would require 1,024 individual executions to accomplish the same result. The structure also promotes cheaper gas fees. The cost of facilitating individual transactions is always more than the cost of those same transactions blocked together in a PTB.
+一个PTB可以在单个执行中执行多达1,024个独特的操作，而在传统区块链上的交易需要执行1,024次以实现相同的结果。该结构还促进了更便宜的气费。单独执行交易的成本总是高于将这些相同的交易集中在PTB中的成本。
 
-The remainder of this topic covers the semantics of the execution of the transaction commands. It assumes familiarity with the Sui object model and the Move language. For more information on those topics, see the following documents:
+本主题的其余部分介绍了交易命令的执行语义。它假设对Sui对象模型和Move语言有一定的了解。有关这些主题的更多信息，请参见以下文档：
 
-- [Object model](../object-model.mdx)
-- [Move Concepts](../sui-move-concepts.mdx)
+- [对象模型](../object-model.mdx)
+- [Move概念](../sui-move-concepts.mdx)
 
-## Transaction type
+## 交易类型
 
-There are two parts of a PTB that are relevant to execution semantics. Other transaction information, such as the transaction sender or the gas limit, might be referenced but are out of scope. The structure of a PTB is:
+与执行语义相关的PTB的两个部分。其他交易信息，如交易发件人或气体限制，可能会被引用，但超出了范围。PTB的结构如下：
 
 ```rust
 {
@@ -25,38 +25,38 @@ There are two parts of a PTB that are relevant to execution semantics. Other tra
 }
 ```
 
-Looking closer at the two main components:
-- The `inputs` value is a vector of arguments, `[Input]`. These arguments are either objects or pure values that you can use in the commands. The objects are either owned by the sender or are shared/immutable objects. The pure values represent simple Move values, such as `u64` or `String` values, which you can be construct purely from their bytes. For historical reasons, `Input` is `CallArg` in the Rust implementation.
-- The `commands` value is a vector of commands, `[Command]`. The possible commands are:
-  - `TransferObjects` sends multiple (one or more) objects to a specified address.
-  - `SplitCoins` splits off multiple (one or more) coins from a single coin. It can be any `sui::coin::Coin<_>` object.
-  - `MergeCoins` merges multiple (one or more) coins into a single coin. Any `sui::coin::Coin<_>` objects can be merged, as long as they are all of the same type.
-  - `MakeMoveVec` creates a vector (potentially empty) of Move values. This is used primarily to construct vectors of Move values to be used as arguments to `MoveCall`.
-  - `MoveCall` invokes either an `entry` or a `public` Move function in a published package.
-  - `Publish` creates a new package and calls the `init` function of each module in the package.
-  - `Upgrade` upgrades an existing package. The upgrade is gated by the `sui::package::UpgradeCap` for that package.
+深入了解两个主要组成部分：
+- `inputs` 值是一个参数向量，`[Input]`。这些参数可以是对象或纯值，您可以在命令中使用它们。这些对象要么由发送方拥有，要么是共享/不可变对象。纯值表示简单的Move值，如 `u64` 或 `String` 值，您可以纯粹地通过它们的字节构建。由于历史原因，在Rust实现中，`Input` 被称为 `CallArg`。
+- `commands` 值是一个命令向量，`[Command]`。可能的命令包括：
+  - `TransferObjects` 将多个（一个或多个）对象发送到指定地址。
+  - `SplitCoins` 从单个代币中拆分多个（一个或多个）代币。可以是任何 `sui::coin::Coin<_>` 对象。
+  - `MergeCoins` 将多个（一个或多个）代币合并为一个代币。可以合并任何 `sui::coin::Coin<_>` 对象，只要它们都是相同类型的。
+  - `MakeMoveVec` 创建一个Move值的向量（可能为空）。主要用于构造将用作 `MoveCall` 参数的Move值的向量。
+  - `MoveCall` 调用已发布包中的 `entry` 或 `public` Move函数。
+  - `Publish` 创建一个新包并调用该包中每个模块的 `init` 函数。
+  - `Upgrade` 升级现有包。升级由该包的 `sui::package::UpgradeCap` 限制。
 
-## Inputs and results
+## 输入和结果
 
-Inputs and results are the two types of values you can use in transaction commands. Inputs are the values that are provided to the PTB, and results are the values that are produced by the PTB commands. The inputs are either objects or simple Move values, and the results are arbitrary Move values (including objects).
+输入和结果是您可以在交易命令中使用的两种类型的值。输入是提供给PTB的值，而结果是由PTB命令产生的值。输入可以是对象或简单的Move值，而结果可以是任意的Move值（包括对象）。
 
-The inputs and results can be seen as populating an array of values. For inputs, there is a single array, but for results, there is an array for each individual transaction command, creating a 2D-array of result values. You can access these values by borrowing (mutably or immutably), by copying (if the type permits), or by moving (which takes the value out of the array without re-indexing). 
+可以将输入和结果看作填充值数组。对于输入，有一个单一的数组，但对于结果，对于每个单独的交易命令都有一个数组，从而创建了一个结果值的二维数组。您可以通过借用（可变或不可变）、复制（如果类型允许）或移动（从数组中取出值而不重新索引）来访问这些值。
 
-### Inputs
+### 输入
 
-Input arguments to a PTB are broadly categorized as either objects or pure values. The direct implementation of these arguments is often obscured by transaction builders or SDKs. This section describes information or data the Sui network needs when specifying the list of inputs, `[Input]`. Each `Input` is either an object, `Input::Object(ObjectArg)`, which contains the necessary metadata to specify to object being used, or a pure value, `Input::Pure(PureArg)`, which contains the bytes of the value.
+PTB的输入参数可广泛分为对象或纯值两种。这些参数的直接实现通常由交易构建器或SDK所隐藏。本节描述了在指定输入列表 `[Input]` 时Sui网络需要的信息或数据。每个 `Input` 都是一个对象，`Input::Object(ObjectArg)`，其中包含指定要使用的对象的必要元数据，或者是纯值，`Input::Pure(PureArg)`，其中包含值的字节。
 
-For object inputs, the metadata needed differs depending on the type of [ownership of the object](../object-ownership.mdx). The data for the `ObjectArg` enum follows:
+对于对象输入，所需的元数据取决于对象的[所有权](../object-ownership.mdx)类型。`ObjectArg` 枚举的数据如下：
 
-If the object is owned by an address (or it is immutable), then use `ObjectArg::ImmOrOwnedObject(ObjectID, SequenceNumber, ObjectDigest)`. The triple respectively specifies the object's ID, its sequence number (also known as its version), and the digest of the object's data.
+如果对象由地址拥有（或它是不可变的），则使用 `ObjectArg::ImmOrOwnedObject(ObjectID, SequenceNumber, ObjectDigest)`。三元组分别指定对象的ID、其序列号（也称为版本）和对象数据的摘要。
 
-If an object is shared, then use `Object::SharedObject { id: ObjectID, initial_shared_version: SequenceNumber, mutable: bool }`. Unlike `ImmOrOwnedObject`, a shared objects version and digest are determined by the network's consensus protocol. The `initial_shared_version` is the version of the object when it was first shared, which is used by consensus when it has not yet seen a transaction with that object. While all shared objects _can_ be mutated, the `mutable` flag indicates whether the object is to be used mutably in this transaction. In the case where the `mutable` flag is set to `false`, the object is read-only, and the system can schedule other read-only transactions in parallel.
+如果对象是共享的，则使用 `Object::SharedObject { id: ObjectID, initial_shared_version: SequenceNumber, mutable: bool }`。与 `ImmOrOwnedObject` 不同，共享对象的版本和摘要由网络的共识协议确定。`initial_shared_version` 是对象首次共享时的版本，当协议尚未看到带有该对象的事务时，它由共识使用。虽然所有共享对象都可以被变更，但 `mutable` 标志指示该对象在此事务中是否可变。在 `mutable` 标志设置为 `false` 的情况下，对象是只读的，系统可以并行安排其他只读事务。
 
-If the object is owned by another object, as in it was sent to an object's ID via the `TransferObjects` command or the `sui::transfer::transfer` function, then use `ObjectArg::Receiving(ObjectID, SequenceNumber, ObjectDigest)`. The object data is the same as for the `ImmOrOwnedObject` case.
+如果对象由另一个对象拥有，例如通过 `TransferObjects` 命令或 `sui::transfer::transfer` 函数将其发送到对象的ID，则使用 `ObjectArg::Receiving(ObjectID, SequenceNumber, ObjectDigest)`。对象数据与 `ImmOrOwnedObject` 案例相同。
 
-For pure inputs, the only data provided is the [BCS](https://github.com/MystenLabs/sui/blob/main/crates/sui-framework/docs/bcs.md) bytes, which are deserialized to construct Move values. Not all Move values can be constructed from BCS bytes. This means that even if the bytes match the expected layout for a given Move type, they cannot be deserialized into a value of that type unless the type is one of the types permitted for `Pure` values. The following types are allowed to be used with pure values:
+对于纯输入，提供的唯一数据是[BCS](https://github.com/MystenLabs/sui/blob/main/crates/sui-framework/docs/bcs.md)字节，这些字节被反序列化以构造Move值。并非所有Move值都可以从BCS字节构造出来。这意味着即使字节与给定Move类型的预期布局匹配，它们也不能被反序列化为该类型的值，除非该类型是 `Pure` 值允许的类型之一。以下类型允许与纯值一起使用：
 
-- All primitive types:
+- 所有原始类型：
   - `u8`
   - `u16`
   - `u32`
@@ -65,185 +65,185 @@ For pure inputs, the only data provided is the [BCS](https://github.com/MystenLa
   - `u256`
   - `bool`
   - `address`
-- A string, either an ASCII string (`std::ascii::String`) or UTF8 string (`std::string::String`). In either case, the bytes are validated to be a valid string with the respective encoding.
-- An object ID `sui::object::ID`.
-- A vector, `vector<T>`, where `T` is a valid type for a pure input, checked recursively.
-- An option, `std::option::Option<T>`, where `T` is a valid type for a pure input, checked recursively.
+- 一个字符串，可以是ASCII字符串（`std::ascii::String`）或UTF8字符串（`std::string::String`）。在任何情况下，都会验证字节是否是具有相应编码的有效字符串。
+- 一个对象ID `sui::object::ID`。
+- 一个向量，`vector<T>`，其中 `T` 是对纯输入有效类型的递归检查。
+- 一个选项，`std::option::Option<T>`，其中 `T` 是对纯输入有效类型的递归检查。
 
-Interestingly, the bytes are not validated until the type is specified in a command, for example in `MoveCall` or `MakeMoveVec`. This means that a given pure input could be used to instantiate Move values of several types. See the the [Arguments section](#arguments) for more details.
+有趣的是，字节在类型在命令中指定之前不会被验证，例如在 `MoveCall` 或 `MakeMoveVec` 中。这意味着给定的纯输入可以用于实例化多种类型的Move值。有关更多详细信息，请参见 [Arguments section](#arguments)。
 
-### Results
+### 结果
 
-Each transaction command produces a (possibly empty) array of values. The type of the value can be any arbitrary Move type, so unlike inputs, the values are not limited to objects or pure values. The number of results generated and their types are specific to each transaction command. The specifics for each command can be found in the section for that command, but in summary:
+每个事务命令产生一个（可能为空的）值数组。值的类型可以是任意的 Move 类型，因此与输入不同，这些值不仅限于对象或纯值。生成的结果数量及其类型对每个事务命令都是具体的。可以在每个命令的部分找到每个命令的具体信息，但总体上：
 
-- `MoveCall`: the number of results and their types are determined by the Move function being called. Move functions that return references are not supported at this time.
-- `SplitCoins`: produces (one or more) coins from a single coin. The type of each coin is `sui::coin::Coin<T>` where the specific coin type `T` matches the coin being split.
-- `Publish`: returns the upgrade capability, `sui::package::UpgradeCap`, for the newly published package.
-- `Upgrade`: returns the upgrade receipt, `sui::package::UpgradeReceipt`, for the upgraded package.
-- `TransferObjects` and `MergeCoins` do not produce any results (an empty result vector).
+- `MoveCall`：结果的数量和类型由调用的 Move 函数确定。目前不支持返回引用的 Move 函数。
+- `SplitCoins`：从单个币中产生（一个或多个）币。每个币的类型是 `sui::coin::Coin<T>`，其中具体的币类型 `T` 与被分割的币相匹配。
+- `Publish`：返回新发布包的升级能力 `sui::package::UpgradeCap`。
+- `Upgrade`：返回已升级包的升级收据 `sui::package::UpgradeReceipt`。
+- `TransferObjects` 和 `MergeCoins` 不产生任何结果（一个空的结果向量）。
 
-### Argument structure and usage
+### 参数结构和使用
 
-Each command takes `Argument`s that specify the input or result being used. The usage (by-reference or by-value) is inferred based on the type of the argument and the expected argument of the command. First, examine the structure of the `Argument` enum.
+每个命令都接受指定输入或结果的 `Argument`。使用方式（按引用或按值）是根据参数的类型和命令的预期参数推断的。首先，查看 `Argument` 枚举的结构。
 
-- `Input(u16)` is an input argument, where the `u16` is the index of the input in the input vector. For example, given an input vector of `[Object1, Object2, Pure1, Object3]`, `Object1` is accessed with `Input(0)` and `Pure1` is accessed with `Input(2)`.
-- `GasCoin` is a special input argument representing the object for the `SUI` coin used to pay for gas. It is kept separate from the other inputs because the gas coin is always present in each transaction and has special restrictions (see below) not present for other inputs. Additionally, the gas coin being separate makes its usage explicit, which is helpful for sponsored transactions where the sponsor might not want the sender to use the gas coin for anything other than gas.  
-    
-  The gas coin cannot be taken by-value except with the `TransferObjects` command. If you need an owned version of the gas coin, you can first use `SplitCoins` to split off a single coin.    
-    
-  This limitation exists to make it easy for the remaining gas to be returned to the coin at the end of execution. In other words, if the gas coin was wrapped or deleted, then there would not be an obvious spot for the excess gas to be returned. See the [Execution section](#execution) for more details.
+- `Input(u16)` 是一个输入参数，其中 `u16` 是输入向量中输入的索引。例如，给定输入向量 `[Object1, Object2, Pure1, Object3]`，`Object1` 通过 `Input(0)` 访问，`Pure1` 通过 `Input(2)` 访问。
+- `GasCoin` 是表示用于支付燃料的 `SUI` 币的特殊输入参数。它与其他输入保持分开，因为燃料币总是出现在每个事务中并且具有特殊的限制（参见下文），不同于其他输入。此外，燃料币的分离使其使用明确，对于赞助交易而言，赞助商可能不希望发送方将燃料币用于除燃料外的任何其他用途。
 
-- `NestedResult(u16, u16)` uses the value from a previous command. The first `u16` is the index of the command in the command vector, and the second `u16` is the index of the result in the result vector of that command. For example, given a command vector of `[MoveCall1, MoveCall2, TransferObjects]` where `MoveCall2` has a result vector of `[Value1, Value2]`, `Value1` would be accessed with `NestedResult(1, 0)` and `Value2` would be accessed with `NestedResult(1, 1)`.
-- `Result(u16)` is a special form of `NestedResult` where `Result(i)` is roughly equivalent to `NestedResult(i, 0)`. Unlike `NestedResult(i, 0)`, `Result(i)`, however, this errors if the result array at index `i` is empty or has more than one value. The ultimate intention of `Result` is to allow accessing the entire result array, but that is not yet supported. So in its current state, `NestedResult` can be used instead of `Result` in all circumstances.
+  燃料币不能以值方式（按值）取出，除非使用 `TransferObjects` 命令。如果需要燃料币的拥有版本，可以先使用 `SplitCoins` 将其拆分为单个币。
 
-## Execution {#execution}
+  这个限制存在是为了使剩余的燃料轻松地在执行结束时退还给该币。换句话说，如果燃料币被封装或删除，那么就没有明显的位置可以将多余的燃料退还。有关更多详细信息，请参见 [Execution section](#execution)。
 
-For the execution of PTBs, the input vector is populated by the input objects or pure value bytes. The transaction commands are then executed in order, and the results are stored in the result vector. Finally, the effects of the transaction are applied atomically. The following sections describe each aspect of execution in greater detail.
+- `NestedResult(u16, u16)` 使用先前命令的值。第一个 `u16` 是命令向量中命令的索引，第二个 `u16` 是该命令的结果向量中结果的索引。例如，给定一个命令向量 `[MoveCall1, MoveCall2, TransferObjects]`，其中 `MoveCall2` 具有结果向量 `[Value1, Value2]`，则可以使用 `NestedResult(1, 0)` 访问 `Value1`，并使用 `NestedResult(1, 1)` 访问 `Value2`。
+- `Result(u16)` 是 `NestedResult` 的一种特殊形式，其中 `Result(i)` 粗略相当于 `NestedResult(i, 0)`。但是，与 `NestedResult(i, 0)` 不同，`Result(i)` 如果结果数组在索引 `i` 处为空或有多个值，则引发错误。`Result` 的最终意图是允许访问整个结果数组，但目前尚不支持。因此，在其当前状态下，`NestedResult` 可以在所有情况下代替 `Result` 使用。
 
-### Start of execution
+## 执行 {#execution}
 
-At the beginning of execution, the PTB runtime takes the already loaded input objects and loads them into the input array. The objects are already verified by the network, checking rules like existence and valid ownership. The pure value bytes are also loaded into the array but not validated until usage.
+对于 PTB 的执行，输入向量由输入对象或纯值字节填充。然后按顺序执行事务命令，并将结果存储在结果向量中。最后，事务的效果会被以原子方式应用。以下各节更详细地描述了执行的每个方面。
 
-The most important thing to note at this stage is the effects on the gas coin. At the beginning of execution, the maximum gas budget (in terms of `SUI`) is withdrawn from the gas coin. Any unused gas is returned to the gas coin at the end of execution, even if the coin has changed owners.
+### 执行的开始
 
-### Executing a transaction command
+在执行开始时，PTB 运行时将已加载的输入对象加载到输入数组中。对象已由网络验证，检查规则如存在性和有效拥有权等。纯值字节也加载到数组中，但直到使用时才进行验证。
 
-Each transaction command is then executed in order. First, examine the rules around arguments, which are shared by all commands.
+在这个阶段最重要的一点是对燃料币的影响。在执行开始时，从燃料币中提取了最大燃料预算（以 `SUI` 为单位）。无论硬币是否更改所有者，未使用的燃料都将在执行结束时退还到燃料币。
 
-#### Arguments {#arguments}
+### 执行事务命令
 
-You can use each argument by-reference or by-value. The usage is based on the type of the argument and the type signature of the command.
-  - If the signature expects an `&mut T`, the runtime checks the argument has type `T` and it is then mutably borrowed.
-  - If the signature expects an `&T`, the runtime checks the argument has type `T` and it is then immutably borrowed.
-  - If the signature expects a `T`, the runtime checks the argument has type `T` and it is copied if `T: copy` and moved otherwise. No object in Sui has `copy` because the unique ID field `sui::object::UID` present in all objects does not have the `copy` ability.
+然后按顺序执行每个事务命令。首先，查看与所有命令共享的参数规则。
 
-The transaction fails if an argument is used in any form after being moved. There is no way to restore an argument to its position (its input or result index) after it is moved.
+#### 参数 {#arguments}
 
-If an argument is copied but does not have the `drop` ability, then the last usage is inferred to be a move. As a result, if an argument has `copy` and does not have `drop`, the last usage _must_ be by value. Otherwise, the transaction will fail because a value without `drop` has not been used.
+可以通过引用或按值使用每个参数。使用方式基于参数的类型和命令的类型签名。
+  - 如果签名期望 `&mut T`，则运行时检查参数是否具有类型 `T`，然后对其进行可变借用。
+  - 如果签名期望 `&T`，则运行时检查参数是否具有类型 `T`，然后对其进行不可变借用。
+  - 如果签名期望 `T`，则运行时检查参数是否具有类型 `T`，如果 `T: copy` 则进行复制，否则进行移动。Sui 中没有 `copy`，因为所有对象都没有 `copy` 能力的唯一 ID 字段 `sui::object::UID`。
+  
+如果参数在移动后以任何形式使用，则事务失败。没有办法在移动后将参数恢复到其位置（其输入或结果索引）。
 
-The borrowing of arguments has other rules to ensure unique safe usage of an argument by reference. If an argument is:
-  - Mutably borrowed, there must be no outstanding borrows. Duplicate borrows with an outstanding mutable borrow could lead to dangling references (references that point to invalid memory).
-  - Immutably borrowed, there must be no outstanding mutable borrows. Duplicate immutable borrows are allowed.
-  - Moved, there must be no outstanding borrows. Moving a borrowed value would dangle those outstanding borrows, making them unsafe.
-  - Copied, there can be outstanding borrows, mutable or immutable. While it might lead to some unexpected results in some cases, there is no safety concern.
+如果参数被复制但没有 `drop` 能力，则推断最后一次使用是移动。因此，如果参数具有 `copy` 但没有 `drop`，则最后一次使用 _必须_ 是按值。否则，事务将失败，因为没有 `drop` 的值没有被使用。
 
-Object inputs have the type of their object `T` as you might expect. However, for `ObjectArg::Receiving` inputs, the object type `T` is instead wrapped as `sui::transfer::Receiving<T>`. This is because the object is not owned by the sender, but instead by another object. And to prove ownership with that parent object, you call the `sui::transfer::receive` function to remove the wrapper.
+借用参数还有其他规则，以确保按引用唯一安全地使用参数。如果参数是：
+  - 可变借用，不能有未完成的借用。与未完成的可变借用重复的可变借用可能导致悬空引用（指向无效内存的引用）。
+  - 不可变借用，不能有未完成的可变借用。允许重复的不可变借用。
+  - 移动，不能有未完成的借用。移动已借用的值将使这些未完成的借用悬空，使其不安全。
+  - 复制，可以有未完成的借用，可变或不可变。虽然在某些情况下可能导致一些意外的结果，但没有安全问题。
 
-The `GasCoin` has special restrictions on being used by-value (moved). You can only use it by-value with the `TransferObjects` command.
+对象输入的类型与其对象 `T` 的类型一样。但是，对于 `ObjectArg::Receiving` 输入，对象类型 `T` 被包装为 `sui::transfer::Receiving<T>`。这是因为该对象不是由发送方拥有，而是由另一个对象拥有。为了证明具有该父对象的所有权，您调用 `sui::transfer::receive` 函数以移除包装。
 
-Shared objects also have restrictions on being used by-value. These restrictions exist to ensure that at the end of the transaction the shared object is either still shared or deleted. A shared object cannot be unshared (having the owner changed) and it cannot be wrapped. A shared object:
-  - Marked as not `mutable` (being used read-only) cannot be used by value.
-  - Cannot be transferred or frozen. These checks are not done dynamically, however, but rather at the end of the transaction only. For example, `TransferObjects` succeeds if passed a shared object, but at the end of execution the transaction fails.
-  - Can be wrapped and can become a dynamic field transiently, but by the end of the transaction it must be re-shared or deleted.
+`GasCoin` 对以值方式使用（移动）有特殊限制。您只能使用 `TransferObjects` 命令按值使用它。
 
-Pure values are not type checked until their usage. When checking if a pure value has type `T`, it is checked whether `T` is a valid type for a pure value (see the previous list). If it is, the bytes are then validated. You can use a pure value with multiple types as long as the bytes are valid for each type. For example, you can use a string as an ASCII string `std::ascii::String` and as a UTF8 string `std::string::String`. However, after you mutably borrow the pure value, the type becomes fixed, and all future usages must be with that type.
+共享对象对以值方式使用也有限制。这些限制存在是为了确保在事务结束时共享对象仍然是共享的或已删除。共享对象不能取消共享（拥有者更改）并且不能被封装。共享对象：
+  - 标记为非 `mutable`（以只读方式使用）不能以值方式使用。
+  - 不能被转移或冻结。然而，这些检查仅在事务结束时进行，而不是动态进行。例如，如果传递了一个共享对象，`TransferObjects` 将成功，但在执行结束时事务失败。
+  - 可以被封装，并且可以暂时成为动态字段，但在事务结束时必须重新共享或删除。
+
+纯值在使用之前不进行类型检查。在检查纯值是否具有类型 `T` 时，将检查 `T` 是否是纯值的有效类型（请参见前面的列表）。如果是，则验证字节。您可以使用具有多种类型的纯值，只要字节对每种类型都有效。例如，可以将字符串用作 ASCII 字符串 `std::ascii::String` 和 UTF8 字符串 `std::string::String`。但是，在您可变地借用纯值之后，类型就会变得固定，所有将来的使用都必须具有该类型。
 
 #### `TransferObjects`
 
-The command has the form `TransferObjects(ObjectArgs, AddressArg)` where `ObjectArgs` is a vector of objects and `AddressArg` is the address the objects are sent to.
+该命令的形式为 `TransferObjects(ObjectArgs, AddressArg)`，其中 `ObjectArgs` 是对象的向量，`AddressArg` 是对象发送到的地址。
 
-- Each argument `ObjectArgs: [Argument]` must be an object, however, the objects do not need to have the same type.
-- The address argument `AddressArg: Argument` must be an address, which could come from a `Pure` input or a result.
-- All arguments, objects and address, are taken by value.
-- The command does not produce any results (an empty result vector).
-- While the signature of this command cannot be expressed in Move, you can think of it roughly as having the signature `(vector<forall T: key + store. T>, address): ()` where `forall T: key + store. T` is indicating that the `vector` is a heterogenous vector of objects.
+- 每个参数 `ObjectArgs: [Argument]` 必须是一个对象，但对象的类型可以不同。
+- 地址参数 `AddressArg: Argument` 必须是一个地址，可以来自 `Pure` 输入或结果。
+- 所有参数，对象和地址，都按值接受。
+- 该命令不生成任何结果（一个空的结果向量）。
+- 虽然此命令的签名无法在 Move 中表达，但您可以粗略地将其视为具有签名 `(vector<forall T: key + store. T>, address): ()`，其中 `forall T: key + store. T` 表示 `vector` 是对象的异构向量。
 
 #### `SplitCoins`
 
-The command has the form `SplitCoins(CoinArg, AmountArgs)` where `CoinArg` is the coin being split and `AmountArgs` is a vector of amounts to split off.
+该命令的形式为 `SplitCoins(CoinArg, AmountArgs)`，其中 `CoinArg` 是要分割的币，`AmountArgs` 是一个要分割的数量的向量。
 
-- When the transaction is signed, the network verifies that the `AmountArgs` is non-empty.
-- The coin argument `CoinArg: Argument` must be a coin of type `sui::coin::Coin<T>` where `T` is the type of the coin being split. It can be any coin type and is not limited to `SUI` coins.
-- The amount arguments `AmountArgs: [Argument]` must be `u64` values, which could come from a `Pure` input or a result.
-- The coin argument `CoinArg` is taken by mutable reference.
-- The amount arguments `AmountArgs` are taken by value (copied).
-- The result of the command is a vector of coins, `sui::coin::Coin<T>`. The coin type `T` is the same as the coin being split, and the number of results matches the number of arguments
-- For a rough signature expressed in Move, it is similar to a function `<T: key + store>(coin: &mut sui::coin::Coin<T>, amounts: vector<u64>): vector<sui::coin::Coin<T>>` where the result `vector` is guaranteed to have the same length as the `amounts` vector.
+- 在交易签名时，网络验证 `AmountArgs` 不为空。
+- 币参数 `CoinArg: Argument` 必须是类型为 `sui::coin::Coin<T>` 的币，其中 `T` 是要分割的币的类型。它可以是任何币类型，不仅限于 `SUI` 币。
+- 金额参数 `AmountArgs: [Argument]` 必须是 `u64` 值，可以来自 `Pure` 输入或结果。
+- 币参数 `CoinArg` 按可变引用接受。
+- 金额参数 `AmountArgs` 按值接受（复制）。
+- 该命令的结果是一个币的向量，`sui::coin::Coin<T>`。币类型 `T` 与参数的数量相匹配。
+- 在 Move 中，其签名类似于一个函数 `<T: key + store>(coin: &mut sui::coin::Coin<T>, amounts: vector<u64>): vector<sui::coin::Coin<T>>`，其中结果 `vector` 保证与 `amounts` 向量具有相同的长度。
 
 #### `MergeCoins`
 
-The command has the form `MergeCoins(CoinArg, ToMergeArgs)` where the `CoinArg` is the target coin in which the `ToMergeArgs` coins are merged into. In other words, you merge multiple coins (`ToMergeArgs`) into a single coin (`CoinArg`).
+该命令的形式为 `MergeCoins(CoinArg, ToMergeArgs)`，其中 `CoinArg` 是要将 `ToMergeArgs` 币合并到其中的目标币。换句话说，您将多个币（`ToMergeArgs`）合并到单个币（`CoinArg`）中。
 
-- When the transaction is signed, the network verifies that the AmountArgs is non-empty.
-- The coin argument `CoinArg: Argument` must be a coin of type `sui::coin::Coin<T>` where `T` is the type of the coin being merged. It can be any coin type and is not limited to `SUI` coins.
-- The coin arguments `ToMergeArgs: [Argument]` must be `sui::coin::Coin<T>` values where the `T` is the same type as the `CoinArg`.
-- The coin argument `CoinArg` is taken by mutable reference.
-- The merge arguments `ToMergeArgs` are taken by value (moved).
-- The command does not produce any results (an empty result vector).
-- For a rough signature expressed in Move, it is similar to a function `<T: key + store>(coin: &mut sui::coin::Coin<T>, to_merge: vector<sui::coin::Coin<T>>): ()`
+- 在交易签名时，网络验证 `AmountArgs` 不为空。
+- 币参数 `CoinArg: Argument` 必须是类型为 `sui::coin::Coin<T>` 的币，其中 `T` 是要合并的币的类型。它可以是任何币类型，不仅限于 `SUI` 币。
+- 币参数 `ToMergeArgs: [Argument]` 必须是 `sui::coin::Coin<T>` 值，其中 `T` 与 `CoinArg` 的类型相同。
+- 币参数 `CoinArg` 按可变引用接受。
+- 合并参数 `ToMergeArgs` 按值接受（移动）。
+- 该命令不生成任何结果（一个空的结果向量）。
+- 在 Move 中，其签名类似于一个函数 `<T: key + store>(coin: &mut sui::coin::Coin<T>, to_merge: vector<sui::coin::Coin<T>>): ()`。
 
 #### `MakeMoveVec`
 
-The command has the form `MakeMoveVec(VecTypeOption, Args)` where `VecTypeOption` is an optional argument specifying the type of the elements in the vector being constructed and `Args` is a vector of arguments to be used as elements in the vector.
+该命令的形式为 `MakeMoveVec(VecTypeOption, Args)`，其中 `VecTypeOption` 是一个可选参数，指定正在构建的向量中元素的类型，`Args` 是要用作向量元素的参数的向量。
 
-- When the transaction is signed, the network verifies that if that the type must be specified for an empty vector of `Args`.
-- The type `VecTypeOption: Option<TypeTag>` is an optional argument specifying the type of the elements in the vector being constructed. The `TypeTag` is a Move type for the elements in the vector, i.e. the `T` in the produced `vector<T>`.
-  - The type does not not have to be specified for an object vector--when `T: key`.
-  - The type _must_ be specified if the type is not an object type or when the vector is empty.
-- The arguments `Args: [Argument]` are the elements of the vector. The arguments can be any type, including objects, pure values, or results from previous commands.
-- The arguments `Args` are taken by value. Copied if `T: copy` and moved otherwise.
-- The command produces a _single_ result of type `vector<T>`. The elements of the vector cannot then be accessed individually using `NestedResult`. Instead, the entire vector must be used as an argument to another command. If you wish to access the elements individually, you can use the `MoveCall` command and do so inside of Move code.
-- While the signature of this command cannot be expressed in Move, you can think of it roughly as having the signature `(T...): vector<T>` where `T...` indicates a variadic number of arguments of type `T`.
+- 在交易签名时，网络验证如果为空则必须为 `Args` 的空向量指定类型。
+- 类型 `VecTypeOption: Option<TypeTag>` 是一个可选参数，指定正在构建的向量中元素的类型。`TypeTag` 是向量中元素的 Move 类型，即生成的 `vector<T>` 中的 `T`。
+  - 对于对象向量，如果 `T: key`，则不必指定类型。
+  - 如果类型不是对象类型或向量为空，则 _必须_ 指定类型。
+- 参数 `Args: [Argument]` 是向量的元素。参数可以是任何类型，包括对象、纯值或先前命令的结果。
+- 参数 `Args` 按值接受。如果 `T: copy` 则复制，否则移动。
+- 该命令生成一个类型为 `vector<T>` 的 _单一_ 结果。然后无法使用 `NestedResult` 分别访问向量的元素。相反，整个向量必须用作另一条命令的参数。如果希望分别访问元素，可以使用 `MoveCall` 命令并在 Move 代码中执行。
+- 虽然此命令的签名无法在 Move 中表达，但您可以粗略地将其视为具有签名 `(T...): vector<T>`，其中 `T...` 表示类型为 `T` 的参数的可变数量。
 
 #### `MoveCall`
 
-This command has the form `MoveCall(Package, Module, Function, TypeArgs, Args)` where `Package::Module::Function` combine to specify the Move function being called, `TypeArgs` is a vector of type arguments to that function, and `Args` is a vector of arguments for the Move function.
+该命令的形式为 `MoveCall(Package, Module, Function, TypeArgs, Args)`，其中 `Package::Module::Function` 组合在一起指定了正在调用的 Move 函数，`TypeArgs` 是要传递给该函数的类型参数的向量，`Args` 是 Move 函数的参数的向量。
 
-- The package `Package: ObjectID` is the Object ID of the package containing the module being called.
-- The module `Module: String` is the name of the module containing the function being called.
-- The function `Function: String` is the name of the function being called.
-- The type arguments `TypeArgs: [TypeTag]` are the type arguments to the function being called. They must satisfy the constraints of the type parameters for the function.
-- The arguments `Args: [Argument]` are the arguments to the function being called. The arguments must be valid for the parameters as specified in the function's signature.
-- Unlike the other commands, the usage of the arguments and the number of results are dynamic in that they both depend on the signature of the Move function being called.
+- 包 `Package: ObjectID` 是包含正在调用的模块的对象 ID。
+- 模块 `Module: String` 是包含正在调用的函数的模块的名称。
+- 函数 `Function: String` 是正在调用的函数的名称。
+- 类型参数 `TypeArgs: [TypeTag]` 是要传递给正在调用的函数的类型参数。它们必须满足函数类型参数的约束。
+- 参数 `Args: [Argument]` 是正在调用的函数的参数。这些参数必须符合函数签名中指定的参数的规定。
+- 与其他命令不同，参数的使用和结果的数量是动态的，因为它们都取决于正在调用的 Move 函数的签名。
 
 #### `Publish` {#publish}
 
-The command has the form `Publish(ModuleBytes, TransitiveDependencies)` where `ModuleBytes` are the bytes of the module being published and `TransitiveDependencies` is a vector of package Object ID dependencies to link against.
+该命令的形式为 `Publish(ModuleBytes, TransitiveDependencies)`，其中 `ModuleBytes` 是正在发布的模块的字节，`TransitiveDependencies` 是要链接到的包对象 ID 依赖项的向量。
 
-When the transaction is signed, the network verifies that the `ModuleBytes` are not empty. The module bytes `ModuleBytes: [[u8]]` contain the bytes of the modules being published with each `[u8]` element is a module.
+在交易签名时，网络验证 `ModuleBytes` 不为空。模块字节 `ModuleBytes: [[u8]]` 包含每个 `[u8]` 元素是一个模块的模块字节。
 
-The transitive dependencies `TransitiveDependencies: [ObjectID]` are the Object IDs of the packages that the new package depends on. While each module indicates the packages used as dependencies, the transitive object IDs must be provided to select the version of those packages. In other words, these object IDs are used to select the version of the packages marked as dependencies in the modules.
+传递依赖项 `TransitiveDependencies: [ObjectID]` 是新包依赖的包的对象 ID。虽然每个模块都指示用作依赖项的包，但必须提供传递的对象 ID 以选择这些包的版本。换句话说，这些对象 ID 用于选择模块中标记为依赖项的包的版本。
 
-After the modules in the package are verified, the `init` function of each module is called in same order as the module byte vector `ModuleBytes`.
+验证了包中的模块后，将按照模块字节向量 `ModuleBytes` 的相同顺序调用每个模块的 `init` 函数。
 
-The command produces a single result of type `sui::package::UpgradeCap`, which is the upgrade capability for the newly published package.
+该命令生成一个类型为 `sui::package::UpgradeCap` 的 _单一_ 结果，该结果是新发布包的升级能力。
 
 #### `Upgrade`
 
-The command has the form `Upgrade(ModuleBytes, TransitiveDependencies, Package, UpgradeTicket)`, where the `Package` indicates the object ID of the package being upgraded.  The `ModuleBytes` and `TransitiveDependencies` work similarly as the `Publish` command.
+该命令的形式为 `Upgrade(ModuleBytes, TransitiveDependencies, Package, UpgradeTicket)`，其中 `Package` 指示要升级的包的对象 ID。`ModuleBytes` 和 `TransitiveDependencies` 的工作方式与 `Publish` 命令相似。
 
-For details on the `ModuleBytes` and `TransitiveDependencies`, see the [`Publish` command](#publish). Note though, that no `init` functions are called for the upgraded modules.
+有关 `ModuleBytes` 和 `TransitiveDependencies` 的详细信息，请参阅 [`Publish` 命令](#publish)。请注意，升级的模块不调用 `init` 函数。
 
-The `Package: ObjectID` is the Object ID of the package being upgraded. The package must exist and be the latest version.
+`Package: ObjectID` 是要升级的包的对象 ID。该包必须存在并且是最新版本。
 
-The `UpgradeTicket: sui::package::UpgradeTicket` is the upgrade ticket for the package being upgraded and is generated from the `sui::package::UpgradeCap`. The ticket is taken by value (moved).
+`UpgradeTicket: sui::package::UpgradeTicket` 是要升级的包的升级券，并且是从 `sui::package::UpgradeCap` 生成的。该券按值接受（移动）。
 
-The command produces a single result type `sui::package::UpgradeReceipt` which provides proof for that upgrade. For more details on upgrades, see [Upgrading Packages](../sui-move-concepts/packages/upgrade.mdx).
+该命令生成一个类型为 `sui::package::UpgradeReceipt` 的 _单一_ 结果，该结果提供了该升级的证明。有关升级的更多详细信息，请参见[升级包](../sui-move-concepts/packages/upgrade.mdx)。
 
-### End of execution
+### 执行结束
 
-At the end of execution, the remaining values are checked and effects for the transaction are calculated.
+在执行结束时，将检查剩余的值并计算交易的效果。
 
-For inputs, the following checks are performed:
-  - Any remaining immutable or readonly input objects are skipped since no modifications have been made to them.
-  - Any remaining mutable input objects are returned to their original owners--if they were shared they remain shared, if they were owned they remain owned.
-  - Any remaining pure input values are dropped. Note that pure input values must have `copy` and `drop` since all permissible types for those values have `copy` and `drop`.
-  - For any shared object you must also check that it has only been deleted or re-shared. Any other operation (wrap, transfer, freezing, and so on) results in an error.
+对于输入，执行以下检查：
+  - 跳过任何剩余的不可变或只读输入对象，因为对它们没有进行修改。
+  - 将任何剩余的可变输入对象还给其原始所有者--如果它们是共享的，则保持共享，如果它们是拥有的，则保持拥有。
+  - 放弃任何剩余的纯输入值。请注意，纯输入值必须具有 `copy` 和 `drop`，因为对于这些值的所有允许的类型都具有 `copy` 和 `drop`。
+  - 对于任何共享对象，还必须检查它是否仅已删除或重新共享。任何其他操作（包括封装、转移、冻结等）都会导致错误。
 
-For results, the following checks are performed:
-  - Any remaining result with the `drop` ability is dropped.
-  - If the value has `copy` but not `drop`, it's last usage must have been by-value. In that way, it's last usage is treated as a move.
-  - Otherwise, an error is given because there is an unused value without `drop`.
+对于结果，执行以下检查：
+  - 放弃具有 `drop` 能力的任何剩余结果。
+  - 如果值具有 `copy` 但没有 `drop`，则其最后一次使用必须是按值使用。以这种方式，最后一次使用将被视为移动。
+  - 否则，将出现错误，因为存在一个未使用的值没有 `drop`。
 
-Any remaining SUI deducted from the gas coin at the beginning of execution is returned to the coin, even if the owner has changed. In other words, the maximum possible gas is deducted at the beginning of execution, and then the unused gas is returned at the end of execution (all in SUI). Because you can take the gas coin only by-value with `TransferObjects`, it will not have been wrapped or deleted.
+在执行开始时，从 gas 币中扣除的任何剩余 SUI 都会返回到该币中，即使所有者已更改。换句话说，在执行开始时，会扣除最大可能的 gas，然后在执行结束时返回未使用的 gas（全部以 SUI 计）。由于只能使用 `TransferObjects` 按值获取 gas 币，因此它不会被封装或删除。
 
-The total effects (which contain the created, mutated, and deleted objects) are then passed out of the execution layer and are applied by the Sui network.
+然后，总效果（其中包含创建、变异和删除的对象）传递出执行层，并由 Sui 网络应用。
 
-## Example
+## 示例
 
-Let's walk through an example of a PTB's execution. While this example is not exhaustive in demonstrating all the rules, it does show the general flow of execution.
+让我们通过一个 PTB 执行的示例来说明。尽管这个例子不能详尽地展示所有规则，但它确实显示了执行的一般流程。
 
-Suppose you want to buy two items from a marketplace costing `100 MIST`. You keep one for yourself, and then send the object and the remaining coin to a friend at address `0x808`. You can do that all in one PTB:
+假设您想要从市场购买两个价格为 `100 MIST` 的物品。您留下一个物品，然后将另一个物品和剩余的币发送到地址 `0x808` 的朋友。您可以在一个 PTB 中完成所有这些操作：
 
 ```rust
 {
@@ -262,9 +262,9 @@ Suppose you want to buy two items from a marketplace costing `100 MIST`. You kee
 }
 ```
 
-The inputs include the friend's address, the marketplace object, and the value for the coin split. For the commands, split off the coin, call the market place function, send the gas coin and one object, grab your address (via `sui::tx_context::sender`), and then send the remaining object to yourself. For simplicity, the documentation refers to the package names by name, but note that in practice they are referenced by the package's Object ID.
+输入包括朋友的地址、市场物品和币值分割的数值。至于命令，首先要分割币，调用市场函数，发送 gas 币和一个对象，获取您的地址 (通过 sui::tx_context::sender)，然后将剩余对象发送给自己。为简化起见，文档中使用包的名称引用它们，但请注意，在实践中它们是通过包的对象 ID 引用的。
 
-To walk through this, first look at the the memory locations, for the gas object, inputs, and results
+为了进行演示，首先查看 gas 对象、输入和结果的内存位置。
 
 ```rust
 Gas Coin: sui::coin::Coin<SUI> { id: gas_coin, balance: sui::balance::Balance<SUI> { value: 1_000_000u64 } }
@@ -276,13 +276,13 @@ Inputs: [
 Results: []
 ```
 
-Here you have two objects loaded so far, the gas coin with a value of `1_000_000u64` and the marketplace object of type `some_package::some_marketplace::Marketplace` (these names and representations are shortened for simplicity going forward). The pure arguments are not loaded, and are present as BCS bytes.
+到目前为止，已加载两个对象，gas 币的值为 `1_000_000u64`，市场对象的类型为 `some_package::some_marketplace::Marketplace`（为简便起见，这些名称和表示法在后文中被缩短）。纯参数尚未加载，并以 BCS 字节的形式存在。
 
-Note that while gas is deducted at each command, that aspect of execution is not demonstrated in detail.
+请注意，虽然每个命令都会扣除 gas，但未详细展示执行的这一方面。
 
-### Before commands: start of execution
+### 在命令之前：执行开始
 
-Before execution, remove the gas budget from the gas coin. Assume a gas budget of `500_000` so the gas coin now has a value of `500_000u64`.
+在执行之前，从 gas 币中扣除 gas 预算。假设 gas 预算为 `500_000`，因此 gas 币现在的值为 `500_000u64`。
 
 ```rust
 Gas Coin: Coin<SUI> { id: gas_coin, ... value: 500_000u64 ... } // The maximum gas is deducted
@@ -294,15 +294,15 @@ Inputs: [
 Results: []
 ```
 
-Now you can execute the commands.
+现在你可以执行命令了。
 
-### Command 0: `SplitCoins`
+## Command 0: `SplitCoins`
 
-The first command `SplitCoins(GasCoin, [Input(2)])` accesses the gas coin by mutable reference and loads the pure argument at `Input(2)` as a `u64` value of `100u64`. Because `u64` has the `copy` ability, you do not move the `Pure` input at `Input(2)`. Instead, the bytes are copied out.
+第一个命令 `SplitCoins(GasCoin, [Input(2)])` 通过可变引用访问 gas 币，并将 `Input(2)` 处的纯参数加载为 `u64` 类型的值 `100u64`。由于 `u64` 具有 `copy` 能力，不会移动 `Input(2)` 处的 `Pure` 输入。相反，将其字节复制出来。
 
-For the result, a new coin object is made.
+对于结果，生成一个新的 coin 对象。
 
-This gives us updated memory locations of
+这给我们带来了更新后的内存位置：
 
 ```rust
 Gas Coin: Coin<SUI> { id: gas_coin, ... value: 499_900u64 ... }
@@ -318,7 +318,7 @@ Results: [
 
 ### Command 1: `MoveCall`
 
-Now the command, `MoveCall("some_package", "some_marketplace", "buy_two", [], [Input(1), NestedResult(0, 0)])`. Call the function `some_package::some_marketplace::buy_two` with the arguments `Input(1)` and `NestedResult(0, 0)`. To determine how they are used, you need to look at the function's signature. For this example, assume the signature is
+现在执行命令 `MoveCall("some_package", "some_marketplace", "buy_two", [], [Input(1), NestedResult(0, 0)])`。调用函数 `some_package::some_marketplace::buy_two`，传递参数 `Input(1)` 和 `NestedResult(0, 0)`。要确定它们是如何使用的，您需要查看函数的签名。对于此示例，假设签名为
 
 ```rust
 entry fun buy_two(
@@ -327,11 +327,12 @@ entry fun buy_two(
     ctx: &mut TxContext,
 ): (Item, Item)
 ```
-where `Item` is the type of the two objects being sold.
 
-Since the `marketplace` parameter has type `&mut Marketplace`, use `Input(1)` by mutable reference. Assume some modifications are being made into the value of the `Marketplace` object. However, the `coin` parameter has type `Coin<Sui>`, so use `NestedResult(0, 0)` by value. The `TxContext` input is automatically provided by the runtime.
+其中 `Item` 是被出售的两个物品的类型。
 
-This gives updated memory locations, where `_` indicates the object has been moved.
+由于 `marketplace` 参数的类型是 `&mut Marketplace`，因此通过可变引用使用 `Input(1)`。假设对 `Marketplace` 对象的值进行了一些修改。然而，`coin` 参数的类型是 `Coin<Sui>`，因此通过按值使用 `NestedResult(0, 0)`。`TxContext` 输入由运行时自动提供。
+
+这给出了更新后的内存位置，其中 `_` 表示对象已被移动。
 
 ```rust
 Gas Coin: Coin<SUI> { id: gas_coin, ... value: 499_900u64 ... }
@@ -346,13 +347,13 @@ Results: [
 ],
 ```
 
-Assume that `buy_two` deletes its `Coin<SUI>` object argument and transfers the `Balance<SUI>` into the `Marketplace` object.
+假设 `buy_two` 删除了其 `Coin<SUI>` 对象参数，并将 `Balance<SUI>` 转移到了 `Marketplace` 对象中。
 
 ### Command 2: `TransferObjects`
 
-`TransferObjects([GasCoin, NestedResult(1, 0)], Input(0))` transfers the gas coin and first item to the address at `Input(0)`. All inputs are by value, and the objects do not have `copy` so they are moved. While no results are given, the ownership of the objects is changed. This cannot be seen in the memory locations, but rather in the transaction effects.
+`TransferObjects([GasCoin, NestedResult(1, 0)], Input(0))` 将 gas coin 和第一个物品转移到 `Input(0)` 处的地址。所有输入都是按值传递的，而且对象没有 `copy`，因此它们被移动。虽然没有给出结果，但对象的所有权已经改变。这不能在内存位置中看到，而是通过交易效果来体现。
 
-You now have updated memory locations of
+现在，您有了更新后的内存位置
 
 ```rust
 Gas Coin: _ // The gas coin is moved
@@ -370,15 +371,15 @@ Results: [
 
 ### Command 3: `MoveCall`
 
-Make another Move call, this one to `sui::tx_context::sender` with the signature
+进行另一个 Move 调用，这次调用 `sui::tx_context::sender`，签名为
 
 ```rust
 public fun sender(ctx: &TxContext): address
 ```
 
-While you could have just passed in the sender's address as a `Pure` input, this example demonstrates calling some of the additional utility of PTBs; while this function is not an `entry` function, you can call the `public` function, too, because you can provide all of the arguments. In this case, the only argument, the `TxContext`, is provided by the runtime. The result of the function is the sender's address. Note that this value is not treated like the `Pure` inputs--the type is fixed to `address` and it cannot be deserialized into a different type, even if it has a compatible BCS representation.
+虽然你本可以将发送者的地址作为 `Pure` 输入传递，但这个例子演示了 PTB 的一些附加实用功能；尽管这个函数不是一个 `entry` 函数，你也可以调用 `public` 函数，因为你可以提供所有的参数。在这种情况下，唯一的参数 `TxContext` 是由运行时提供的。该函数的结果是发送者的地址。请注意，这个值不像 `Pure` 输入那样对待--它的类型被固定为 `address`，即使它有一个兼容的 BCS 表示，也不能反序列化为不同的类型。
 
-You now have updated memory locations of
+现在，你的内存位置已经更新为
 
 ```rust
 Gas Coin: _
@@ -395,11 +396,11 @@ Results: [
 ],
 ```
 
-### Command 4: `TransferObjects`
+### 命令 4: `TransferObjects`
 
-Finally, transfer the remaining item to yourself. This is similar to the previous `TransferObjects` command. You are using the last `Item` by-value and the sender's address by-value. The item is moved because `Item` does not have `copy`, and the address is copied because `address` does have `copy`.
+最后，将剩下的物品转移到自己手中。这与之前的 `TransferObjects` 命令类似。你正在通过值使用最后一个 `Item` 和发送者的地址。该物品被移动，因为 `Item` 没有 `copy`，而地址被复制，因为 `address` 具有 `copy`。
 
-The final memory locations are
+最终的内存位置为
 
 ```rust
 Gas Coin: _
@@ -417,27 +418,26 @@ Results: [
 ],
 ```
 
-### After commands: end of execution
+### 执行结束后：执行的最后
 
-At the end of execution, the runtime checks the remaining values, which are the three inputs and
-the sender's address. The following summarizes the checks performed before effects are given:
+在执行结束时，运行时会检查剩余的值，这些值包括三个输入和发送者的地址。在给出效果之前，以下是执行前进行的总结检查：
 
-- Any remaining input objects are marked as being returned to their original owners.
-  - The gas coin has been Moved. And the `Marketplace` keeps the same owner, which is shared.
-- All remaining values must have `drop`.
-  - The Pure inputs have `drop` because any type they can instantiate has `drop`.
-  - The sender's address has `drop` because the primitive type `address` has `drop`.
-  - All other results have been moved.
-- Any remaining shared objects must have been deleted or re-shared.
-  - The `Marketplace` object was not moved, so the owner remains as shared.
+- 任何剩余的输入对象都标记为将被归还给它们的原始所有者。
+  - Gas coin 已经被移动。而 `Marketplace` 保持相同的所有者，即共享。
+- 所有剩余的值都必须有 `drop`。
+  - Pure 输入具有 `drop`，因为它们可以实例化的任何类型都有 `drop`。
+  - 发送者的地址具有 `drop`，因为基本类型 `address` 具有 `drop`。
+  - 所有其他的结果都已经被移动。
+- 任何剩余的共享对象必须已经被删除或重新共享。
+  - `Marketplace` 对象未被移动，因此所有者保持不变，仍然是共享的。
 
-After these checks are performed, generate the effects.
+执行这些检查后，生成效果。
 
-- The coin split off from the gas coin, `new_coin`, does not appear in the effects because it was created and deleted in the same transaction.
-- The gas coin and the item with `id1` are transferred to `0x808`.
-  - The gas coin is mutated to update its balance. The remaining gas of the maximum budget of `500_000` is returned to the gas coin even though the owner has changed.
-  - The `Item` with `id1` is a newly created object.
-- The item with `id2` is transferred to the sender's address.
-  - The `Item` with `id2` is a newly created object.
-- The `Marketplace` object is returned, remains shared, and it's mutated.
-  - The object remains shared but its contents are mutated.
+- 从 Gas coin 拆分出来的 coin，`new_coin`，不会出现在效果中，因为它在同一交易中被创建并删除。
+- Gas coin 和具有 `id1` 的物品被转移到 `0x808`。
+  - Gas coin 被突变以更新其余额。即使所有者发生了变化，最大预算的剩余 gas（`500_000`）也会返回给 gas coin。
+  - 具有 `id1` 的 `Item` 是一个新创建的对象。
+- 具有 `id2` 的物品被转移到发送者的地址。
+  - 具有 `id2` 的 `Item` 是一个新创建的对象。
+- `Marketplace` 对象被返回，保持共享，并发生了突变。
+  - 对象保持共享状态，但其内容发生了突变。

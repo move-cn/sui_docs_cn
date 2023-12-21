@@ -1,25 +1,25 @@
 ---
-title: Staking and Unstaking
-description: Staking and unstaking SUI with validators earns a percentage of rewards they receive from gas fees.
+title: 质押和赎回
+description: 通过与验证器一起质押和赎回SUI，可以赚取来自气费的奖励百分比。
 ---
 
-Sui uses a Delegated-Proof-of-Stake (DPoS) system to secure and operate the network, meaning that the voting power of a validator in the network is determined by the amount of stake delegated to them by SUI token holders. The more stake delegated to a validator, the more voting power they have. In exchange for processing transactions and performing consensus, validators earn rewards based on the amount of gas fees collected. These rewards are then shared among stakers as staking rewards.
+Sui使用委托权益证明（DPoS）系统来保护和操作网络，这意味着网络中验证器的投票权由SUI代币持有者委托给他们的质押量决定。委托给验证器的质押量越多，他们就拥有越多的投票权。作为处理交易和执行共识的交换，验证器根据收集到的气费奖励，赚取相应的奖励。然后，这些奖励作为质押奖励分享给质押者。
 
-## Staking
+## 质押
 
-You stake your SUI tokens by sending a transaction to the network that calls the staking function implemented as part of the system Move package. This transaction wraps the SUI tokens in a self-custodial stake object. This stake object contains information including the validator staking pool ID and the activation epoch of the stake. With the introduction of [SIP-6](https://blog.sui.io/liquid-staking-coming-sui/), you can participate in liquid staking protocols using your staked objects.
+您通过向网络发送调用系统Move包的实施的质押功能的交易来质押您的SUI代币。该交易将SUI代币包装在自托管的质押对象中。此质押对象包含有关验证器质押池ID和质押激活纪元的信息。引入[SIP-6](https://blog.sui.io/liquid-staking-coming-sui/)后，您可以使用您的质押对象参与液体质押协议。
 
-Sui-compatible crypto wallets typically have functionality to initiate staking and unstaking from your Sui address. See the respective documentation for these tools to begin staking your SUI.
+与Sui兼容的加密钱包通常具有从您的Sui地址开始进行质押和赎回的功能。请参阅这些工具的相应文档，以开始质押您的SUI。
 
-## Unstaking
+## 赎回
 
-Similar to staking, a user withdraws stake from a validator by sending a transaction that calls the unstaking function in the system Move package. This transaction unwraps the stake object, and sends both the principal and the accumulated rewards to the user as SUI tokens. You accrue rewards only during epochs where the stake is active for the entire epoch. The rewards withdrawn from the validator's rewards pool are calculated based on the activation epoch and unstaking epoch of the stake.
+与质押类似，用户通过发送调用系统Move包中的赎回功能的交易，从验证器那里撤回质押。该交易解开质押对象，并将本金和累积奖励一同作为SUI代币发送给用户。您只在质押在整个纪元内处于活动状态期间获得奖励。从验证器的奖励池中提取的奖励是基于质押的激活纪元和赎回纪元计算的。
 
-## Choosing a validator for staking
+## 选择质押的验证器
 
-When you stake on Sui, you have to choose a specific validator you would like to stake with. The choice of validator can potentially impact the amount of staking rewards you receive. The factors determining this amount include, but are not limited to:
+当您在Sui上进行质押时，您必须选择您想要质押的特定验证器。选择验证器可能会影响您获得的质押奖励的金额。确定此金额的因素包括但不限于：
 
-- Validator commission rate: a validator can choose to set a non-zero commission rate specifying the percentage of staking rewards they are taking from the stakers. For example, if a validator has the commission rate of 10%, then 10% of every staker's staking rewards is given to the validator. Understand that a validator can choose its commission at a future moment in time without prior notice.
-- Validator performance: a validator with bad performance might be punished according to the [tallying rule](./gas-pricing.mdx#tallying-rule). Punished validators do not receive any staking rewards for the epoch during which they are punished, and you also do not receive that epoch's rewards when you withdraw your stake from that validator. 
+- 验证器佣金率：验证器可以选择设置非零佣金率，指定他们从质押者那里获取的质押奖励的百分比。例如，如果一个验证器的佣金率为10％，那么每个质押者的质押奖励的10％将给予验证器。请注意，验证器可以在未来的某个时刻选择更改其佣金，而无需事先通知。
+- 验证器性能：性能差的验证器可能会根据[tallying rule](./gas-pricing.mdx#tallying-rule)受到惩罚。受到惩罚的验证器在受到惩罚的纪元内不会获得任何质押奖励，而当您从该验证器撤回质押时，您也不会获得该纪元的奖励。
 
-Sui-compatible crypto wallets and explorers typically provide validator information such as commission and APY. See the respective documentation for these tools for information on how to retrieve this data.
+与Sui兼容的加密钱包和浏览器通常提供验证器信息，例如佣金和APY。请参阅这些工具的相应文档，了解如何检索此数据。

@@ -1,16 +1,16 @@
 ---
-title: Custom Upgrade Policies
+title: 自定义升级策略
 ---
 
-Protecting the ability to upgrade a package on chain using a single key can pose a security risk for several reasons:
+使用单个密钥保护链上包的升级能力可能会因以下几个原因而带来安全风险：
 
 {@include: ../../../snippets/upgrade-single-key-risk.mdx}
 
-To address the security risk of single-key upgrade ownership poses while still providing the opportunity to [upgrade live packages](./upgrade.mdx), Sui offers _custom upgrade policies_. These policies protect `UpgradeCap` access and issue `UpgradeTicket` objects that authorize upgrades on a case-by-case basis.
+为了解决单键升级所有权带来的安全风险，同时仍然提供[升级现有包](./upgrade.mdx)的机会，Sui 提供了 _自定义升级策略_。这些策略保护 `UpgradeCap` 访问，并发放 `UpgradeTicket` 对象，根据具体情况授权升级。
 
-## Compatibility {#compatibility}
+## 兼容性 {#compatibility}
 
-Sui comes with a set of built-in package compatibility policies, listed here from most to least strict:
+Sui 自带一组内置的包兼容性策略，按照从最严格到最宽松的顺序列在此处：
 
 | Policy          | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
 | --------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -19,26 +19,21 @@ Sui comes with a set of built-in package compatibility policies, listed here fro
 | Additive        | You can add new functionality to the package (e.g., new public functions or structs) but you can't change any of the existing functionality (e.g., the code in existing public functions cannot change).                                                                                                                                                                                                                                                                                                                                                                        |
 | Compatible      | The most relaxed policy. In addition to what the more restrictive policies allow, in an upgraded version of the package: <ul><li>You can change all function implementations.</li><li>You can remove the ability constraints on generic type parameters in function signatures.</li><li>You can change, remove, or make `public` any `private`, `public(friend)`, and `entry` function signatures.</li><li>You cannot change `public` function signatures (except in the case of ability constraints mentioned previously).</li><li>You cannot change existing types.</li></ul> |
 
-Each of these policies, in the order listed, is a superset of the previous one in the type of changes allowed in the upgraded package.
+每个列出的策略，按照列出的顺序，都是在升级包中允许的更改类型上一种的超集。
 
-When you publish a package, by default it adopts the most relaxed, compatible policy. You can publish a package as part of a transaction block that can change the policy before the transaction block successfully completes, making the package available on chain for the first time at the desired policy level, rather than at the default one.
+当您发布一个包时，默认情况下它采用最宽松的兼容性策略。您可以将包发布为一个事务块的一部分，该事务块在成功完成之前可以更改策略，使包在链上首次可用时具有所需的策略级别，而不是默认级别。
 
-You can change the current policy by calling one of the functions in `sui::package` (`only_additive_upgrades`, `only_dep_upgrades`, `make_immutable`) on the package's `UpgradeCap` and a policy can become only more restrictive. For example, after you call `sui::package::only_dep_upgrades` to restrict the policy to become additive, calling `sui::package::only_additive_upgrades` on the `UpgradeCap` of the same package results in an error.
+您可以通过在包的 `UpgradeCap` 上调用 `sui::package` 中的一个函数 (`only_additive_upgrades`、`only_dep_upgrades`、`make_immutable`) 来更改当前策略，并且策略只能变得更加严格。例如，在调用 `sui::package::only_dep_upgrades` 将策略限制为可添加之后，对同一包的 `UpgradeCap` 调用 `sui::package::only_additive_upgrades` 将导致错误。
 
-## Upgrade overview {#upgrade-overview}
+## 升级概述 {#upgrade-overview}
 
-Package upgrades must occur end-to-end in a single transaction block and are composed of three commands:
+包升级必须在单个事务块中端到端进行，并由三个命令组成：
 
-1. **Authorization:** Get permission from the `UpgradeCap` to perform
-   the upgrade, creating an `UpgradeTicket`.
-1. **Execution:** Consume the `UpgradeTicket` and verify the package
-   bytecode and compatibility against the previous version, and create
-   the on-chain object representing the upgraded package. Return an
-   `UpgradeReceipt` as a result on success.
-1. **Commit:** Update the `UpgradeCap` with information about the
-   newly created package.
+1. **授权：** 从 `UpgradeCap` 获取执行升级的权限，创建一个 `UpgradeTicket`。
+1. **执行：** 消耗 `UpgradeTicket`，验证包字节码和与之前版本的兼容性，并创建表示已升级包的链上对象。在成功时返回 `UpgradeReceipt` 作为结果。
+1. **提交：** 更新 `UpgradeCap`，提供有关新创建的包的信息。
 
-While step 2 is a built-in command, steps 1 and 3 are implemented as Move functions. The Sui framework provides their most basic implementation:
+尽管步骤 2 是一个内置命令，但步骤 1 和步骤 3 是作为 Move 函数实现的。Sui 框架提供了它们的最基本实现：
 
 ```move
 module sui::package {
@@ -55,16 +50,13 @@ module sui::package {
 }
 ```
 
-These are the functions that `sui client upgrade` calls for authorization and commit. Custom upgrade policies work by guarding
-access to a package `UpgradeCap` (and therefore to calls of these functions) behind extra conditions that are specific to that policy
-(such as voting, governance, permission lists, timelocks, and so on).
+这些是 `sui client upgrade` 为授权和提交调用的函数。自定义升级策略通过在额外条件（如投票、治理、权限列表、时间锁等）之后保护对包 `UpgradeCap`（因此也是对这些函数调用）的访问来实现。
 
-Any pair of functions that produces an `UpgradeTicket` from an `UpgradeCap` and consumes an `UpgradeReceipt` to update an
-`UpgradeCap` constitutes a custom upgrade policy.
+任何一对从 `UpgradeCap` 生成 `UpgradeTicket` 并从 `UpgradeReceipt` 消耗以更新 `UpgradeCap` 的函数构成一个自定义升级策略。
 
 ## UpgradeCap {#upgradecap}
 
-The `UpgradeCap` is the central type responsible for coordinating package upgrades.
+`UpgradeCap` 是负责协调包升级的中心类型。
 
 ```move
 module sui::package {
@@ -77,18 +69,18 @@ module sui::package {
 }
 ```
 
-Publishing a package creates the `UpgradeCap` object and upgrading the package updates that object. The owner of this object has permission to:
+发布一个包会创建 `UpgradeCap` 对象，而升级该包则会更新该对象。拥有此对象的所有者具有以下权限：
 
-- Change the compatibility requirements for future upgrades.
-- Authorize future upgrades.
-- Make the package immutable (not upgradeable).
+- 更改未来升级的兼容性要求。
+- 授权未来的升级。
+- 使包变为不可变（不可升级）。
 
-And its API guarantees the following properties:
+其 API 保证以下属性：
 
-- Only the latest version of a package can be upgraded (a linear history is guaranteed).
-- Only one upgrade can be in-flight at any time (cannot authorize multiple concurrent upgrades).
-- An upgrade can only be authorized for the extent of a single transaction; no one can `store` the `UpgradeTicket` that proves authorization.
-- Compatibility requirements for a package can be made only more restrictive over time.
+- 只能升级包的最新版本（保证线性历史）。
+- 一次只能有一个升级在进行中（不能授权多个并发升级）。
+- 升级只能在单个事务的范围内被授权；无法 `store` 证明授权的 `UpgradeTicket`。
+- 包的兼容性要求只能随时间变得更加严格。
 
 ## UpgradeTicket {#upgradeticket}
 
@@ -103,29 +95,28 @@ module sui::package {
 }
 ```
 
-An `UpgradeTicket` is proof that an upgrade has been authorized. This authorization is specific to:
+`UpgradeTicket` 是升级已被授权的证明。此授权是特定于以下内容：
 
-- A particular `package: ID` to upgrade from, which must be the latest package in the family identified by the `UpgradeCap` at `cap: ID`.
-- A particular `policy: u8` that attests to the kind of compatibility guarantees that the upgrade expects to adhere to.
-- A particular `digest: vector<u8>` that identifies the contents of the package after the upgrade.
+- 要升级的特定 `package: ID`，它必须是由位于 `cap: ID` 的 `UpgradeCap` 标识的家族中的最新包。
+- 特定的 `policy: u8`，表示升级期望遵循的兼容性保证类型。
+- 特定的 `digest: vector<u8>`，用于标识升级后包的内容。
 
-When you attempt to run the upgrade, the validator checks that the upgrade it is about to perform matches the upgrade that was authorized along all those lines, and does not perform the upgrade if any of these criteria are not met.
+当您尝试运行升级时，验证器会检查即将执行的升级是否符合所有这些方面的授权升级，并且如果不满足其中任何一个条件，则不执行升级。
 
-After creating an `UpgradeTicket`, you must use it within that transaction block (you cannot store it for later, drop it, or burn it), or the transaction fails.
+创建了 `UpgradeTicket` 后，您必须在该事务块内使用它（不能将其存储以供以后使用，也不能丢弃或销毁它），否则事务将失败。
 
-### Package digest {#package-digest}
+### 包摘要 {#package-digest}
 
-The `UpgradeTicket` `digest` field comes from the `digest` parameter to `authorize_upgrade`, which the caller must supply. While
-`authorize_upgrade` does not process the `digest`, custom policies can use it to authorize only upgrades that it has seen the
-bytecode or source code for ahead of time. Sui calculates the digest as follows:
+`UpgradeTicket` 的 `digest` 字段来自于 `authorize_upgrade` 的 `digest` 参数，调用方必须提供。虽然
+`authorize_upgrade` 不处理 `digest`，但自定义策略可以使用它来仅授权提前见过其字节码或源代码的升级。Sui 计算摘要的步骤如下：
 
-- Take the bytecode for each module, represented as an array of bytes.
-- Append the list of the package's transitive dependencies, each represented as an array of bytes.
-- Sort this list of byte-arrays lexicographically.
-- Feed each element in the sorted list, in order, into a `Blake2B` hasher.
-- Compute the digest from this hash state.
+- 获取每个模块的字节码，表示为字节数组。
+- 添加包的所有传递依赖项的列表，每个表示为字节数组。
+- 对字节数组的列表进行词典排序。
+- 将排序后的列表中的每个元素按顺序输入到 `Blake2B` 哈希器中。
+- 从该哈希状态计算摘要。
 
-Refer to the [implementation for digest calculation](https://github.com/MystenLabs/sui/blob/d8cb153d886d54752763fbdab631b062da7d894b/crates/sui-types/src/move_package.rs#L232-L251) for more information, but in most cases, you can rely on the Move toolchain to output the digest as part of the build, when passing the `--dump-bytecode-as-base64` flag:
+有关更多信息，请参阅 [摘要计算的实现](https://github.com/MystenLabs/sui/blob/d8cb153d886d54752763fbdab631b062da7d894b/crates/sui-types/src/move_package.rs#L232-L251)，但在大多数情况下，您可以依赖 Move 工具链在构建时输出摘要，当传递 `--dump-bytecode-as-base64` 标志时：
 
 ```bash
 sui move build --dump-bytecode-as-base64
@@ -147,38 +138,35 @@ module sui::package {
 }
 ```
 
-The `UpgradeReceipt` is proof that the `Upgrade` command ran successfully, and Sui added the new package to the set of created
-objects for the transaction. It is used to update its `UpgradeCap` (identified by `cap: ID`) with the ID of the latest package in its
-family (`package: ID`).
+`UpgradeReceipt` 是 `Upgrade` 命令成功运行的证明，Sui 将新包添加到事务的已创建对象集中。它用于使用其家族中最新包的 ID (`package: ID`) 更新其 `UpgradeCap`（由 `cap: ID` 标识）。
 
-After Sui creates an `UpgradeReceipt`, you must use it to update its `UpgradeCap` within the same transaction block (you cannot store it for later, drop it, or burn it), or the transaction fails.
+在 Sui 创建了 `UpgradeReceipt` 后，您必须在同一事务块内使用它来更新其 `UpgradeCap`（不能将其存储以供以后使用，也不能丢弃或销毁它），否则事务将失败。
 
-## Isolating policies {#isolating-policies}
+## 隔离策略 {#isolating-policies}
 
-When writing custom upgrade policies, prefer:
+在编写自定义升级策略时，建议：
 
-- separating them into their own package (not co-located with the code they govern the upgradeability of),
-- making that package immutable (not upgradeable), and
-- locking in the policy of the `UpgradeCap`, so that the policy cannot be made less restrictive later.
+- 将它们分离到它们自己的包中（不要与它们管理升级性的代码共同定位）。
+- 使该包不可变（不能升级）。
+- 锁定 `UpgradeCap` 的策略，以防以后无法降低策略的限制性。
 
-These best practices help uphold **informed user consent** and **bounded risk** by making it clear what a package's upgrade policy is
-at the moment a user locks value into it, and ensuring that the policy does not evolve to be more permissive with time, without the package user realizing and choosing to accept the new terms.
+这些最佳实践有助于维护**知情用户同意**和**有界风险**，因为它清楚地表明用户在将价值锁定到包中时包的升级策略是什么，并确保策略不会随时间演变为更宽松的形式，而用户没有意识到并选择接受新条款。
 
-## Example: "Day of the Week" upgrade policy {#example-upgrade}
+## 示例：“星期几” 升级策略 {#example-upgrade}
 
-Time to put everything into practice by writing a toy upgrade policy that only authorizes upgrades on a particular day of the week (of the package creator's choosing).
+通过编写一个玩具升级策略来将所有内容付诸实践，该策略仅在一周的特定某一天（由包创建者选择）授权升级。
 
-### Creating an upgrade policy {#creating-upgrade-policy}
+### 创建升级策略 {#creating-upgrade-policy}
 
-Start by creating a new Move package for the upgrade policy:
+首先，为升级策略创建一个新的 Move 包：
 
 ```bash
 sui move new policy
 ```
 
-The command creates a `policy` directory with a `sources` folder and `Move.toml` manifest.
+该命令创建一个名为 `policy` 的目录，其中包含一个名为 `sources` 的文件夹和一个 `Move.toml` 文件清单。
 
-In the `sources` folder, create a source file named `day_of_week.move`. Copy and paste the following code into the file:
+在 `sources` 文件夹中，创建一个名为 `day_of_week.move` 的源文件。将以下代码复制并粘贴到该文件中：
 
 ```move
 module policy::day_of_week {
@@ -206,9 +194,9 @@ module policy::day_of_week {
 }
 ```
 
-This code includes a constructor and defines the object type for the custom upgrade policy.
+该代码包含一个构造函数，并定义了自定义升级策略的对象类型。
 
-You then need to add a function to authorize an upgrade, if on the correct day of the week. First, define a couple of constants, one for the error code that identifies an attempted upgrade on a day the policy doesn't allow, and another to define the number of milliseconds in a day (to be used shortly). Add these definitions directly under the current `ENotWeekDay` one.
+接下来，您需要添加一个函数来授权升级，如果在一周的正确日期。首先，定义两个常量，一个用于标识在策略不允许的日期尝试升级的错误代码，另一个用于定义一天中的毫秒数（稍后将用到）。将这些定义直接添加到当前的 `ENotWeekDay` 下方。
 
 ```move
 // Request to authorize upgrade on the wrong day of the week.
@@ -217,7 +205,7 @@ const ENotAllowedDay: u64 = 2;
 const MS_IN_DAY: u64 = 24 * 60 * 60 * 1000;
 ```
 
-After the `new_policy` function, add a `week_day` function to get the current weekday. As promised, the function uses the `MS_IN_DAY` constant you defined earlier.
+接下来，再 `new_policy` 函数后，添加一个 `week_day` 函数来获取当前星期几。正如前面所承诺的，该函数使用您之前定义的 `MS_IN_DAY` 常量。
 
 ```move
 fun week_day(ctx: &TxContext): u8 {
@@ -230,9 +218,9 @@ fun week_day(ctx: &TxContext): u8 {
 
 ```
 
-This function uses the epoch timestamp from `TxContext` rather than `Clock` because it needs only daily granularity, which means the upgrade transactions don't require consensus.
+这个函数使用 `TxContext` 中的纪元时间戳而不是 `Clock`，因为它只需要每日的粒度，这意味着升级交易不需要共识。
 
-Next, add an `authorize_upgrade` function that calls the previous function to get the current day of the week, then checks whether that value violates the policy, returning the `ENotAllowedDay` error value if it does.
+接下来，添加一个 `authorize_upgrade` 函数，该函数调用之前的函数获取当前星期几，然后检查该值是否违反策略，如果是，则返回 `ENotAllowedDay` 错误值。
 
 ```move
 public fun authorize_upgrade(
@@ -246,9 +234,9 @@ public fun authorize_upgrade(
 }
 ```
 
-The signature of a custom `authorize_upgrade` can be different from the signature of `sui::package::authorize_upgrade` as long as it returns an `UpgradeTicket`.
+只要 `authorize_upgrade` 返回一个 `UpgradeTicket`，自定义 `authorize_upgrade` 的签名可以与 `sui::package::authorize_upgrade` 的签名不同。
 
-Finally, provide implementations of `commit_upgrade` and `make_immutable` that delegate to their respective functions in `sui::package`:
+最后，提供 `commit_upgrade` 和 `make_immutable` 的实现，它们分别委托给 `sui::package` 中的相应函数：
 
 ```move
 public fun commit_upgrade(
@@ -265,7 +253,7 @@ public fun make_immutable(cap: UpgradeCap) {
 }
 ```
 
-The final code in your `day_of_week.move` file should resemble the following:
+你的 `day_of_week.move` 文件中的最终代码应如下所示：
 
 ```move
 module policy::day_of_week {
@@ -328,7 +316,7 @@ module policy::day_of_week {
 
 ### Publishing an upgrade policy {#publishing-an-upgrade-policy}
 
-Use the `sui client publish` command to publish the policy.
+使用 `sui client publish` 命令发布该策略。
 
 ```bash
 sui client publish --gas-budget 100000000
@@ -340,7 +328,7 @@ sui client publish --gas-budget 100000000
   Show output
   </summary>
 ```
-A successful publish returns the following:
+成功发布后返回如下：
 
 ```bash
 INCLUDING DEPENDENCY Sui
@@ -425,7 +413,7 @@ Array [
 </details>
 ```
 
-Following best practices, use the Sui Client CLI to call `sui::package::make_immutable` on the `UpgradeCap` to make the policy immutable.
+按照最佳实践，使用 Sui 客户端 CLI 在 `UpgradeCap` 上调用 `sui::package::make_immutable` 以使策略成为不可变的。
 
 ```bash
 sui client call --gas-budget 10000000 \
@@ -442,7 +430,7 @@ sui client call --gas-budget 10000000 \
   </summary>
 ```
 
-A successful call returns the following:
+成功的调用将返回以下结果：
 
 ```bash
 ----- Transaction Digest ----
@@ -501,17 +489,17 @@ Array [
 </details>
 ```
 
-### Creating a package for testing {#creating-testing-package}
+### 创建用于测试的包 {#creating-testing-package}
 
-With a policy now available on chain, you need a package to upgrade. This topic creates a basic package and references it in the following scenarios, but you can use any package you might have available instead of creating a new one.
+现在，已经在链上准备好一个策略，您需要一个要升级的包。本主题创建一个基本的包并在后续场景中引用它，但您可以使用任何可用的包，而不是创建新的包。
 
-If you don't have a package available, use the `sui move new` command to create the template for a new package called `example`.
+如果您没有可用的包，请使用 `sui move new` 命令创建名为 `example` 的新包的模板。
 
 ```bash
 sui move new example
 ```
 
-In the `example/sources` directory, create an `example.move` file with the following code:
+在 `example/sources` 目录中，创建一个名为 `example.move` 的文件，并添加以下代码：
 
 ```move
 module example::example {
@@ -522,18 +510,18 @@ module example::example {
 }
 ```
 
-The instruction that follows publishes this example package and then upgrades it to change the value in the `Event` it emits. Because you are using a custom upgrade policy, you need to use the TypeScript SDK to build the package's publish and upgrade commands.
+接下来的说明将发布此示例包，然后升级它以更改其发出的 `Event` 中的值。由于使用了自定义升级策略，需要使用 TypeScript SDK 构建包的发布和升级命令。
 
-### Using TypeScript SDK {#using-typeccript-sdk}
+### 使用 TypeScript SDK {#using-typeccript-sdk}
 
-Create a new directory to store a Node.js project. You can use the `npm init` function to create the `package.json`, or manually create the file. Depending on your approach to creating `package.json`, populate or add the following JSON to it:
+创建一个新目录来存储 Node.js 项目。您可以使用 `npm init` 函数创建 `package.json`，或手动创建该文件。根据创建 `package.json` 的方法，填充或添加以下 JSON：
 
 ```JSON
 { "type": "module" }
 
 ```
 
-Open a terminal or console to the root of your Node.js project. Run the following command to add the Sui TypeScript SDK as a dependency:
+打开终端或控制台到您的 Node.js 项目的根目录。运行以下命令将 Sui TypeScript SDK 添加为依赖项：
 
 ```bash
 npm install @mysten/sui.js

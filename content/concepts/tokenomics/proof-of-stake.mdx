@@ -1,33 +1,33 @@
 ---
-title: Proof of Stake
+title: 权益证明
 ---
 
-The Sui platform relies on delegated proof-of-stake (DPoS) to determine the set of validators that process transactions.
+Sui平台依赖委托权益证明（DPoS）来确定处理交易的验证器集。
 
-## SUI token staking {#staking}
+## SUI代币质押 {#staking}
 
-Within each epoch, a fixed set of validators process operations, each with a specific amount of stake from SUI token holders. A validator's share of total stake is relevant in that it determines each validator's share of voting power for processing transactions. Staking SUI implies the SUI tokens are locked for the entire epoch. SUI token holders are free to withdraw their SUI or to change their selected validator when the epoch changes.
+在每个纪元内，一组固定的验证器处理操作，每个验证器都有来自SUI代币持有者的特定数量的质押。验证器在总质押中的份额是相关的，因为它决定了每个验证器在处理交易时的投票权份额。质押SUI意味着SUI代币将在整个纪元内被锁定。SUI代币持有者可以在纪元更改时自由提取其SUI或更改其选择的验证器。
 
-## Economic model {#economic-model}
+## 经济模型 {#economic-model}
 
-This section covers how the different components of the Sui economy interact with each other to introduce the Sui DPoS system. For reference, see the Staking and Tokenomics diagram in the [Sui Tokenomics](../tokenomics.mdx) overview.
+本节介绍了Sui经济的不同组成部分如何相互作用，引入了Sui DPoS系统。有关参考，请查看[Sui Tokenomics](../tokenomics.mdx)概述中的Staking和Tokenomics图表。
 
-The Sui economic model works as follows:
+Sui经济模型工作如下：
 
-At the beginning of each epoch, three important events happen:
+在每个纪元开始时，发生三个重要事件：
 
-- SUI holders stake (some) of their tokens to validators and a new [committee](../../guides/operator/validator-committee.mdx) is formed.
-- The reference gas prices are set as described in [Sui Gas Pricing](./gas-pricing.mdx).
-- The [storage fund](./storage-fund.mdx) size is adjusted using the net inflow of the previous epoch.
+- SUI持有者向验证器质押（一些）他们的代币，形成一个新的[委员会](../../guides/operator/validator-committee.mdx)。
+- 参考气价按照[Sui Gas Pricing](./gas-pricing.mdx)中描述的方式设定。
+- 利用上一纪元的净流入调整[存储基金](./storage-fund.mdx)的规模。
 
-Following these actions, the protocol computes the total amount of stake as the sum of staked SUI plus the storage fund. Call the share of user stake $\alpha$.
+在执行这些操作后，协议计算质押总额，将质押的SUI和存储基金之和称为用户质押份额 $\alpha$。
 
-During each epoch: Users submit transactions to the Sui platform and validators process them. For each transaction, users pay the associated computation and storage gas fees. In cases where users delete previous transaction data, users obtain a partial rebate of their storage fees. Validators observe the behavior of other validators and evaluate each other's performance.
+在每个纪元期间：用户向Sui平台提交交易，验证器处理这些交易。对于每笔交易，用户支付相关的计算和存储气体费用。在用户删除先前交易数据的情况下，用户将获得存储费用的部分退款。验证器观察其他验证器的行为并评估彼此的表现。
 
-At the end of each epoch: The protocol distributes stake rewards to participants of the DPoS mechanism. This occurs through two main steps:
+在每个纪元结束时：协议向DPoS机制的参与者分配权益奖励。这通过两个主要步骤进行：
 
-- The total amount of stake rewards is calculated as the sum of computation fees accrued throughout the epoch plus the epoch’s stake reward subsidies. The latter component is temporary in that it will only exist in the network's first years and disappear in the long run as the amount of SUI in circulation reaches its total supply.
-- The total amount of stake rewards is distributed across various entities. Importantly, remember that the storage fund is taken into account in the calculation of the epoch total stake. However, the storage fund is not owned by any entities in the way that staked SUI is. Instead, the Sui economic model distributes the stake rewards accruing to the storage fund – a share $(1-\alpha)$ of the total stake rewards – to validators in order to compensate them for their storage costs. Of these rewards, a share $\gamma$ is paid out to validators while the remaining $(1-\gamma)$ is used to reinvest in capital of the fund. Finally, let $\beta_v$ represent the share of stake managed by a validator $v$ that is owned by itself while $(1-\beta_v)$ represents the share owned by third-party stakers. Validators keep the full rewards accruing to their own stake but keep only a commission $\delta_v\\%$ on SUI tokens staked by users as a fee for managing that stake. The split of stake rewards for the user staking pool staking at validator $v$ and for the validator itself equal:
+- 质押奖励的总额被计算为整个纪元中累积的计算费用加上纪元质押奖励补贴的总和。后者是临时的，仅存在于网络的最初几年，并在SUI的总供应达到其总供应时长期消失。
+- 质押奖励的总额分配给各种实体。值得注意的是，存储基金在计算纪元总质押时被考虑在内。然而，存储基金不属于任何实体，就像质押的SUI一样。相反，Sui经济模型将分配给存储基金的质押奖励份额（总质押奖励的 $(1-\alpha)$ 部分）支付给验证器，以补偿他们的存储成本。在这些奖励中，份额 $\gamma$ 被支付给验证器，而剩下的 $(1-\gamma)$ 用于再投资基金的资本。最后，让 $\beta_v$ 表示由验证器 $v$ 管理的质押份额中由自己拥有的份额，而 $(1-\beta_v)$ 表示由第三方质押者拥有的份额。验证器获得其自己质押的全部奖励，但仅保留由用户质押的SUI代币的佣金 $\delta_v\\%` 作为管理该质押的费用。用户质押池在验证器 $v$ 处的质押奖励的分配和验证器本身的质押奖励的分配相等：
 
 $$
 UserStakeRewards_v \ = \Big[ \alpha(1-\delta_v)(1-\beta_v)\Big]\mu_v\sigma_v \times StakeRewards
@@ -37,14 +37,14 @@ $$
 ValidatorRewards_v \ = \ \Bigg[\alpha\Big(\beta_v+\delta_v(1-\beta_v)\Big)\mu_v\sigma_v+(1-\alpha)\frac{\gamma}{N}\Bigg] \times StakeRewards
 $$
 
-The $\mu_v$ variable captures the output of the [tallying rule](gas-pricing.mdx#tallying-rule) computed as part of the [gas price mechanism](./gas-pricing.mdx) and corresponds to $\mu_v\geq1$ for performant validators and $\mu_v<1$ for non-performant validators. This variable ensures that validators have "skin in the game" and are incentivized to operate Sui efficiently. The $\sigma_v$ parameter captures each validator's share of total stake.
+变量 $\mu_v$ 捕捉了[tallying rule](gas-pricing.mdx#tallying-rule)的输出，作为[gas price mechanism](./gas-pricing.mdx)的一部分计算，并对于性能良好的验证器来说 $\mu_v\geq1$，对于性能较差的验证器来说 $\mu_v<1$。这个变量确保验证器有"参与游戏"并有动力高效运营Sui。参数 $\sigma_v$ 捕捉每个验证器在总质押中的份额。
 
-Consequently, validators with more stake earn more stake rewards and the joint $\mu_v\sigma_v$ term incentivizes validators to increase their share of stake while also operating the network performantly. In the long-run, this incentive encourages users to shift the stake distribution towards the network's most efficient validators, delivering a cost-efficient and decentralized network.
+因此，拥有更多质押的验证器赚取更多质押奖励，联合 $\mu_v\sigma_v$ 项激励验证器增加其质押份额，同时也高效运营网络。从长远来看，这个激励鼓励用户将质押分布转向网络效率最高的验证器，提供了成本高效和去中心化的网络。
 
-Finally, the storage fund rewards accrue to all $N$ validators equally (since all validators face a similar burden of holding data in storage). The small amount of stake rewards that is not distributed out to either users or validators, namely the share $(1-\alpha)(1-\gamma)$ of stake rewards, gets reinvested in the storage fund.
+最后，存储基金奖励平均分配给所有 $N$ 个验证器（因为所有验证器都面临相似的存储数据负担）。未分配给用户或验证器的少量质押奖励，即份额 $(1-\alpha)(1-\gamma)$ 的质押奖励，重新投资到存储基金中。
 
-On net, this design encourages validators to operate with low gas price quotes, but not too low or they receive slashed stake rewards. Consequently, the Sui gas price mechanism and DPoS system encourages a healthy competition for fair prices where validators set low gas fees while operating with viable business models.
+总体而言，这个设计鼓励验证器以较低的气价报价运作，但不能太低，否则将受到削减的质押奖励。因此，Sui气价机制和DPoS系统鼓励以可行的商业模式设定低气费的公平价格竞争。
 
-## Sui incentives {#incentives}
+## Sui激励 {#incentives}
 
-The Sui economic model bestows Sui users with an important monitoring role. On the one hand, users want their transactions processed as quickly and efficiently as possible. User clients, such as wallets, encourage this by prioritizing communication with the most responsive validators. Such efficient operations are compensated with boosted rewards relative to less responsive validators. On the other hand, SUI token stakers receive the same boosted or penalized rewards as their selected validator. An unresponsive validator is thus doubly exposed to Sui incentives: they lose directly through slashed rewards and indirectly through reduced user stake in future epochs as stakers move their tokens to more responsive validators.
+Sui经济模型赋予Sui用户一个重要的监控角色。一方面，用户希望他们的交易尽快而高效地处理。用户客户端，如钱包，通过优先与响应最快的验证器通信来鼓励这一点。这种高效的操作通过相对于响应较慢的验证器而言的提升奖励得到补偿。另一方面，SUI代币持有者接收与其选择的验证器相同的提升或惩罚的奖励。因此，一个不响应的验证器在Sui激励方面受到双重影响：他们直接通过被削减的奖励损失，间接地通过在未来纪元中减少用户质押而损失。

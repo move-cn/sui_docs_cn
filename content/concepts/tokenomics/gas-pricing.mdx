@@ -1,47 +1,45 @@
----
-title: Sui Gas Pricing
----
+# Sui 燃气定价
 
-The Sui gas-pricing mechanism achieves three outcomes: delivering low, predictable transaction fees, incentivizing validators to optimize their transaction processing operations, and preventing denial of service attacks.
+Sui 燃气定价机制实现了三个目标：提供低廉、可预测的交易费用，激励验证器优化其交易处理操作，并防止拒绝服务攻击。
 
-This enables you to focus on using the Sui network to provide the best user experience without needing to forecast the current market price of gas fees. Since validators agree on a network-wide reference price at the start of each epoch, you can use the reference price as a credible anchor when submitting transactions. Moreover, the price setting mechanism rewards good validator behavior, thus aligning incentives between SUI token holders, the network's operators (validators), and its users.
+这使您能够专注于使用 Sui 网络提供最佳用户体验，而无需预测当前燃气费用的市场价格。由于验证器在每个纪元开始时就网络范围的参考价格达成一致，您可以在提交交易时使用参考价格作为可信的锚点。此外，价格设置机制奖励良好的验证器行为，从而使 SUI 代币持有者、网络运营商（验证器）和用户之间的激励保持一致。
 
-A unique feature of the Sui gas price mechanism is that users pay separate fees for transaction execution and for storing the data associated with each transaction. The gas fees associated with an arbitrary transaction $\tau$ equal:
+Sui 燃气价格机制的一个独特特征是用户支付执行交易和存储与每个交易相关的数据的独立费用。与任意交易 $\tau$ 相关的燃气费用如下：
 
 $$
 GasFees[\tau] \ = \ ComputationUnits[\tau] \times ComputationPrice[\tau] \ + \ StorageUnits[\tau] \times StoragePrice
 $$
 
-The gas functions $ComputationUnits[\tau]$ and $StorageUnits[\tau]$ measure the amount of computation and storage resources, respectively, required to process and store the data associated with $\tau$. The gas prices $ComputationPrice[\tau]$ and $StoragePrice$ translate the cost of computation and storage, respectively, into SUI units. The decoupling between gas units and gas prices is useful since SUI market price will fluctuate over time in accordance with supply and demand.
+燃气函数 $ComputationUnits[\tau]$ 和 $StorageUnits[\tau]$ 分别测量处理和存储与 $\tau$ 相关的数据所需的计算和存储资源的数量。燃气价格 $ComputationPrice[\tau]$ 和 $StoragePrice$ 将计算和存储的成本转化为 SUI 单位。燃气单位和燃气价格之间的解耦是有用的，因为 SUI 的市场价格会根据供需关系随时间波动。
 
-## Computation gas prices {#computation}
+## 计算燃气价格 {#computation}
 
-The computation gas price $ComputationPrice[\tau]$ captures the cost of one unit of computation in SUI units. This price is set at the transaction level and submitted by the user as the transaction's gas price. Conceptually, it is useful to think about this gas price in two parts:
+计算燃气价格 $ComputationPrice[\tau]$ 捕捉在 SUI 单位中计算的一单位成本。该价格在交易级别设置，并由用户作为交易的燃气价格提交。在概念上，有必要将这个燃气价格分为两个部分来考虑：
 
 $$
 ComputationPrice[\tau] \ = \ ReferencePrice \ + \ Tip[\tau]
 $$
 
-On the Sui network, a single $ReferencePrice$ exists throughout each epoch, with Sui validators updating the $ReferencePrice$ at each epoch boundary. Hence, in practice, when a user submits a gas price above the $ReferencePrice$, it is useful to think of the difference as a tip paid to the network in order to get higher priority. During moments of regular network operations, users are not expected to pay tips and the vast majority of transactions have gas prices equal to $ReferencePrice$.
+在 Sui 网络上，每个纪元都存在一个 $ReferencePrice$，Sui 验证器在每个纪元边界更新 $ReferencePrice$。因此，在实践中，当用户提交高于 $ReferencePrice$ 的燃气价格时，有必要将其差异视为支付给网络的小费，以获取更高的优先级。在常规网络操作时，预计用户无需支付小费，绝大多数交易的燃气价格等于 $ReferencePrice$。
 
-More generally, the Sui gas price mechanism makes the $ReferencePrice$ a credible anchor for you to reference when submitting transactions to the network. Providing reasonable confidence that transactions submitted with gas prices at or close to the reference price are executed in a timely manner. This is achieved through three core steps:
+更一般地说，Sui 燃气价格机制使 $ReferencePrice$ 成为您在提交交易到网络时的可信锚点。合理确信以接近或等于参考价格的燃气价格提交的交易将及时执行。这是通过以下三个核心步骤实现的：
 
-- **Gas price survey:** All validators are surveyed at the start of each epoch, and every validator submits their reservation price. That is, each validator states the minimum gas price at which they are willing to process transactions. The protocol orders these quotes and chooses the 2/3 percentile by stake as the reference price. The gas price survey goal is to set a reference price under which a [quorum](../../guides/operator/validator-committee.mdx#quorums) of validators are willing to promptly process transactions.
-- **Tallying rule:** Throughout the epoch, validators obtain signals over the operations of other validators. Each validator uses these signals to build a (subjective) evaluation over the performance of every other validator. Specifically, each validator constructs a multiplier for the stake rewards of every other validator such that validators who behave well receive boosted rewards, and validators who do not receive reduced rewards. The tallying rule goal is to create a community-enforced mechanism for encouraging validators to honor the reference gas price.
-- **Incentivized stake reward distribution rule:** At the end of the epoch, the distribution of stake rewards across validators is adjusted using information from the tallying rule. Specifically, a global multiplier is built for every validator using the median value (weighted by stake) out of the set of individual multipliers constructed during the tallying rule. All else equal, validators that operated performantly receive their regular stake rewards, whereas validators who did not operate performantly at the reference gas price receive slashed rewards. Since stake rewards are influenced by the amount of stake each validator owns, validators are encouraged to obtain more stake by lowering gas fees and pricing out inefficient validators. This benefits Sui end users since the stake reward distribution rule incentivizes validators to deliver a more cost-efficient network.
+- **燃气价格调查：** 在每个纪元开始时，对所有验证器进行调查，每个验证器都提交其保留价格。也就是说，每个验证器陈述他们愿意处理交易的最低燃气价格。协议对这些报价进行排序，并选择按权益排名的 2/3 百分位数作为参考价格。燃气价格调查的目标是设置一个大多数验证器愿意迅速处理交易的参考价格。
+- **计分规则：** 在整个纪元中，验证器获取关于其他验证器操作的信号。每个验证器使用这些信号来建立对每个其他验证器表现的（主观的）评估。具体而言，每个验证器为其他每个验证器的权益奖励构建一个乘数，以便表现良好的验证器获得提高的奖励，而表现不佳的验证器获得降低的奖励。计分规则的目标是创建一种社区强制的机制，鼓励验证器遵守参考燃气价格。
+- **激励的权益奖励分配规则：** 在纪元结束时，使用来自计分规则的信息调整验证器之间的权益奖励分配。具体而言，使用在计分规则期间构建的个体乘数集合的中位数值（按权益加权）为每个验证器构建一个全局乘数。其他条件相同，以参考燃气价格运作的良好的验证器获得其常规权益奖励，而未能以参考燃气价格运作的验证器则获得削减的奖励。由于权益奖励受到每个验证器拥有的权益数量的影响，验证器受到鼓励通过降低燃气费用和淘汰效率低下的验证器来获得更多的权益。这有利于 Sui 最终用户，因为权益奖励分配规则激励验证器提供更具成本效益的网络。
 
-In sum, the gas price mechanism has two main forces: the tallying rule incentivizes validators to honor the quotes submitted during the gas survey, while the distribution rule incentivizes validators to submit low reservations prices. The interaction of these two forces delivers a mechanism encouraging validators to set a low network-level reference gas price - but not too low, because they face penalties if they cannot honor their quotes. In other words, the gas price mechanism encourages a healthy competition for fair prices.
+总的来说，燃气价格机制有两个主要力量：计分规则激励验证器遵守燃气调查期间提交的报价，而分配规则激励验证器提交低的保留价格。这两种力量的相互作用提供了一种机制，鼓励验证器设定较低的网络级参考燃气价格 - 但不要太低，因为如果他们无法遵守报价，他们将面临处罚。换句话说，燃气价格机制鼓励公平价格的健康竞争。
 
-## Storage gas prices {#storage}
+# 存储燃气价格 {#storage}
 
-The storage gas price $StoragePrice$ captures the costs of covering one unit of storage in perpetuity, in SUI units. This price is set through governance proposals and is updated infrequently. The goal is to ensure Sui users pay for their use of on-chain data storage by depositing these fees into the storage fund and then redistributing these fees to future validators. In contrast to the computation gas price, storage prices are fixed and common for all transactions both within an epoch and across epochs until the storage price is updated.
+存储燃气价格 $StoragePrice$ 捕捉了以 SUI 单位永久覆盖一单位存储的成本。这个价格是通过治理提案设定的，并且更新不频繁。其目标是确保 Sui 用户支付他们在链上数据存储的费用，通过将这些费用存入存储基金，然后将这些费用重新分配给未来的验证器。与计算燃气价格相比，存储价格在纪元内和跨纪元的所有交易中都是固定的，直到存储价格更新。
 
-The $StoragePrice$ is set exogenously through the governance proposal with the goal of targeting the off-chain dollar cost of data storage. In the long run, as the costs of storage fall due to technological improvements and the dollar price of the SUI token evolves, governance proposals will update the price in order to reflect the new dollar target price.
+$StoragePrice$ 是通过治理提案外生设定的，其目标是针对链下数据存储的美元成本。从长远来看，随着存储成本由于技术进步而降低以及 SUI 代币的美元价格演变，治理提案将更新价格以反映新的美元目标价格。
 
-## Gas prices as a coordination mechanism {#coordination-mechanism}
+## 燃气价格作为协调机制 {#coordination-mechanism}
 
-Overall, when you submit transactions with computation gas prices at or close to the current epoch $ReferencePrice$ and storage gas prices at the targeted $StoragePrice$, you have the best user experience. The Sui gas price mechanism provides you with credible reference prices for submitting your transactions. By incentivizing validators to elicit their true reservation prices and honor these quotes, you can credibly assume your transactions are processed in a timely manner.
+总的来说，当您提交具有计算燃气价格接近或等于当前纪元 $ReferencePrice$ 以及存储燃气价格接近或等于目标 $StoragePrice$ 的交易时，您将获得最佳用户体验。Sui 燃气价格机制为您提供了可信的提交交易的参考价格。通过激励验证器引出其真实的保留价格并遵守这些报价，您可以可靠地假设您的交易会及时处理。
 
-After Sui enables horizontal scaling, validators can add more workers as demand for on-chain activity scales. This increases their costs linearly at the same pace of network activity and lets them process more transactions at the same low gas prices. In cases of extreme network congestion where validators cannot scale fast enough, the tip presence provides a market-based congestion pricing mechanism that discourages further demand spikes by increasing the cost of transacting on the Sui platform.
+在 Sui 启用横向扩展之后，验证器可以根据链上活动需求的扩展增加更多的工作人员。这使得他们的成本与网络活动的速度相同线性增加，并使他们能够以相同的低燃气价格处理更多的交易。在网络拥塞极端的情况下，验证器无法快速扩展时，小费的存在提供了一种基于市场的拥塞定价机制，通过提高在 Sui 平台上进行交易的成本来抑制进一步的需求激增。
 
-In the long run, the Sui gas price mechanism creates incentives for validators to optimize their hardware and operations. Validators that invest in becoming more efficient are able to honor lower gas prices and obtain a stake reward boost. Sui validators are thus encouraged to innovate and improve the experience of end users.
+从长远来看，Sui 燃气价格机制为验证器优化其硬件和操作创造了激励。投资于提高效率的验证器能够遵守较低的燃气价格并获得权益奖励提升。因此，Sui 验证器受到鼓励进行创新并提升最终用户的体验。

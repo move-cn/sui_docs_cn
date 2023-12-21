@@ -1,31 +1,31 @@
 ---
 title: zkLogin
-description: zkLogin is a Sui primitive that enables you to send transactions from a Sui address using an OAuth credential, without publicly linking the two.
+description: zkLogin是Sui的一种基元，使您能够使用OAuth凭证从Sui地址发送交易，而无需公开将两者关联起来。
 ---
 
-zkLogin is a Sui primitive that provides the ability for you to send transactions from a Sui address using an OAuth credential, without publicly linking the two.
+zkLogin是Sui的一种基元，它使您能够使用OAuth凭证从Sui地址发送交易，而无需公开将两者关联起来。
 
-zkLogin is designed with the following goals in mind:
+zkLogin设计时考虑了以下目标：
 
-- **Streamlined onboarding:** zkLogin enables you to transact on Sui using the familiar OAuth login flow, eliminating the friction of handling cryptographic keys or remembering mnemonics.
-- **Self-custody:** A zkLogin transaction requires user approval via the standard OAuth login process--the OAuth provider cannot transact on the user's behalf.
-- **Security:** zkLogin is a two-factor authentication scheme: sending a transaction requires both a credential from a recent OAuth login and a salt not managed by the OAuth provider. An attacker who compromises an OAuth account cannot transact from the user's corresponding Sui address unless they separately compromise the salt.
-- **Privacy:** Zero-knowledge proofs prevent third parties from linking a Sui address with its corresponding OAuth identifier.
-- **Optional verified identity:** A user can opt in to verify the OAuth identifier that was used to derive a particular Sui address. This serves as the foundation for a verifiable on-chain identity layer.
-- **Accessibility:** zkLogin is one of several native Sui signature schemes thanks to Sui's [cryptography agility](./transaction-auth/signatures.mdx). It integrates with other Sui primitives, like sponsored transactions and multisig.
-- **Rigorousness:** The code for zkLogin has been independently [audited](https://github.com/sui-foundation/security-audits/blob/main/docs/zksecurity_zklogin-circuits.pdf) by two firms specializing in zero knowledge. The public zkLogin ceremony for creating the common reference string attracted contributions from more than 100 participants.
+- **简化入门流程：** zkLogin使您能够使用熟悉的OAuth登录流程在Sui上进行交易，消除了处理加密密钥或记住助记词的摩擦。
+- **自我托管：** zkLogin交易需要用户通过标准的OAuth登录流程进行批准，OAuth提供商不能代表用户进行交易。
+- **安全性：** zkLogin是一种两因素身份验证方案：发送交易需要来自最近OAuth登录的凭据和不由OAuth提供商管理的盐。攻击者即使攻击了OAuth帐户，也不能从用户对应的Sui地址进行交易，除非它们单独攻击了盐。
+- **隐私：** 零知识证明阻止第三方将Sui地址与其相应的OAuth标识符关联起来。
+- **可选的已验证身份：** 用户可以选择验证用于派生特定Sui地址的OAuth标识符。这为可验证的链上身份层奠定了基础。
+- **可访问性：** 由于Sui的[密码学灵活性](./transaction-auth/signatures.mdx)，zkLogin是几种原生Sui签名方案之一。它与其他Sui基元（如赞助交易和多重签名）集成。
+- **严谨性：** zkLogin的代码已由两家专门从事零知识的公司进行了独立的[审计](https://github.com/sui-foundation/security-audits/blob/main/docs/zksecurity_zklogin-circuits.pdf)。用于创建通用参考字符串的公共zkLogin仪式吸引了100多名参与者的贡献。
 
-Are you a builder who wants to integrate zkLogin into your application or wallet? Dive into our [Integration guide](#integration-guide).
+您是希望将zkLogin集成到您的应用程序或钱包中的开发者吗？深入了解我们的[集成指南](#integration-guide)。
 
-If you want to understand how zkLogin works, including how the zero-knowledge proof is generated, and how Sui verifies a zkLogin transaction, see [this section](#how-zklogin-works).
+如果您想了解zkLogin的工作原理，包括如何生成零知识证明以及Sui如何验证zkLogin交易，请参阅[此部分](#how-zklogin-works)。
 
-If you are curious about the security model and the privacy considerations of zkLogin, visit this [page](#security-and-privacy).
+如果您对zkLogin的安全模型和隐私考虑感兴趣，请访问此[页面](#security-and-privacy)。
 
-More questions? See [the FAQ section](#faq).
+还有更多问题吗？请查看[FAQ部分](#faq)。
 
-## OpenID providers
+## OpenID提供商
 
-The following table lists the OpenID providers that can support zkLogin or are currently being reviewed to determine whether they can support zkLogin.
+以下表列出了可以支持zkLogin或目前正在审核中以确定它们是否可以支持zkLogin的OpenID提供商。
 
 | Provider     | Can support? | Devnet   | Testnet  | Mainnet  |
 | ------------ | ----------   | -------- | -------- | -------- |
@@ -43,22 +43,22 @@ The following table lists the OpenID providers that can support zkLogin or are c
 | Auth0        | Under review |   No     |  No      | No       |
 | Okta         | Under review |   No     |  No      | No       |
 
-## Integration guide
+## 集成指南
 
-Here is the high-level flow the wallet or frontend application must implement to support zkLogin-enabled transactions:
+以下是支持zkLogin启用交易的钱包或前端应用程序必须实现的高级流程：
 
-1. The wallet creates an ephemeral KeyPair.
-1. The wallet prompts the user to complete an OAuth login flow with the nonce corresponding to the ephemeral public key.
-1. After receiving the JWT token, the wallet obtains a zero-knowledge proof.
-1. The wallet obtains a unique user salt based on a JWT token. The OAuth subject identifier and salt can be used to compute the zkLogin Sui address.
-1. The wallet signs transactions with the ephemeral private key.
-1. The wallet submits the transaction with the ephemeral signature and the zero-knowledge proof.
+1. 钱包创建一个临时KeyPair。
+1. 钱包提示用户完成OAuth登录流程，其中包含与临时公钥对应的随机数。
+1. 在收到JWT令牌后，钱包获取零知识证明。
+1. 钱包基于JWT令牌获取唯一的用户盐。OAuth主题标识符和盐可用于计算zkLogin Sui地址。
+1. 钱包使用临时私钥签署交易。
+1. 钱包提交交易，包括临时签名和零知识证明。
 
-Let's dive into the specific implementation details.
+让我们深入了解具体的实现细节。
 
-## Install the zkLogin TypeScript SDK
+## 安装zkLogin TypeScript SDK
 
-To use the zkLogin TypeScript SDK in your project, run the following command in your project root:
+要在项目中使用zkLogin TypeScript SDK，请在项目根目录中运行以下命令：
 
 ```typescript
 npm install @mysten/zklogin
@@ -67,11 +67,11 @@ npm install @mysten/zklogin
 npm install @mysten/zklogin@experimental
 ```
 
-## Configure a developer account with OpenID provider
+## 配置与OpenID提供商的开发者账户
 
-Sui currently supports Google, Facebook, and Twitch. More OpenID-compatible providers will be enabled in the future.
+Sui目前支持Google、Facebook和Twitch。将来将启用更多兼容OpenID的提供商。
 
-For example, the following TypeScript code can be used to construct a login URL for testing.
+例如，以下TypeScript代码可用于构建用于测试的登录URL。
 
 ```typescript
 const REDIRECT_URI = '<YOUR_SITE_URL>';
@@ -89,104 +89,104 @@ const params = new URLSearchParams({
 const loginURL = `https://accounts.google.com/o/oauth2/v2/auth?${params}`;
 ```
 
-You must configure the client ID (`$CLIENT_ID`) and redirect URL (`$REDIRECT_URL`) with each provider as follows:
+你必须在每个提供商中配置客户端ID（`$CLIENT_ID`）和重定向URL（`$REDIRECT_URL`）：
 
 ### Google
 
-1. Register for a Google Cloud account and access the [dashboard](https://console.cloud.google.com/home/dashboard).
-1. Select "APIs & Services" then "Credentials", where you can find the client ID. Set the redirect URL. This should be the wallet or application front end.
+1. 注册Google Cloud账户并访问[仪表板](https://console.cloud.google.com/home/dashboard)。
+1. 选择"APIs & Services"然后选择"Credentials"，在那里可以找到客户端ID。设置重定向URL。这应该是钱包或应用程序前端。
 
-![1](images/zklogin-google1.png 'Sign up for Google developer account')
+![1](images/zklogin-google1.png '注册Google开发者账户')
 
-_Sign up for Google developer account_
+_注册Google开发者账户_
 
-![2](images/zklogin-google2.png 'Go to Credentials')
+![2](images/zklogin-google2.png '转到Credentials')
 
-_Go to Credentials_
+_转到Credentials_
 
-![3](images/zklogin-google3.png 'Configure Redirect URL')
+![3](images/zklogin-google3.png '配置重定向URL')
 
-_Configure a Redirect URL_
+_配置重定向URL_
 
 ### Facebook
 
-1. Register for a Facebook developer account and access the [dashboard](https://developers.facebook.com/apps/).
+1. 注册Facebook开发者账户并访问[仪表板](https://developers.facebook.com/apps/)。
 
-1. Select "Build your app" then "Products" then "Facebook Login" where you can find the client ID. Set the redirect URL. This should be the wallet or application frontend.
+1. 选择"Build your app"，然后选择"Products"，然后选择"Facebook Login"，在那里可以找到客户端ID。设置重定向URL。这应该是钱包或应用程序前端。
 
-![1](images/zklogin-facebook1.png 'Sign up for Facebook developer account')
+![1](images/zklogin-facebook1.png '注册Facebook开发者账户')
 
-_Sign up for Facebook developer account_
+_注册Facebook开发者账户_
 
-![2](images/zklogin-facebook2.png 'Go to Settings')
+![2](images/zklogin-facebook2.png '转到Settings')
 
-_Go to Settings_
+_转到Settings_
 
 ### Twitch
 
-1. Register for a Twitch developer account. Access the [dashboard](https://dev.twitch.tv/console).
+1. 注册Twitch开发者账户。访问[仪表板](https://dev.twitch.tv/console)。
 
-1. Go to "Register Your Application" then "Application" where you can find the client ID. Set the redirect URL. This should be the wallet or application frontend.
+1. 转到"Register Your Application"，然后选择"Application"，在那里可以找到客户端ID。设置重定向URL。这应该是钱包或应用程序前端。
 
-![1](images/zklogin-twitch1.png "Sign up for Twitch developer account")
+![1](images/zklogin-twitch1.png "注册Twitch开发者账户")
 
-*Sign up for Twitch developer account*
+*注册Twitch开发者账户*
 
-![2](images/zklogin-twitch2.png "Go to Console")
+![2](images/zklogin-twitch2.png "转到Console")
 
-*Go to Console*
+*转到Console*
 
 ### Kakao
 
-1. Register for a Kakao developer account. Access the [dashboard](https://developers.kakao.com/console/app) and add an application.
+1. 注册Kakao开发者账户。访问[仪表板](https://developers.kakao.com/console/app)并添加一个应用。
 
-![1](images/zklogin-kakao1.png "Add applications to Kakao")
+![1](images/zklogin-kakao1.png "向Kakao添加应用")
 
-*Add applications to Kakao*
+*向Kakao添加应用*
 
-1. Go to "App Keys" where you can find the corresponding client ID for different platforms.
+1. 转到"App Keys"，在那里可以找到不同平台对应的客户端ID。
 
-- Native app key: Used to call APIs through the Android or iOS SDK.
-- JavaScript key: Used to call APIs through the JavaScript SDK.
-- REST API key: Used to call APIs through the REST API.
+- Native app key：用于通过Android或iOS SDK调用API。
+- JavaScript key：用于通过JavaScript SDK调用API。
+- REST API key：用于通过REST API调用API。
 
-![2](images/zklogin-kakao2.png "Find Client ID")
+![2](images/zklogin-kakao2.png "找到Client ID")
 
-*Find client ID*
+*找到Client ID*
 
-1. Toggle on "Kakao Login Activation" and "OpenID Connect Activation". Set the redirect URL in "Kakao Login" under "Product Settings". This should be the wallet or application frontend.
+1. 切换打开"Kakao Login Activation"和"OpenID Connect Activation"。在"Product Settings"下的"Kakao Login"中设置重定向URL。这应该是钱包或应用程序前端。
 
-![1](images/zklogin-kakao3.png "Set Redirect URL")
+![1](images/zklogin-kakao3.png "设置重定向URL")
 
-*Set redirect URL*
+*设置重定向URL*
 
 ### Slack
 
-1. Register for a Slack developer account. Access the [dashboard](https://api.slack.com/apps) and go to "Create New App" then choose "From scratch".
+1. 注册Slack开发者账户。访问[仪表板](https://api.slack.com/apps)并转到"Create New App"，然后选择"From scratch"。
 
-	![1](images/zklogin-slack1.png "Create app in Slack")
+	![1](images/zklogin-slack1.png "在Slack中创建应用")
 
-	*Create app in Slack*
+	*在Slack中创建应用*
 
-1. Find the Client ID and Client Secret under "App Credentials".
+1. 在"App Credentials"下找到Client ID和Client Secret。
 
-	![1](images/zklogin-slack2.png "Find Client ID and Client Secret")
+	![1](images/zklogin-slack2.png "找到Client ID和Client Secret")
 
-	*Find Client ID and Client Secret*
+	*找到Client ID和Client Secret*
 
-1. Set Redirect URL in "OAuth & Permissions" under "Features". This should be the wallet or application frontend.
+1. 在"Features"下的"OAuth & Permissions"中设置重定向URL。这应该是钱包或应用程序前端。
 
-	![1](images/zklogin-slack3.png "Set Redirect URL")
+	![1](images/zklogin-slack3.png "设置重定向URL")
 
-	*Set Redirect URL*
+	*设置重定向URL*
 
-## Get JWT Token
+## 获取JWT令牌
 
-1. Generate an ephemeral KeyPair. Follow the same process as you would generating a KeyPair in a traditional wallet. See [Sui SDK](https://sdk.mystenlabs.com/typescript/cryptography/keypairs) for details.
+1. 生成一个临时KeyPair。按照在传统钱包中生成KeyPair的相同过程进行。详细信息请参见 [Sui SDK](https://sdk.mystenlabs.com/typescript/cryptography/keypairs)。
 
-1. Set the expiration time for the ephemeral KeyPair. The wallet decides whether the maximum epoch is the current epoch or later. The wallet also determines whether this is adjustable by the user.
+1. 为临时KeyPair设置过期时间。钱包决定最大时期是当前时期还是以后的时期。钱包还确定是否用户可以调整此设置。
 
-1. Assemble the OAuth URL with configured client ID, redirect URL, ephemeral public key and nonce: This is what the application sends the user to complete the login flow with a computed [nonce](#notations).
+1. 使用配置的客户端ID、重定向URL、临时公钥和随机数组装OAuth URL：这是应用程序发送给用户以完成登录流程的内容，其中包括计算的[随机数](#notations)。
 
 ```typescript
 import { generateNonce, generateRandomness } from '@mysten/zklogin';
@@ -200,11 +200,11 @@ const ephemeralKeyPair = new Ed25519Keypair();
 const randomness = generateRandomness();
 const nonce = generateNonce(ephemeralKeyPair.getPublicKey(), maxEpoch, randomness);
 ```
-The auth flow URL can be constructed with `$CLIENT_ID`, `$REDIRECT_URL` and `$NONCE`.
+T认证流URL可以使用 `$CLIENT_ID`、`$REDIRECT_URL` 和 `$NONCE` 构建。
 
-For some providers ("Yes" for "Auth Flow Only"), the JWT token can be found immediately in the redirect URL after the auth flow.
+对于某些提供商（在“仅认证流”中选择“是”），JWT令牌可以立即在认证流之后的重定向URL中找到。
 
-For other providers ("No" for "Auth Flow Only"), the auth flow only returns a code (`$AUTH_CODE`) in redirect URL. To retrieve the JWT token, an additional POST call is required with "Token Exchange URL".
+对于其他提供商（在“仅认证流”中选择“否”），认证流只返回重定向URL中的代码（`$AUTH_CODE`）。要检索JWT令牌，需要使用“Token Exchange URL”进行额外的POST调用。
 
 | Provider | Auth Flow URL | Token Exchange URL | Auth Flow Only |
 | ----------- | ----------- | ----------- | ----------- |
@@ -215,17 +215,17 @@ For other providers ("No" for "Auth Flow Only"), the auth flow only returns a co
 | Apple | `https://appleid.apple.com/auth/authorize?client_id=$CLIENT_ID&redirect_uri=$REDIRECT_URL&scope=email&response_mode=form_post&response_type=code%20id_token&nonce=$NONCE` | N/A | Yes |
 | Slack | `https://slack.com/openid/connect/authorize?response_type=code&client_id=$CLIENT_ID&redirect_uri=$REDIRECT_URL&nonce=$NONCE&scope=openid` | `https://slack.com/api/openid.connect.token?code=$AUTH_CODE&client_id=$CLIENT_ID&client_secret=$CLIENT_SECRET` | No |
 
-## Decoding JWT
+## 解码JWT
 
-Upon successful redirection the ID Provider will attach the JWT token as a URL parameter (Using the Google Flow as an example)
+在成功重定向后，身份提供商将JWT令牌作为URL参数附加（以Google流程为例）
 
 ```
 http://host/auth?id_token=tokenPartA.tokenPartB.tokenPartC&authuser=0&prompt=none
 ```
 
-The `id_token` param is the JWT token in encoded format. You can validate the correctness of the encoded token and investigate its structure by pasting it in the [jwt.io](https://jwt.io) website.
+`id_token` 参数是以编码格式的JWT令牌。您可以通过将其粘贴到 [jwt.io](https://jwt.io) 网站中来验证编码令牌的正确性并调查其结构。
 
-To decode the JWT you can use a library like: `jwt_decode:` and map the response to the provided type `JwtPayload`:
+要解码JWT，您可以使用类似 `jwt_decode` 的库，并将响应映射到提供的类型 `JwtPayload`：
 
 ```typescript
 
@@ -242,17 +242,17 @@ export interface JwtPayload {
 }
 ```
 
-## User Salt Management
+## 用户盐管理
 
-User salt is used when computing the zkLogin Sui address (see [definition](#address-definition)). The salt is required to be a 16-bytes value or a integer smaller than `2n**128n`. There are several options for the application to maintain the user salt:
-1. Client Side:
-   - Option 1: Request user input for the salt during wallet access, transferring the responsibility to the user, who must then remember it.
-   - Option 2: Browser or Mobile Storage: Ensure proper workflows to prevent users from losing wallet access during device or browser changes. One approach is to email the salt during new wallet setup.
-2. Backend service that exposes an endpoint that returns a unique salt for each user consistently.
-   - Option 3: Store a mapping from user identifier (e.g. `sub`) to user salt in a conventional database (e.g. `user` or `password` table). The salt is unique per user.
-   - Option 4: Implement a service that keeps a master seed value, and derive a user salt with key derivation by validating and parsing the JWT token. For example, use `HKDF(ikm = seed, salt = iss || aud, info = sub)` defined [here](https://github.com/MystenLabs/fastcrypto/blob/e6161f9279510e89bd9e9089a09edc018b30fbfe/fastcrypto/src/hmac.rs#L121). Note that this option does not allow any rotation on master seed or change in client ID (i.e. aud), otherwise a different user address will be derived and will result in loss of funds.
+在计算zkLogin Sui地址时使用用户盐（请参见 [定义](#address-definition)）。盐必须是一个16字节的值，或者小于`2n**128n`的整数。应用程序在维护用户盐时有几个选项：
+1. 客户端端：
+   - 选项1：在访问钱包时请求用户输入盐，将责任转移到用户身上，用户需要记住盐。
+   - 选项2：浏览器或移动存储：确保适当的工作流程，以防止用户在更改设备或浏览器时失去钱包访问。一种方法是在设置新钱包时通过电子邮件发送盐。
+2. 公开一个端点的后端服务，该端点为每个用户一致返回唯一的盐。
+   - 选项3：在传统数据库中（例如 `user` 或 `password` 表）存储从用户标识符（例如 `sub`）到用户盐的映射。每个用户的盐是唯一的。
+   - 选项4：实现一个服务，保留主种子值，并通过验证和解析JWT令牌派生用户盐，使用密钥派生，例如使用 `HKDF(ikm = seed, salt = iss || aud, info = sub)` 在 [这里](https://github.com/MystenLabs/fastcrypto/blob/e6161f9279510e89bd9e9089a09edc018b30fbfe/fastcrypto/src/hmac.rs#L121)定义。请注意，此选项不允许在主种子上进行旋转或更改客户端ID（即aud），否则将导致派生不同用户地址，可能会导致资金丢失。
 
-Here's an example request and response for the Mysten Labs-maintained salt server (using option 4). If you wish to use the Mysten ran salt server, please contact us for whitelisting your registered client ID. Only valid JWT token authenticated with whitelisted client IDs are accepted.
+以下是Mysten Labs维护的盐服务器的示例请求和响应（使用选项4）。如果您希望使用Mysten运行的盐服务器，请联系我们以将您注册的客户端ID列入白名单。只有使用已列入白名单的客户端ID进行身份验证的有效JWT令牌才会被接受。
 
 ```bash
 curl -X POST https://salt.api.mystenlabs.com/get_salt -H 'Content-Type: application/json' -d '{"token": "$JWT_TOKEN"}'
@@ -260,11 +260,11 @@ curl -X POST https://salt.api.mystenlabs.com/get_salt -H 'Content-Type: applicat
 Response: {"salt":"129390038577185583942388216820280642146"}
 ```
 
-User salt is used to disconnect the OAuth identifier (sub) from the on-chain Sui address to avoid linking Web2 credentials with Web3 credentials. While losing or misusing the salt could enable this link, it wouldn't compromise fund control or zkLogin asset authority. See more discussion [here](#security-and-privacy).
+用户盐用于断开OAuth标识符（sub）与链上Sui地址之间的关联，以避免将Web2凭据与Web3凭据关联起来。尽管失去或滥用盐可能会启用此关联，但不会危及资金控制或zkLogin资产权限。请参阅更多讨论 [这里](#security-and-privacy)。
 
-## Get the User's Sui Address
+## 获取用户的Sui地址
 
-Once the OAuth flow completes, the JWT token can be found in the redirect URL. Along with the user salt, the zkLogin address can be derived as follows:
+一旦OAuth流程完成，JWT令牌可以在重定向URL中找到。结合用户盐，可以按照以下步骤派生zkLogin地址：
 
 ```typescript
 import { jwtToAddress } from '@mysten/zklogin';
@@ -272,11 +272,11 @@ import { jwtToAddress } from '@mysten/zklogin';
 const zkLoginUserAddress = jwtToAddress(jwt, userSalt);
 ```
 
-## Get the Zero-Knowledge Proof
+## 获取零知识证明
 
-The next step is to fetch the ZK proof. This is an attestation (proof) over the ephemeral key pair that proves the ephemeral key pair is valid.
+下一步是获取ZK证明。这是对临时密钥对的一种证明，证明临时密钥对是有效的。
 
-First, generate the extended ephemeral public key to use as an input to the ZKP.
+首先，生成扩展的临时公钥，以将其用作ZKP的输入。
 
 ```typescript
 import { getExtendedEphemeralPublicKey } from '@mysten/zklogin';
@@ -284,26 +284,26 @@ import { getExtendedEphemeralPublicKey } from '@mysten/zklogin';
 const extendedEphemeralPublicKey = getExtendedEphemeralPublicKey(ephemeralKeyPair.getPublicKey());
 ```
 
-You need to fetch a new ZK proof if the previous ephemeral key pair is expired or is otherwise inaccessible.
+如果之前的临时密钥对已过期或无法访问，您需要获取一个新的ZK证明。
 
-Because generating a ZK proof can be resource-intensive and potentially slow on the client side, it's advised that wallets utilize a backend service endpoint dedicated to ZK proof generation.
+由于在客户端生成ZK证明可能会消耗大量资源并且潜在地较慢，建议钱包使用专用于ZK证明生成的后端服务端点。
 
-There are two options:
-1. Call the Mysten Labs-maintained proving service
-1. Run the proving service in your backend using the provided Docker images.
+有两个选项：
+1. 调用Mysten Labs维护的证明服务
+1. 在您的后端使用提供的Docker映像运行证明服务。
 
-### Call the Mysten Labs-maintained proving service
+### 调用Mysten Labs维护的证明服务
 
-If you wish to use the Mysten ran ZK Proving Service for Mainnet, please contact us for whitelisting your registered client ID. Only valid JWT token authenticated with whitelisted client IDs are accepted.
+如果您希望在Mainnet上使用Mysten运行的ZK Proving Service，请联系我们，以便将您的注册客户端ID列入白名单。仅接受使用列入白名单的客户端ID进行身份验证的有效JWT令牌。
 
-To use `prover-dev` endpoint, you do not need to whitelist client IDs. Note that the proof generated with the `prover-dev` endpoint can only be submitted for Devnet zkLogin transactions, submitting it to Testnet or Mainnet fails.
+要使用`prover-dev`端点，您无需列入白名单客户端ID。请注意，使用`prover-dev`端点生成的证明只能提交用于Devnet zkLogin交易，将其提交到Testnet或Mainnet将失败。
 
-| Network | Prover URL |
+| 网络 | Prover URL |
 | ------- | ---------- |
 | Mainnet, Testnet | https://prover.mystenlabs.com/v1 |
 | Devnet | https://prover-dev.mystenlabs.com/v1 |
 
-You can use BigInt or Base64 encoding for `extendedEphemeralPublicKey`, `jwtRandomness`, and `salt`. The following examples show two sample requests with the first using BigInt encoding and the second using Base64.
+您可以使用BigInt或Base64编码来处理 `extendedEphemeralPublicKey`，`jwtRandomness`和 `salt`。以下示例展示了两个样本请求，第一个使用BigInt编码，第二个使用Base64。
 
 ```bash
 curl -X POST $PROVER_URL -H 'Content-Type: application/json' \
@@ -325,7 +325,7 @@ curl -X POST $PROVER_URL -H 'Content-Type: application/json' \
 }'
 ```
 
-Response:
+回应：
 
 ```json
 {
@@ -347,11 +347,11 @@ Response:
 }
 ```
 
-### How to handle CORS error
+### 如何处理CORS错误
 
-To avoid possible CORS errors in Frontend apps, it is suggested to delegate this call to a backend service.
+为了避免在前端应用中可能出现的CORS错误，建议将此调用委托给后端服务。
 
-The response can be mapped to the inputs parameter type of `getZkLoginSignature` of zkLogin SDK.
+响应可以映射到zkLogin SDK的 `getZkLoginSignature` 方法的输入参数类型。
 
 ```typescript
 const proofResponse = await post('/your-internal-api/zkp/get', zkpRequestPayload);

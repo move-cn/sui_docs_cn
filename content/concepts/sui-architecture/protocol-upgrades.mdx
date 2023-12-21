@@ -1,37 +1,35 @@
 ---
-title: Protocol Upgrades
-description: The Sui protocol, framework, and execution engine are frequently extended to include new functionality and bug fixes. The process to upgrade the network ensures clients use the same source.
+title: 协议升级
+description: Sui 协议、框架和执行引擎经常进行扩展，包括新功能和错误修复。升级网络的过程确保客户端使用相同的源代码。
 ---
 
-The Sui protocol, framework, and execution engine are frequently extended to include new functionality and bug fixes. This functionality is added in the form of new code which is released to validator operators as part of our regular software releases. The Sui protocol, however, requires that all Sui validators agree about the results of executing each transaction. 
+Sui 协议、框架和执行引擎经常进行扩展，包括新功能和错误修复。这些功能以新代码的形式添加，作为我们定期软件发布的一部分提供给验证器运营商。然而，Sui 协议要求所有 Sui 验证器在执行每个交易的结果上达成一致。
 
-This poses the following challenge: How do we release code that changes transaction execution, given that it is not possible to ensure that all operators upgrade their software at the same instant? Further, how do we ensure that all Sui transaction history can be replayed even after functionality has changed?
+这带来了以下挑战：在无法确保所有运营商同时升级其软件的情况下，如何发布改变交易执行的代码？此外，在功能发生变化后，如何确保所有 Sui 交易历史都可以重放？
 
-To solve this problem, Sui uses a process called protocol upgrades.
+为解决这个问题，Sui 使用了一个称为协议升级的过程。
 
-# Protocol upgrade process
+# 协议升级过程
 
-An outline of the process used for protocol upgrades includes the following steps:
+用于协议升级的过程概述如下步骤：
 
-1. A Sui developer codes the new feature, but restricts access to the feature using a "feature flag"  - a boolean config variable that is initially set to false.
-1. The value of the feature flag is retrieved from a struct called `ProtocolConfig`.
-1. The developer creates a new version of the `ProtocolConfig` struct where the new feature flag is set to true.
-1. A new release of the Sui validator software is built and released to validator and Full node operators.
-1. When the validator process starts up, it continues to use the previous version of `ProtocolConfig` (in which the flag is false). This way, all validators continue behaving identically regardless of whether they have the new software or not.
-1. As validators are upgraded, they signal to the rest of the validator committee that they are prepared to switch to the new version of the configuration (in which the flag is enabled).
-1. If enough validators vote to switch to the new protocol version, then the new version takes effect at the beginning of the next epoch.
-1. The new feature now comes into effect.
+1. Sui 开发人员编写新功能的代码，但使用“功能标志”限制对该功能的访问 - 这是一个最初设置为 false 的布尔配置变量。
+1. 从称为 `ProtocolConfig` 的结构中检索功能标志的值。
+1. 开发人员创建 `ProtocolConfig` 结构的新版本，其中新功能标志设置为 true。
+1. 构建并发布 Sui 验证器软件的新版本，供验证器和完整节点运营商使用。
+1. 当验证器进程启动时，它继续使用先前版本的 `ProtocolConfig`（其中标志为 false）。这样，无论验证器是否安装了新软件，所有验证器都保持相同的行为。
+1. 随着验证器的升级，它们向验证器委员会的其余部分发出信号，表示它们准备切换到新版本的配置（其中标志已启用）。
+1. 如果足够多的验证器投票切换到新的协议版本，则新版本将在下一轮开始时生效。
+1. 新功能现在开始生效。
 
-Full nodes follow a similar process, however, they do not participate in voting. Instead, they follow the actions that validators recorded. 
+完整节点遵循类似的过程，但它们不参与投票。相反，它们遵循验证器记录的操作。
 
-When validators switch to a new protocol version, they do so by recording the new version number in the special end-of-epoch transaction. Full nodes execute this transaction as they are replaying the chain history, and are thus able to switch to the new protocol version at the right time.
+当验证器切换到新的协议版本时，它们通过在特殊的轮末事务中记录新版本号来完成。完整节点在重放链历史时执行此事务，因此能够在正确的时间切换到新的协议版本。
 
-# Framework upgrades
+# 框架升级
 
-Not all new Sui functionality comes in the form of changes to the validator code. There are also changes to the Sui framework. For instance, Sui developers periodically add new native functions to the framework to expose new functionality to smart contracts. The process for framework updates is similar to protocol upgrades.
+并非所有新的 Sui 功能都以更改验证器代码的形式出现。还有对 Sui 框架的更改。例如，Sui 开发人员定期向框架中添加新的本机函数，以向智能合约公开新功能。框架更新的过程类似于协议升级。
 
-Instead of using feature flags, however, Sui objects are used to coordinate framework changes. The Sui framework is a special object with id `0x2`.
-The Move source code for the framework is built into the validator binary.
+但是，与使用功能标志不同，Sui 对象用于协调框架更改。Sui 框架是一个具有 ID `0x2` 的特殊对象。框架的 Move 源代码内置到验证器二进制文件中。
 
-If the validator notices that its built-in framework is different from the framework in object `0x2`, it signals to the other validators that it would like to upgrade the framework to a new version. Just as with changes to `ProtocolConfig`, if enough validators agree to perform the upgrade, the new framework object is written at the end of the current epoch. Then, transactions that are executed in the new epoch use the new version of the framework.
-
+如果验证器注意到其内置框架与对象 `0x2` 中的框架不同，它向其他验证器发出信号，表示它希望将框架升级到新版本。就像对 `ProtocolConfig` 的更改一样，如果足够多的验证器同意执行升级，则新框架对象将写入当前轮的末尾。然后，在新轮执行的交易中使用框架的新版本。

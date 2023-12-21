@@ -2,7 +2,7 @@
 title: Strings
 ---
 
-Move does not have a native type for strings, but it has a useful wrapper.
+在 Move 中，没有原生的字符串类型，但有一个有用的装饰器。
 
 ```move
 module examples::strings {
@@ -32,9 +32,9 @@ module examples::strings {
 }
 ```
 
-## String literals
+## 字符串字面量
 
-Define string literals in Move as byte strings. To do so, prepend `b` to your string.
+在 Move 中，通过将字符串前置 `b` 来将其定义为字节字符串。
 
 ```move
 const IMAGE_URL: vector<u8> = b"https://api.capy.art/capys/";

@@ -4,7 +4,7 @@ title: Hot Potato
 
 import ExampleImport from '@site/src/components/ExampleImport';
 
-A hot potato is a struct that has no capabilities, therefore you can only pack and unpack it in its module. In this struct, you must call function B after function A in the case where function A returns a hot potato and function B consumes it. A hot potato pattern is useful when implementing flash loans, for example.
+热土豆是一个没有能力的结构，因此您只能在其模块中打包和解包它。在这个结构中，在函数 A 返回一个热土豆并且函数 B 消耗它的情况下，您必须在函数 A 之后调用函数 B。例如，在实现闪电贷款时，热土豆模式非常有用。
 
 ```move
 module examples::trade_in {
@@ -71,4 +71,5 @@ module examples::trade_in {
 }
 ```
 
-The Sui repository includes [several examples](https://github.com/MystenLabs/sui/tree/main/examples/move) that demonstrate Sui capabilities. The [Flash Loan](https://github.com/MystenLabs/sui/blob/main/examples/move/flash_lender/sources/example.move) code in those examples demonstrates the pattern this topic describes.
+Sui存储库包含多个示例，演示了Sui的各种功能。这些示例中的[闪电贷款](https://github.com/MystenLabs/sui/blob/main/examples/move/flash_lender/sources/example.move)代码演示了本主题描述的模式。
+

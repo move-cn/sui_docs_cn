@@ -1,16 +1,16 @@
 ---
-title: ID Pointer
+title: ID指针
 ---
 
-ID pointer is a technique that separates the main data (an object) and its accessors/capabilities by linking the latter to the original. There's a few different ways you can use this pattern:
+ID指针是一种将主要数据（对象）与其访问器/功能分离的技术，通过将后者与原始数据链接起来。有几种不同的方式可以使用这种模式：
 
-- Issuing transferable capabilities for shared objects (for example, a TransferCap that changes 'owner' field of a shared object)
-- Splitting dynamic data and static (for example, an NFT and its collection information)
-- Avoiding unnecessary type linking (and witness requirement) in generic applications (LP token for a `LiquidityPool`)
+- 发行共享对象的可转让功能（例如，更改共享对象的'所有者'字段的TransferCap）
+- 拆分动态数据和静态数据（例如，NFT及其集合信息）
+- 在通用应用程序中避免不必要的类型链接（和见证要求）（LiquidityPool的LP代币）
 
-The following example implements basic `Lock` and `Key` mechanics on Sui where `Lock<T>` is a shared object that can contain any object, and `Key` is an owned object, which is required to get access to the contents of the lock.
+以下示例在Sui上实现了基本的`Lock`和`Key`机制，其中`Lock<T>`是一个共享对象，可以包含任何对象，而`Key`是一个拥有的对象，需要获取对锁内容的访问权限。
 
-`Key` is linked to its `Lock` using an `ID` field. This check allows off-chain discovery of the target, as well as splits the dynamic transferable capability and the 'static' contents. Another benefit of this approach is that the target asset is always discoverable, while you can wrap its `Key` into another object (such as a marketplace listing).
+`Key`通过一个`ID`字段与其`Lock`关联。这种检查允许在链下发现目标，同时拆分动态可转让的功能和“静态”内容。这种方法的另一个好处是目标资产始终是可发现的，同时您可以将其`Key`包装到另一个对象中（例如市场上的列表）。
 
 ```move
 module examples::lock_and_key {
@@ -104,7 +104,7 @@ module examples::lock_and_key {
 }
 ```
 
-This pattern is used in these examples:
+这个模式在以下示例中使用：
 
 - [Escrow](https://github.com/MystenLabs/sui/blob/main/examples/move/escrow/sources/example.move)
 - [Hero](https://github.com/MystenLabs/sui/blob/main/examples/move/hero/sources/example.move)

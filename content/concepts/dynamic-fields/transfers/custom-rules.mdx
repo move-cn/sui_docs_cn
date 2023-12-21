@@ -1,22 +1,22 @@
 ---
-title: Custom Transfer Rules
-description: Custom transfer rules enable you to define a set of rules that must be met before Sui considers a transfer operation valid.
+title: 自定义转账规则
+description: 自定义转账规则使您能够在Sui考虑转账操作有效之前定义必须满足的一组规则。
 ---
 
-Every Sui object must have the `key` ability. The `store` ability, on the other hand, is an optional ability you can add to Sui objects. Objects with the `store` ability:
+每个Sui对象必须具有`key`能力。另一方面，`store`能力是您可以添加到Sui对象的可选能力。具有`store`能力的对象：
 
-- are transferable by anyone using the `sui::transfer::public_transfer` function; and
-- are able to be wrapped in other objects.
+- 可以被任何人使用`sui::transfer::public_transfer`函数进行转账；
+- 可以被包装在其他对象中。
 
-Importantly for custom transfer rules, if the Sui object `O` does not have the `store` ability, you cannot call the `sui::transfer::public_transfer` function to transfer it. The Move module that defines `O` is the only entity that can transfer objects of that type using the `sui::transfer::transfer` function. Consequently, the module that defines the object `O` can define a custom transfer function for `O` that can take any number of arguments, and enforce any restrictions desired for performing a transfer operation (for example, a fee must be paid in order to transfer the object).
+对于自定义转账规则来说，如果Sui对象`O`没有`store`能力，则不能调用`sui::transfer::public_transfer`函数对其进行转账。定义`O`的Move模块是唯一能够使用`sui::transfer::transfer`函数转移该类型对象的实体。因此，定义对象`O`的模块可以为`O`定义自定义转账函数，该函数可以接受任意数量的参数，并强制执行对执行转账操作所需的任何限制（例如，必须支付费用才能转移对象）。
 
-## The store ability and transfer rules
+## store能力和转账规则
 
-Custom transfer rules for objects enable you to define the transfer conditions that must be met for a valid transfer operation. You should be intentional about adding the `store` ability to an object because you are providing unrestricted access to that object without having to go through the module that defines it. After you enable public transfers on an object, there is no way of re-enabling custom transfer rules or any type of restrictions regarding the transfer of the object.
+对象的自定义转账规则使您能够定义必须满足的有效转账操作的转账条件。在将`store`能力添加到对象时，您应该有意识地添加，因为这样您可以在无需通过定义它的模块的情况下提供对该对象的无限制访问。在启用了对象的公共转账之后，就无法重新启用自定义转账规则或关于对象转账的任何类型的限制。
 
-## Example
+## 示例
 
-This example creates an object type `O` that is transferrable only if the `unlocked` flag inside of it is set to `true`:
+此示例创建了一个名为`O`的对象类型，只有当其内部的`unlocked`标志设置为`true`时才能进行转账：
 
 ```move
 struct O has key {
@@ -26,7 +26,7 @@ struct O has key {
 }
 ```
 
-Within the same module that defines the object `O`, you can then define a custom transfer rule `transfer_unlocked` for `O` that takes the object to transfer and the address to transfer it to, and verifies that the object is unlocked before transferring it to the specified address.
+在定义对象`O`的同一模块中，您可以为`O`定义一个名为`transfer_unlocked`的自定义转账规则。该规则接受要转移的对象和要转移到的地址，并在将其转移到指定地址之前验证该对象是否已解锁。
 
 ```move
 module examples::custom_transfer {
@@ -47,7 +47,7 @@ module examples::custom_transfer {
 }
 ```
 
-With custom transfer rules, you can define multiple different transfer rules for the same object. Each of these rules might have different restrictions that execution of the transaction can dynamically enforce. So, if you wanted to allow only locked objects to be transferred to a specific address you could add the following function to the previous module:
+使用自定义转账规则，您可以为同一对象定义多个不同的转账规则。每个规则可能具有不同的限制，执行事务时可以动态强制执行这些限制。因此，如果您只想允许将锁定的对象转移到特定地址，可以将以下函数添加到前面的模块：
 
 ```move
 const EObjectNotLocked: u64 = 1;
@@ -60,4 +60,4 @@ public fun transfer_locked(object: O) {
 }
 ```
 
-With these rules in place there are two different custom transfer rules for any object `O`; either it's unlocked and anyone can transfer it, or it's locked, and only `0xCAFE` can transfer it. Importantly, these two ways of transferring `O` are the only ways of transferring any object of type `O`. In particular, because `O` does not have the `store` ability, you cannot transfer it using the `sui::transfer::public_transfer` function. In fact, the only ways of transferring `O` are using `examples::custom_transfer::transfer_unlocked` and `examples::custom_transfer::transfer_locked`.
+有了这些规则，任何对象 `O` 都有两种不同的自定义转账规则；它要么是解锁的，任何人都可以转账，要么是锁定的，只有 `0xCAFE` 可以转账。重要的是，这两种转账 `O` 的方式是转移任何类型为 `O` 的对象的唯一方式。特别是，因为 `O` 没有 `store` 能力，您不能使用 `sui::transfer::public_transfer` 函数进行转账。事实上，转移 `O` 的唯一方式是使用 `examples::custom_transfer::transfer_unlocked` 和 `examples::custom_transfer::transfer_locked`。

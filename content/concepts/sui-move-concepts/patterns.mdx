@@ -1,29 +1,30 @@
 ---
 title: Patterns
-description: Move coding patterns, or techniques, solve logic problems you encounter when developing Move packages for the Sui blockchain. These include capabilities, witness and transferrable witness, hot potato, and ID pointer. 
+description: Move 编程模式或技巧，解决您在为 Sui 区块链开发 Move 包时遇到的逻辑问题。这包括 capabilities、witness 和 transferrable witness、hot potato 以及 ID 指针等。
 ---
 
-Topics in this section introduce Move coding patterns that solve various logic needs in your package development. 
+本节的主题介绍了解决包开发中各种逻辑需求的 Move 编程模式。
 
 ## Capabilities
 
-A capability is a pattern that allows authorizing actions with an object. See [Capabilities](./patterns/capabilities.mdx) for an example of this pattern.
+Capability 是一种允许使用对象授权操作的模式。请参阅[Capabilities](./patterns/capabilities.mdx)以获取此模式的示例。
 
-## Witness and transferrable witness
+## Witness 和 transferrable witness
 
-A witness is a type with `drop` that proves that its owner was present at the time of some privileged operation, for example having access to the one-time witness (OTW) for a module proves that the code is being run at the time the module was first published. See the following topics for details.
+Witness 是一种具有 `drop` 的类型，用于证明其所有者在某些特权操作的时间点出现，例如，访问模块的一次性见证（OTW）证明了代码正在模块首次发布时运行。有关详细信息，请参阅以下主题。
 
 - [Witness](./patterns/witness)
 - [Transferrable Witness](./patterns/transferrable-witness)
 
-## Hot potato
+## Hot Potato
 
-A hot potato is a struct that has no capabilities, therefore you can only pack and unpack it in its module.
+Hot Potato 是一种没有 capabilities 的结构体，因此您只能在其模块中打包和解包它。
 
 - [Hot Potato](./patterns/hot-potato)
 
-## ID pointer
+## ID Pointer
 
-Objects can refer to each other by using their IDs as pointers.  For example a capability that guards access to another object may store that object's `ID` to perform an authorization check.
+对象可以通过使用它们的 ID 作为指针相互引用。例如，保护对另一个对象访问的 capability 可能会存储该对象的 `ID` 以执行授权检查。
 
 - [ID Pointer](./patterns/id-pointer)
+

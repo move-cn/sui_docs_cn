@@ -1,15 +1,15 @@
 ---
-title: Shared Objects
-description: Anyone can access shared objects on the Sui network, so care must be taken to secure access, if needed.
+title: 共享对象
+description: 在 Sui 网络上，任何人都可以访问共享对象，因此如果需要，必须谨慎确保访问安全。
 ---
 
-A shared object is an object that is shared using the `sui::transfer::share_object` function and is accessible to everyone. Unlike owned objects, anyone can access shared ones on the network. Extended functionality and accessibility of this kind of objects requires additional effort by securing access, if needed.
+共享对象是使用 `sui::transfer::share_object` 函数共享的对象，可以被所有人访问。与拥有的对象不同，任何人都可以在网络上访问共享对象。这种类型的对象的扩展功能和可访问性需要额外的努力来确保访问安全，如果需要的话。
 
-Shared objects require the `key` ability.
+共享对象需要 `key` 能力。
 
-## Example
+## 示例
 
-The following example creates a shop to sell digital donuts. Everyone needs access to the shop to purchase donuts from it, so the example creates the shop as a shared object using `sui::transfer::share_object`.
+以下示例创建了一个销售数字甜甜圈的商店。每个人都需要访问商店才能从中购买甜甜圈，因此示例使用 `sui::transfer::share_object` 创建商店作为共享对象。
 
 ```move
 module examples::donuts {
