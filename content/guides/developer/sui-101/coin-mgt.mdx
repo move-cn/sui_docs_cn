@@ -1,40 +1,40 @@
 ---
-title: Coin Management
-description: Because Sui uses Coins as owned objects for transactions, you need to explicitly manage them in your programmable transaction block development.
+title: 代币管理
+description: 由于 Sui 在交易中使用代币作为所有权对象，您需要在可编程事务块开发中显式地管理它们。
 ---
 
-A key concept when programming on Sui is that of owned objects. Address-owned objects are important in that they allow for highly parallelizable transactions. And they also logically map to assets or resources that someone exclusively owns. Coins are a typical case of owned object usage, with cash being a real-life reference. The owned objects paradigm, however, and particularly as related to coins, is somewhat of a divergence from other blockchains which have a concept of balance. In other words, in other systems, especially account based systems, coins are held in a single location (field) which can be thought of as a balance in a bank account.
+在 Sui 上进行编程时的一个关键概念是所有权对象。地址所有的对象对于高度可并行化的交易至关重要。它们还在逻辑上映射到某人独占所有的资产或资源。代币是所有权对象使用的典型案例，其中现金是现实生活的参考。然而，所有权对象的范式，尤其是与代币相关的部分，与其他区块链的余额概念略有分歧。换句话说，在其他系统中，尤其是基于账户的系统中，代币存放在一个单一的位置（字段）中，可以被视为银行账户中的余额。
 
-Because Sui uses owned objects instead of a balance, it is common to own a number of coins, at times even a significant number of them. Some scenarios necessitate merging some or all of those coins into a single object. At times, merging coins together might even be required because the amount necessary to execute a transaction is more than any single coin the sender owns, thus making merging an inevitable step.
+由于 Sui 使用所有权对象而不是余额，通常拥有一些代币，有时甚至是相当数量的代币，是很常见的。一些情景需要合并一些或所有这些代币为单个对象。有时，合并代币可能是必需的，因为执行交易所需的金额超过发送方所拥有的任何单个代币，从而使合并成为不可避免的步骤。
 
-## SDK usage
+## SDK 使用
 
-The Sui SDKs ([TypeScript](https://sdk.mystenlabs.com/typescript) and [Rust](/references/rust-sdk.mdx)) manage coins on your behalf, removing the overhead of having to deal with coin management manually. The SDKs attempt to merge coins whenever possible and assume that transactions are executed in sequence. That's a reasonable assumption with wallet-based transactions and for common scenarios in general. Sui recommends relying on this feature if you do not have a need for heavy parallel or concurrent execution.
+Sui 的 SDK（[TypeScript](https://sdk.mystenlabs.com/typescript) 和 [Rust](/references/rust-sdk.mdx)）会代表您管理代币，消除了手动处理代币管理的繁琐。SDK 会在可能的情况下尝试合并代币，并假设交易是按顺序执行的。这是一个合理的假设，特别是对于基于钱包的交易和一般情况下的常见场景。Sui 建议在不需要进行大规模并行或并发执行的情况下依赖于此功能。
 
 ## Gas Smashing
 
-When executing a transaction Sui allows you to provide a number of coins as payment. In other words, the payment can be a vector of coins rather than a single coin. That feature, known as gas smashing, performs merging of coins automatically, and presents the PTBs you write with a single gas coin that can be used for other purposes besides just gas.
+在执行交易时，Sui 允许您提供多个代币作为付款。换句话说，支付可以是代币的向量，而不仅仅是单个代币。这个名为 gas smashing 的功能会自动执行代币合并，并为您编写的 PTB 提供一个可以用于除了 gas 之外的其他目的的单个 gas 代币。
 
-Basically, you can provide as many coins as you want (with a max limit defined in the protocol configuration) and have all of them merged (smashed) into the first coin provided as payment. That coin, minus the gas budget, is then available inside the transaction and can be used in any command. If the coin is unused it is returned to the user.
+基本上，您可以提供尽可能多的代币（在协议配置中定义的最大限制内），并将它们全部合并（smashed）到提供的第一个代币中。该代币在扣除 gas 预算后，然后可在交易内使用，并可用于任何命令。如果代币未使用，则会返回给用户。
 
-Gas smashing is an important feature - and a key concept to understand - to have for the optimal management of coins. See [Gas Smashing](/concepts/transactions/gas-smashing.mdx) for more details.
+Gas smashing 是一个重要的功能 - 也是一个需要理解的关键概念 - 用于最佳管理代币。有关更多详细信息，请参阅[Gas Smashing](/concepts/transactions/gas-smashing.mdx)。
 
-## Generic coins
+## 通用代币
 
-Gas smashing works well for `Coin<Sui>` objects, which is the only coin type that can be used for gas payment.
+Gas smashing 对于 `Coin<Sui>` 对象非常有效，这是唯一可以用于支付 gas 的代币类型。
 
-Any other coin type requires explicit management from users. PTBs offer a `mergeCoins` command that you can use to combine multiple coins into a single one. And a `splitCoins` as the complementary operation to break them up.
+其他任何代币类型都需要用户进行显式管理。PTB 提供了一个 `mergeCoins` 命令，您可以使用它将多个代币合并为单个代币。还有一个 `splitCoins` 作为补充操作来拆分它们。
 
-From a cost perspective, those are very cheap transactions, however they require a user to be aware of their coin distribution and their own needs.
+从成本的角度来看，这些是非常便宜的交易，但是需要用户意识到他们的代币分布和自己的需求。
 
-## Concurrency
+## 并发性
 
-Merging coins, and particularly `Coin<Sui>`, into a single coin or a very small number of coins might prove problematic in scenarios where heavy or high concurrency is required.
+在需要重度或高并发性的场景中，将代币（尤其是 `Coin<Sui>`）合并为单个代币或非常少量的代币可能会在某些情况下出现问题。
 
-If you merge all `Coin<Sui>` into a single one, you would need to sequentially submit every transaction. The coin - being an owned object - would have to be provided with a version and it would be locked by the system when signing a transaction, effectively making it impossible to use it in any other transaction until the one that locked it was executed. Moreover, an attempt to sign multiple transactions with the same coin might result in equivocation and the coin being unusable and locked until the end of the epoch.
+如果将所有 `Coin<Sui>` 合并为单个代币，则需要按顺序提交每个事务。由于代币是一个所有权对象，因此在签署事务时必须提供版本，并且在执行锁定它的事务后，系统将其锁定，从而无法在其他事务中使用它。此外，尝试使用同一个代币签署多个事务可能导致模棱两可，使代币无法使用并在时代结束前被锁定。
 
-So when you require heavy concurrency, you should first split a coin into as many coins as the number of transactions to execute concurrently. Alternatively, you could provide multiple and different coins (gas smashing) to the different transactions. It is critically important that the set of coins you use in the different transactions has no intersection at all.
+因此，在需要重度并发性时，您应该首先将一个代币拆分为与要并发执行的事务数相同的代币。或者，您可以为不同的事务提供多个不同的代币（gas smashing）。至关重要的是，您在不同事务中使用的代币集合根本不能有任何交集。
 
-The possible pitfalls in dealing with heavy concurrency are many. Concurrency in transaction execution is not the only performance bottleneck. In creating and submitting a transaction, several round trips with a Full node might be required to discover and fetch the right objects, and to dry run a transaction. Those round trips might affect performance significantly.
+在处理重度并发时可能存在许多潜在问题。事务执行中的并发性并不是唯一的性能瓶颈。在创建和提交事务时，可能需要与全节点进行几轮往返，以发现和获取正确的对象，并进行事务干扰。这些往返可能会显著影响性能。
 
-Concurrency is a difficult subject and is beyond the scope of this documentation. You must take maximum care when dealing with coin management in the face of concurrency, and the right strategy is often tied to the specific scenario, rather than universally available.
+并发性是一个复杂的主题，超出了此文档的范围。在处理并发情况下的代币管理时，您必须在最大程度上小心，并且正确的策略通常与具体的场景相关，而不是通用适用。

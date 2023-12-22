@@ -1,27 +1,27 @@
 ---
-title: Get SUI Tokens
+title: 获取 SUI 代币
 ---
 
-Sui faucet is a helpful tool where Sui developers can get free test SUI tokens to deploy and interact with their programs on Sui's Devnet and Testnet networks. There is no faucet for Sui Mainnet.
+Sui 水龙头是一个有用的工具，Sui 开发人员可以从中获取免费的测试 SUI 代币，以便在 Sui 的 Devnet 和 Testnet 网络上部署和与其程序交互。Sui Mainnet 没有水龙头。
 
-## Prerequisites
+## 先决条件
 
-To request tokens from the faucet, you must own a wallet address that can receive the SUI tokens. See the [Get Sui Address](./get-address.mdx) topic if you don't already have an address or need to create a new one.
+要从水龙头请求代币，您必须拥有一个能够接收 SUI 代币的钱包地址。如果您还没有地址或需要创建新地址，请参阅 [获取 Sui 地址](./get-address.mdx) 主题。
 
-## Request test tokens through Discord
+## 通过 Discord 请求测试代币
 
-1. Join [Discord](https://discord.gg/sui).
-   If you try to join the Sui Discord channel using a newly created Discord account, you may need to wait a few days for validation.
-1. Request test SUI tokens in the Sui [#devnet-faucet](https://discord.com/channels/916379725201563759/971488439931392130) or [#testnet-faucet](https://discord.com/channels/916379725201563759/1037811694564560966) Discord channels. Send the following message to the channel with your client address:
+1. 加入 [Discord](https://discord.gg/sui)。
+   如果您尝试使用新创建的 Discord 帐户加入 Sui Discord 频道，可能需要等待几天进行验证。
+1. 在 Sui [#devnet-faucet](https://discord.com/channels/916379725201563759/971488439931392130) 或 [#testnet-faucet](https://discord.com/channels/916379725201563759/1037811694564560966) Discord 频道中请求测试 SUI 代币。将以下消息发送到频道，并附上您的客户端地址：
    `!faucet <Your client address>`
 
-## Request test tokens through wallet
+## 通过钱包请求测试代币
 
-You can request test tokens within [Sui Wallet](https://github.com/MystenLabs/mysten-app-docs/blob/main/mysten-sui-wallet.md#add-sui-tokens-to-your-sui-wallet).
+您可以在 [Sui 钱包](https://github.com/MystenLabs/mysten-app-docs/blob/main/mysten-sui-wallet.md#add-sui-tokens-to-your-sui-wallet) 中请求测试代币。
 
-## Request test tokens through cURL
+## 通过 cURL 请求测试代币
 
-Use the following cURL command to request tokens directly from the faucet server:
+使用以下 cURL 命令直接从水龙头服务器请求代币：
 
 ```
 curl --location --request POST 'https://faucet.devnet.sui.io/gas' \
@@ -33,14 +33,14 @@ curl --location --request POST 'https://faucet.devnet.sui.io/gas' \
 }'
 ```
 
-If you're working with a local network, replace `'https://faucet.devnet.sui.io/gas'` with the appropriate value based on which package runs your network:
+如果您正在使用本地网络，请根据运行网络的软件包替换 `'https://faucet.devnet.sui.io/gas'` 为适当的值：
 
 - `sui-faucet`: `http://127.0.0.1:5003/gas`
 - `sui-test-validator`: `http://127.0.0.1:9123/gas`
 
-## Request test tokens through TypeScript SDK
+## 通过 TypeScript SDK 请求测试代币
 
-You can also access the faucet using the Sui TypeScript-SDK.
+您还可以使用 Sui TypeScript-SDK 访问水龙头。
 
 ```typescript
 import { requestSuiFromFaucetV0, getFaucetHost } from '@mysten/sui.js/faucet';
@@ -53,6 +53,6 @@ await requestSuiFromFaucetV0({
 });
 ```
 
-## Test tokens on a local network
+## 在本地网络上测试代币
 
-If you are running a local Sui network, you can get tokens from your local faucet. See the [Connect to a Local Network](./local-network.mdx#use-the-local-faucet) topic for details.
+如果您正在运行本地 Sui 网络，可以从本地水龙头获取代币。有关详细信息，请参阅 [连接到本地网络](./local-network.mdx#use-the-local-faucet) 主题。

@@ -1,15 +1,15 @@
 ---
-title: Access On-Chain Time
-description: Access network-based time for your transactions. Sui provides a Clock module to capture near-real time or epoch time in your Sui packages.
+title: 访问链上时间
+description: 为您的交易访问基于网络的时间。Sui 提供了一个 Clock 模块，用于在您的 Sui 包中捕获准实时或时代时间。
 ---
 
-You have options when needing to access network-based time for your transactions. If you need a near real-time measurement (within a few seconds), use the immutable reference of time provided by the `Clock` module in Move. The reference value from this module updates with every network checkpoint. If you don't need as current a time slice, use the `epoch_timestamp_ms` function to capture the precise moment the current epoch started.
+在需要访问基于网络的时间以进行交易时，您有多种选择。如果您需要准实时测量（在几秒内），请使用 Move 中的 `Clock` 模块提供的不可变时间参考。此模块的参考值会随每个网络检查点更新。如果您不需要当前时间片，可以使用 `epoch_timestamp_ms` 函数捕获当前时代开始的精确时刻。
 
-## The sui::clock::Clock module
+## sui::clock::Clock 模块
 
-To access a prompt timestamp, you must pass a read-only reference of `sui::clock::Clock` as an entry function parameter in your transactions. An instance of `Clock` is provided at address `0x6`, no new instances can be created.
+要访问提示时间戳，您必须将 `sui::clock::Clock` 的只读引用作为入口函数参数传递给您的交易。Clock 的实例提供在地址 `0x6`，不允许创建新实例。
 
-Extract a unix timestamp in milliseconds from an instance of `Clock` using
+从 `Clock` 实例中使用以毫秒为单位的 Unix 时间戳
 
 ```move
 module sui::clock {
@@ -17,7 +17,7 @@ module sui::clock {
 }
 ```
 
-The example below demonstrates an entry function that emits an event containing a timestamp from the `Clock`:
+以下示例演示了一个入口函数，该函数触发一个包含来自 `Clock` 的时间戳的事件：
 
 ```move
 module example::clock {
@@ -36,21 +36,21 @@ module example::clock {
 }
 ```
 
-A call to the previous entry function takes the following form, passing `0x6` as the address for the `Clock` parameter:
+对前述入口函数的调用采用以下形式，将 `0x6` 作为 `Clock` 参数的地址传递：
 
 ```shell
 sui client call --package <EXAMPLE> --module 'clock' --function 'access' --args '0x6' --gas-budget <GAS-AMOUNT>
 ```
 
-Expect the `Clock` timestamp to change **every 2 to 3 seconds**, at the rate the network commits checkpoints.
+预计 `Clock` 时间戳将以每 2 到 3 秒的速度更改，这是网络提交检查点的速率。
 
-Successive calls to `sui::clock::timestamp_ms` in the same transaction always produce the same result (transactions are considered to take effect instantly), but timestamps from `Clock` are otherwise monotonic across transactions that touch the same shared objects: Successive transactions seeing a greater or equal timestamp to their predecessors.
+在同一交易中对 `sui::clock::timestamp_ms` 的连续调用始终产生相同的结果（交易被认为立即生效），但来自 `Clock` 的时间戳在接触相同共享对象的跨交易中是单调递增的：连续的交易看到比它们的前任时间戳大或相等。
 
-Any transaction that requires access to a `Clock` must go through consensus because the only available instance is a shared object. As a result, this technique is not suitable for transactions that must use the single-owner fastpath (see Epoch timestamps for a single-owner-compatible source of timestamps).
+任何需要访问 `Clock` 的交易都必须经过共识，因为唯一可用的实例是一个共享对象。因此，这种技术不适用于必须使用单一所有者快速路径的交易（请参阅 Epoch 时间戳，了解时间戳的单一所有者兼容源）。
 
-Transactions that use the clock must accept it as an **immutable reference** (not a mutable reference or value). This prevents contention, as transactions that access the `Clock` can only read it, so do not need to be sequenced relative to each other. Validators refuse to sign transactions that do not meet this requirement and packages that include entry functions that accept a `Clock` or `&mut Clock` fail to publish.
+使用时钟的交易必须将其视为**不可变引用**（而不是可变引用或值）。这可以防止争用，因为访问 `Clock` 的交易只能读取它，因此不需要相对于彼此进行排序。验证器拒绝签署不符合此要求的交易，包括接受 `Clock` 或 `&mut Clock` 的入口函数的软件包将无法发布。
 
-The following functions test `Clock`-dependent code by manually creating a `Clock` object and manipulating its timestamp. This is possible only in test code:
+以下函数通过手动创建 `Clock` 对象并操纵其时间戳来测试与 `Clock` 相关的代码。这仅在测试代码中才可能：
 
 ```move
 module sui::clock {
@@ -71,7 +71,7 @@ module sui::clock {
 }
 ```
 
-The next example presents a simple test that creates a Clock, increments it, and then checks its value:
+下一个示例呈现了一个简单的测试，创建一个 Clock，增加它，然后检查它的值：
 
 ```move
 module example::clock_tests {
@@ -94,9 +94,9 @@ module example::clock_tests {
 }
 ```
 
-## Epoch timestamps
+## 时代时间戳
 
-You can use the following function to access the timestamp for the start of the current epoch for all transactions (including ones that do not go through consensus):
+您可以使用以下函数访问所有交易（包括不经过共识的交易）的当前时代开始的时间戳：
 
 ```move
 module sui::tx_context {
@@ -104,9 +104,9 @@ module sui::tx_context {
 }
 ```
 
-The preceding function returns the point in time when the current epoch started, as a millisecond granularity unix timestamp in a u64. This value changes roughly **once every 24 hours**, when the epoch changes.
+前述函数返回当前时代开始的时间点，以毫秒粒度的 Unix 时间戳形式为 u64。此值大约每 24 小时更改一次，即时代更改时。
 
-Tests based on `sui::test_scenario` can use `later_epoch` (following code), to exercise time-sensitive code that uses `epoch_timestamp_ms` (previous code):
+基于 `sui::test_scenario` 的测试可以使用 `later_epoch`（以下代码）来测试使用 `epoch_timestamp_ms`（前述代码）的依赖于时间的代码：
 
 ```move
 module sui::test_scenario {
@@ -118,4 +118,4 @@ module sui::test_scenario {
 }
 ```
 
-`later_epoch` behaves like `sui::test_scenario::next_epoch` (finishes the current transaction and epoch in the test scenario), but also increments the timestamp by `delta_ms` milliseconds to simulate the progress of time.
+`later_epoch` 的行为类似于 `sui::test_scenario::next_epoch`（完成测试方案中的当前事务和时代），但还将时间戳增加 `delta_ms` 毫秒，以模拟时间的流逝。

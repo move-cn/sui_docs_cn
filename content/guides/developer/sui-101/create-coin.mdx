@@ -1,8 +1,8 @@
 ---
-title: Create a Coin
+title: 创建代币
 ---
 
-Publishing a coin on Sui is nearly as straightforward as publishing a new type. The main difference is the requirement of a [one-time witness](/concepts/sui-move-concepts/one-time-witness.mdx) when creating a coin.
+在 Sui 上发布代币几乎与发布新类型一样简单。主要的区别在于创建代币时需要[一次性见证人](/concepts/sui-move-concepts/one-time-witness.mdx)。
 
 ```move
 module examples::mycoin {
@@ -26,4 +26,4 @@ module examples::mycoin {
 }
 ```
 
-The `Coin<T>` is a generic implementation of a coin on Sui. The owner of the `TreasuryCap` gets control over the minting and burning of coins. Further transactions can be sent directly to the `sui::coin::Coin` with `TreasuryCap` object as authorization.
+`Coin<T>` 是 Sui 上代币的泛型实现。`TreasuryCap` 的所有者对代币的铸造和销毁拥有控制权。可以使用 `TreasuryCap` 对象的授权直接将进一步的交易发送到 `sui::coin::Coin`。

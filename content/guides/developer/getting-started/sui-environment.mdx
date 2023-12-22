@@ -41,17 +41,17 @@ Move开发的推荐IDE是带有`move-analyzer`扩展的Visual Studio Code。按�
 cargo install --git https://github.com/move-language/move move-analyzer --branch sui-move --features "address32"
 ```
 
-See more [IDE options](https://github.com/MystenLabs/awesome-move#ides) in the [Awesome Move](https://github.com/MystenLabs/awesome-move) documentation.
+查看 [Awesome Move](https://github.com/MystenLabs/awesome-move) 文档中的更多 [IDE 选项](https://github.com/MystenLabs/awesome-move#ides)。
 
-After you install VS Code and the `move-analyzer` extension, check out the [Move code examples](https://github.com/MystenLabs/sui/tree/main/examples/move).
+在安装了 VS Code 和 `move-analyzer` 扩展后，查看 [Move 代码示例](https://github.com/MystenLabs/sui/tree/main/examples/move)。
 
-To test or run a Move example on Sui, use the `sui move` command from the Sui CLI.
+要在 Sui 上测试或运行 Move 示例，请使用 Sui CLI 中的 `sui move` 命令。
 
-## Sui repository and how to contribute
+## Sui 仓库和如何贡献
 
-The Sui repo is a monorepo, containing all the source code that is used to build and run the Sui network, as well as this documentation.
+Sui 仓库是一个单体仓库，包含用于构建和运行 Sui 网络的所有源代码，以及本文档。
 
-The root folder of the Sui monorepo has the following top-level folders:
+Sui 单体仓库的根文件夹具有以下顶级文件夹：
 
 - [apps](https://github.com/MystenLabs/sui/tree/main/apps): Contains the source code for the main web applications that Mysten Labs runs, such as the `suiexplorer.com` or the `Sui Wallet`.
 - [crates](https://github.com/MystenLabs/sui/tree/main/crates): Contains all the Rust crates that are part of the Sui system.
@@ -69,7 +69,7 @@ The root folder of the Sui monorepo has the following top-level folders:
 - [sdk](https://github.com/MystenLabs/sui/tree/main/sdk): Contains the source code for different tools and SDKs, such as the Sui TypeScript SDK, Kiosk SDK, BCS, zkLogin, dApp kit, and others.
 - [sui-execution](https://github.com/MystenLabs/sui/tree/main/sui-execution): Contains the source code responsible for abstracting access to the execution layer.
 
-The following primary directories offer a good starting point for exploring the Sui codebase:
+以下主要目录是探索 Sui 代码库的良好起点：
 
 - [explorer](https://github.com/MystenLabs/sui/tree/main/apps/explorer) - Browser-based object explorer for the Sui network. See the deployed application [here](https://suiexplorer.com).
 - [move](https://github.com/MystenLabs/sui/tree/main/external-crates/move) - Move VM, compiler, and tools.
@@ -86,17 +86,17 @@ The following primary directories offer a good starting point for exploring the 
 - [sui-sdk](https://github.com/MystenLabs/sui/tree/main/crates/sui-sdk) - The Sui Rust SDK.
 - [sui-types](https://github.com/MystenLabs/sui/tree/main/crates/sui-types) - Sui object types, such as coins and gas.
 
-## Development branches
+## 开发分支
 
-The Sui repository includes four primary branches: `devnet`, `testnet`, `mainnet`, and `main`.
+Sui 仓库包括四个主要分支：`devnet`、`testnet`、`mainnet` 和 `main`。
 
-The `devnet` branch includes the latest stable build of Sui. Choose the `devnet` branch if you want to build or test on Sui Devnet. If you encounter an issue or find a bug, it may already be fixed in the `main` branch. To submit a PR, you should push commits to your fork of the `main` branch.
+`devnet` 分支包含 Sui 的最新稳定版本。如果您希望在 Sui Devnet 上构建或测试，请选择 `devnet` 分支。如果遇到问题或发现错误，可能已在 `main` 分支中修复。要提交 PR，请将提交推送到您的 `main` 分支的分支。
 
-The `testnet` branch includes the code running on the Sui Testnet network.
+`testnet` 分支包含运行在 Sui Testnet 网络上的代码。
 
-The `mainnet` branch includes the code running on the Sui Mainnet network.
+`mainnet` 分支包含运行在 Sui Mainnet 网络上的代码。
 
-The `main` branch includes the most recent changes and updates. Use the `main` branch if you want to contribute to the Sui project or to experiment with cutting-edge functionality. The `main` branch might include unreleased changes and experimental features, so use it at your own risk.
+`main` 分支包含最近的更改和更新。如果您想要为 Sui 项目做贡献或尝试实验性功能，请使用 `main` 分支。`main` 分支可能包含未发布的更改和实验性功能，因此请谨慎使用。
 
 在Awesome Move文档中查看更多IDE选项。
 
