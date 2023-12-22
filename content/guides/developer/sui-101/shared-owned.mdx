@@ -1,26 +1,26 @@
 ---
-title: Shared versus Owned Objects
-description: On Sui, you can use shared objects, owned objects, or both in your transactions. Weigh the benefits of each to decide the best approach for your project.
+title: 共享与所有权对象
+description: 在 Sui 上，您可以在交易中使用共享对象、所有权对象或两者兼而有之。权衡每种方法的优势，以决定您项目的最佳方案。
 ---
 
-Objects on Sui can be shared (accessible for reads and writes by any transaction) or owned (accessible for reads and writes by transactions signed by their owner).  Many applications can be built using a solution that either uses shared objects or only owned objects, with trade-offs for each that need to be weighed.
+在 Sui 上，对象可以是共享的（可被任何交易读写）或所有权的（仅由其所有者签署的交易进行读写）。许多应用程序可以使用只使用共享对象或仅拥有对象的解决方案进行构建，每种解决方案都有权衡需要权衡的利弊。
 
-Transactions that use only owned objects benefit from very low latency to finality, because they do not need to go through consensus.  On the other hand, the fact that only the owner of the object can access it complicates processes that need to work with objects owned by multiple parties, and access to very hot objects needs to be coordinated off-chain.
+只使用所有权对象的交易从最终性的角度获益良好，因为它们不需要经过共识。另一方面，仅对象所有者能够访问该对象的事实使得需要处理由多方拥有的对象的流程变得复杂，并且需要协调链外访问非常热门的对象。
 
-Transactions that access one or more shared objects require consensus to sequence reads and written to those objects.  This comes at a slightly higher gas cost and increases latency and transactions that access more shared objects or particularly popular objects may see increases in latency due to contention, but the expressivity of allowing multiple addresses to access the same shared object, and the simplicity of allowing the chain to coordinate access to hot objects are benefits.
+访问一个或多个共享对象的交易需要共识以对这些对象进行读取和写入排序。这会导致稍高的 gas 成本，并增加延迟；访问更多共享对象或特别受欢迎的对象的交易可能会由于争用而增加延迟。但允许多个地址访问同一个共享对象的表达力，以及允许链协调对热门对象的访问的简单性是其优势。
 
-To summarize, applications that are extremely sensitive to latency or gas costs, that do not need to handle complex multi-party transactions, or that already require an off-chain service could benefit from a design that only uses owned objects, while applications that require coordination between multiple parties, may prefer to use shared objects.
+总的来说，对延迟或 gas 成本非常敏感、不需要处理复杂的多方交易、或已经需要链外服务的应用程序，可以受益于仅使用所有权对象的设计；而需要在多方之间协调的应用程序可能更喜欢使用共享对象。
 
-For more information on the types of objects that Sui supports, see [Object Ownership](/concepts/object-ownership.mdx).
+有关 Sui 支持的对象类型的更多信息，请参阅[对象所有权](/concepts/object-ownership.mdx)。
 
-## Example: Escrow
+## 示例：托管
 
-The Escrow example demonstrates the trade-offs between shared objects and owned objects by implementing the same application in both styles. It implements a service that allows two addresses to perform a trustless swap of objects with each other (a "trade") with the service holding their objects in escrow.
+托管示例通过在两种样式中实现相同的应用程序，演示了共享对象和所有权对象之间的权衡。它实现了一个服务，允许两个地址在不信任的情况下相互交换对象（“交易”），并由服务将它们的对象托管。
 
-### `Locked<T>` and `Key`
-[Code Sample](https://github.com/MystenLabs/sui/blob/main/examples/move/escrow/sources/lock.move)
+### `Locked<T>` 和 `Key`
+[代码示例](https://github.com/MystenLabs/sui/blob/main/examples/move/escrow/sources/lock.move)
 
-Both implementations use a primitive for locking values, which offers the following interface:
+两种实现都使用了用于锁定值的原语，提供了以下接口：
 
 ```move
 module escrow::lock {
@@ -29,17 +29,17 @@ module escrow::lock {
 }
 ```
 
-Any `T: store` can be locked, to get a `Locked<T>` and a corresponding `Key`, and conversely, the locked value and its corresponding key can be consumed to get back the wrapped object.
+任何 `T: store` 都可以被锁定，以获取一个 `Locked<T>` 和相应的 `Key`，反之亦然，可以消耗锁定的值及其对应的键来获取包装的对象。
 
-The important property that this interface provides is that locked values cannot be modified except by unlocking them first (and later relocking them).  Because unlocking consumes the key, tampering with a locked value can be detected by remembering the ID of the key that it was locked with.  This prevents situations where one party in a swap changes the object they are offering to reduce its value.
+该接口提供的重要属性是，锁定的值在未解锁的情况下无法修改（并在稍后重新锁定它们）。因为解锁会消耗键，通过记住它们被锁定时的键的 ID，可以检测到对锁定的值的篡改。这可以防止在交换中的一方更改其提供的对象以减小其值的情况。
 
-### Owned objects
+### 所有权对象
 
-[Code Sample](https://github.com/MystenLabs/sui/blob/main/examples/move/escrow/sources/owned.move)
+[代码示例](https://github.com/MystenLabs/sui/blob/main/examples/move/escrow/sources/owned.move)
 
-The protocol for swapping via escrow implemented using owned objects starts with both parties locking their respective objects. This will be used to prove that the object has not been tampered with after the swap has been agreed. If either party does not want to proceed at this stage, they just unlock their object.
+使用所有权对象实现的通过托管进行交换的协议始于双方都锁定其各自的对象。这将用于证明在达成交换协议后对象未经篡改。如果任一方在此阶段不希望继续，它们只需解锁其对象。
 
-Assuming both parties are happy to continue, the next step requires a third party to act as custodian.  The custodian holds objects that are waiting for their counterparts to arrive and when they arrive, it matches them up to complete the swap.
+假设双方都愿意继续，下一步需要第三方担任托管人的角色。托管人持有等待它们的对应物品到达的物品，当它们到达时，将它们匹配以完成交换。
 
 ```move
 public fun create<T: key + store>(
@@ -63,9 +63,9 @@ public fun create<T: key + store>(
 }
 ```
 
-The `create` function prepares the `Escrow` request and sends it to the `custodian`.  The object being offered by this party is passed in, locked, with its key, and the object being requested is identified by the ID of the key it was locked with.  While preparing the request, the offered object is unlocked, while remembering the ID of its key.
+`create` 函数准备了 `Escrow` 请求并将其发送给 `custodian`。由此方提供的对象被锁定并随其键传递，被请求的对象由其被锁定的键的 ID 识别。在准备请求时，提供的对象被解锁，同时记住其键的 ID。
 
-Although the custodian is trusted to preserve liveness (to complete swaps if it owns both sides of a swap and to return objects if requested), all other correctness properties are maintained in Move: Even though the custodian owns both objects being swapped, the only valid action they are permitted to take is to match them up with their correct counterpart to finish the swap, or to return them:
+尽管托管方被信任保持活动性（如果它拥有交换的两侧，则完成交换，如果需要则返回对象），但在 Move 中仍然保持所有其他正确性属性：尽管托管方拥有被交换的两个对象，但它们被允许执行的唯一有效操作是将它们与其正确的对应物品匹配以完成交换，或者将它们返回：
 
 
 ```move
@@ -109,13 +109,13 @@ public fun swap<T: key + store, U: key + store>(
 }
 ```
 
-The `swap` function checks that senders and recipients match and that each party wants the object that the other party is offering, by comparing their respective key IDs.  If the custodian tried to match together two unrelated escrow requests to swap, the transaction would not succeed.
+`swap` 函数检查发送方和接收方是否匹配，以及每一方是否想要对方提供的对象，通过比较它们各自的键 ID。如果托管方尝试将两个不相关的托管请求匹配在一起进行交换，交易将不成功。
 
-### Shared objects
+### 共享对象
 
-[Code Sample](https://github.com/MystenLabs/sui/blob/main/examples/move/escrow/sources/shared.move)
+[代码示例](https://github.com/MystenLabs/sui/blob/main/examples/move/escrow/sources/shared.move)
 
-The protocol in the shared object case is less symmetric, but still starts with the first party locking the object they wish to swap. The second party can then view the object that was locked, and if they decide they want to swap with it, they indicate their interest by creating a swap request:
+在共享对象情况下，协议不太对称，但仍以第一方锁定希望交换的对象开始。然后，第二方可以查看被锁定的对象，如果他们决定要与之交换，他们通过创建一个交换请求来表示他们的兴趣：
 
 ```move
 public fun create<T: key + store>(
@@ -136,7 +136,7 @@ public fun create<T: key + store>(
 }
 ```
 
-This time the swap request is a shared object, and accepts the object being escrowed directly (not locked).  The request remembers the address that sent it (who is allowed to reclaim the object if the swap hasn't already happened), and the intended recipient, who is then expected to continue the swap by providing the object they initially locked:
+这次，交换请求是一个共享对象，并直接接受正在托管的对象（未锁定）。该请求记住了发送它的地址（如果交换尚未发生，则允许其取回对象），以及预期的接收方，然后预期接收方将通过提供最初锁定的对象来继续交换：
 
 ```move
 public fun swap<T: key + store, U: key + store>(
@@ -158,14 +158,14 @@ public fun swap<T: key + store, U: key + store>(
 }
 ```
 
-Even though the `Escrow` request is a shared object that is accessible by anyone, the Move interface ensures that only the original sender and the intended recipient can successfully interact with it. `swap` checks that the locked object matches the object that was requested when the `Escrow` was created (again, by comparing key IDs) and assumes that the intended recipient wants the escrowed object (if they did not, they would not have called `swap`).
+尽管 `Escrow` 请求是一个可被任何人访问的共享对象，但 Move 接口确保只有最初的发送方和预期的接收方可以成功地与其交互。`swap` 检查锁定的对象是否与创建 `Escrow` 时请求的对象匹配（再次通过比较键的 ID），并假设预期的接收方想要托管的对象（如果不是，他们就不会调用 `swap`）。
 
-Assuming all checks pass, the object held in `Escrow` is extracted and returned to the first party, leaving the shared request object empty (but still existing).  The locked object offered by the first party is also unlocked and sent to the second party, completing the swap.
+假设所有检查都通过，`Escrow` 中持有的对象被提取并返回给第一方，使共享请求对象为空（但仍然存在）。由第一方提供的锁定对象也被解锁并发送给第二方，完成交换。
 
-### Comparison
+### 比较
 
-This topic explores two ways to implement a swap between two objects.  In both cases there is a point at which one party has made a request and the other has not responded.  At this point, both parties may want to access the `Escrow` object: One to cancel the swap, and the other to complete it.
+此主题探讨了两种在两个对象之间实现交换的方式。在两种情况下，有一个阶段其中一方发出了请求，而另一方尚未回应。在这一点上，双方都可能想访问 `Escrow` 对象：一方取消交换，另一方完成交换。
 
-In one case, the protocol uses only owned objects but requires a custodian to act as an intermediary. This has the advantage of avoiding the costs and latencies of consensus altogether, but involves more steps and requires trusting a third party for liveness.
+在一种情况下，该协议仅使用所有权对象，但需要一个托管人充当中介。这避免了共识的所有成本和延迟，但涉及更多步骤，并需要信任第三方保持活动性。
 
-In the other case, the object is custodied on chain in a shared object.  This requires consensus, and leaves a shared object on chain at the end of the swap (consuming gas in the form of irretrievable storage rebate), but involves fewer steps, and no third party.
+在另一种情况下，对象在链上由共享对象托管。这需要共识，并在交换结束时在链上留下一个共享对象（以不可检索的存储折扣的形式消耗 gas），但涉及的步骤更少，而且没有第三方。

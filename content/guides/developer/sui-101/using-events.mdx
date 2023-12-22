@@ -206,9 +206,9 @@ async fn main() -> Result<(), anyhow::Error> {
 }
 ```
 
-## Filtering event queries
+## 过滤事件查询
 
-To filter the events returned from your queries, use the following data structures. Currently, you cannot combine filters.
+要过滤从查询返回的事件，请使用以下数据结构。目前，无法组合过滤器。
 
 | Query         | Description                                              | JSON-RPC Parameter Example                                                                          |
 | ------------- | -------------------------------------------------------- | --------------------------------------------------------------------------------------------------- |
@@ -222,9 +222,9 @@ To filter the events returned from your queries, use the following data structur
 | `Object`      | Return events associated with the given object           | `{"Object":"0x727b37454ab13d5c1dbb22e8741bff72b145d1e660f71b275c01f24e7860e5e5"}`                     |
 | `TimeRange`   | Return events emitted in [start_time, end_time] interval | `{"TimeRange":{"startTime":1669039504014, "endTime":1669039604014}}`                                  |
 
-## Filtering events for subscription
+## 用于订阅的事件过滤
 
-To create a subscription, you can set a filter to return only the set of events you're interested in listening for. Unlike filtering event queries, you are able to combine subscription filters.
+要创建订阅，您可以设置一个过滤器，仅返回您有兴趣监听的事件集。与过滤事件查询不同，您可以组合订阅过滤器。
 
 | Filter            | Description                                           | JSON-RPC Parameter Example                                                                 |
 | ----------------- | ----------------------------------------------------- | ------------------------------------------------------------------------------------------ |

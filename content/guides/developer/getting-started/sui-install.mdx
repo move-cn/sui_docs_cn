@@ -216,19 +216,19 @@ sudo apt-get install build-essential
 
 <TabItem value="mac" label="macOS">
 
-The prerequisites needed for the macOS operating system include:
+macOS 操作系统所需的先决条件包括：
 
-- Rust and Cargo
+- Rust 和 Cargo
 - Homebrew
 - cURL
 - CMake
 - Git CLI
 
-macOS includes a version of cURL you can use to install Homebrew. Use Homebrew to install other tools, including a newer version of cURL.
+macOS 包含一个您可以用于安装 Homebrew 的 cURL 版本。使用 Homebrew 安装其他工具，包括 cURL 的新版本。
 
 #### Homebrew {#brew}
 
-Use the following command to install [Homebrew](https://brew.sh/):
+使用以下命令安装 [Homebrew](https://brew.sh/):
 
 ```bash
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
@@ -236,22 +236,21 @@ Use the following command to install [Homebrew](https://brew.sh/):
 
 :::info
 
-If you used the commands in the [Install using Homebrew](#install-homebrew) section, you do not need to install anything else.
+如果您使用了 [Install using Homebrew](#install-homebrew) 部分中的命令，则无需安装其他任何内容。
 
 :::
 
-#### All macOS prerequisites
+#### 所有 macOS 先决条件
 
-With Homebrew installed, you can install individual prerequisites from the following sections or install them all at once with this command:
+使用安装了 Homebrew 的情况下，您可以从以下部分安装单个先决条件，或使用以下命令一次性安装它们：
 
 ```bash
 brew install curl cmake git
 ```
 
-
 #### cURL {#curl-1}
 
-Use the following command to update the default [cURL](https://curl.se) on macOS:
+使用以下命令更新 macOS 上的默认 [cURL](https://curl.se)：
 
 ```bash
 brew install curl
@@ -259,98 +258,98 @@ brew install curl
 
 #### CMake {#cmake-1}
 
-Use the following command to install CMake:
+使用以下命令安装 CMake:
 
 ```bash
 brew install cmake
 ```
 
-To customize the installation, see [Installing CMake](https://cmake.org/install/) on the CMake website.
+要自定义安装，请参阅 CMake 网站上的 [安装 CMake](https://cmake.org/install/)。
 
 #### Git CLI {#git-cli-1}
 
-Use the following command to install Git:
+使用以下命令安装 Git:
 
 ```bash
 brew install git
 ```
 
-After installing Git, download and install the [Git command line interface](https://git-scm.com/download/).
+安装 Git 后，下载并安装 [Git command line interface](https://git-scm.com/download/).
 
 </TabItem>
 
 <TabItem value="win" label="Windows">
 
-The prerequisites needed for the Windows 11 operating system include:
+Windows 11 操作系统所需的先决条件包括：
 
 - cURL
-- Rust and Cargo
+- Rust 和 Cargo
 - Git CLI
 - CMake
-- C++ build tools
-- LLVM compiler
+- C++ 构建工具
+- LLVM 编译器
 
 #### cURL {#curl-2}
 
-Windows 11 ships with a Microsoft version of [cURL](https://curl.se/windows/microsoft.html) already installed. If you want to use the curl project version instead, download and install it from [https://curl.se/windows/](https://curl.se/windows/).
+Windows 11 默认安装了微软版本的 [cURL](https://curl.se/windows/microsoft.html)。如果您想使用 curl 项目版本，可以从 [https://curl.se/windows/](https://curl.se/windows/) 下载并安装。
 
 #### Git CLI {#git-cli-2}
 
-Download and install the [Git command line interface](https://git-scm.com/download/).
+下载并安装 [Git 命令行界面](https://git-scm.com/download/)。
 
 #### CMake {#cmake-2}
 
-Download and install [CMake](https://cmake.org/download/) from the CMake website.
+从 CMake 网站下载并安装 [CMake](https://cmake.org/download/)。
 
 #### Protocol Buffers {#protocol-buffers}
 
-Download [Protocol Buffers](https://github.com/protocolbuffers/protobuf/releases) (protoc-xx.x-win32.zip or protoc-xx.x-win64.zip) and add the \bin directory to your Windows PATH environment variable.
+下载 [Protocol Buffers](https://github.com/protocolbuffers/protobuf/releases) (protoc-xx.x-win32.zip 或 protoc-xx.x-win64.zip) 并将 \bin 目录添加到您的 Windows PATH 环境变量中。
 
-#### Additional tools for Windows {#additional-tools-windows}
+#### Windows 上的其他工具 {#additional-tools-windows}
 
-Sui requires the following additional tools on computers running Windows.
+在运行 Windows 的计算机上，Sui 需要以下其他工具。
 
-- For Windows on ARM64 only - [Visual Studio 2022 Preview](https://visualstudio.microsoft.com/vs/preview/).
-- [C++ build tools](https://visualstudio.microsoft.com/downloads/) is required to [install Rust](#rust-and-cargo).
-- The [LLVM Compiler Infrastructure](https://releases.llvm.org/). Look for a file with a name similar to LLVM-15.0.7-win64.exe for 64-bit Windows, or LLVM-15.0.7-win32.exe for 32-bit Windows.
+- 仅适用于 Windows on ARM64 - [Visual Studio 2022 预览版](https://visualstudio.microsoft.com/vs/preview/)。
+- 需要 [C++ 构建工具](https://visualstudio.microsoft.com/downloads/) 来 [安装 Rust](#rust-and-cargo)。
+- [LLVM 编译器基础设施](https://releases.llvm.org/)。查找类似于 LLVM-15.0.7-win64.exe（64 位 Windows）或 LLVM-15.0.7-win32.exe（32 位 Windows）的文件。
 
-**Known issue** - The `sui console` command does not work in PowerShell.
+**已知问题** - 在 PowerShell 中，`sui console` 命令无法正常工作。
 
 </TabItem>
 
 </Tabs>
 
-## Install Sui binaries from source {#install-sui-binaries-from-source}
+## 从源代码安装 Sui 二进制文件 {#install-sui-binaries-from-source}
 
-Run the following command to install Sui binaries from the `testnet` branch:
+运行以下命令从 `testnet` 分支安装 Sui 二进制文件：
 
 ```shell
 cargo install --locked --git https://github.com/MystenLabs/sui.git --branch testnet sui
 ```
 
-The install process can take a while to complete. You can monitor installation progress in the terminal. If you encounter an error, make sure to install the latest version of all prerequisites and then try the command again.
+## 从源代码安装 Sui 二进制文件 {#install-sui-binaries-from-source}
 
-To update to the latest stable version of Rust:
+运行以下命令从 `testnet` 分支安装 Sui 二进制文件：
 
 ```shell
 rustup update stable
 ```
 
-The command installs Sui components in the `~/.cargo/bin` folder.
+该命令将 Sui 组件安装在 `~/.cargo/bin` 文件夹中。
 
-## Upgrade Sui binaries
+## 升级 Sui 二进制文件
 
-If you previously installed the Sui binaries, you can update them to the most recent release with the same command you used to install them:
+如果您之前安装过 Sui 二进制文件，可以使用相同的命令将它们更新到最新版本：
 
 ```shell
 cargo install --locked --git https://github.com/MystenLabs/sui.git --branch devnet sui
 ```
 
-## Next steps {#next-steps}
+## 下一步 {#next-steps}
 
-Now that you have Sui installed, it's time to start developing. Check out the following topics to start working with Sui:
+现在您已经安装了 Sui，是时候开始开发了。查看以下主题以开始使用 Sui：
 
-- Read about the [Sui CLI](/references/cli.mdx), the most straightforward way to start exploring Sui networks.
-- [Learn about the available networks](./connect.mdx) and connect to one.
-- [Get some coins](./get-coins.mdx) on a development network.
-- [Build your first dApp](../first-app.mdx) to start your on-chain journey.
+- 阅读有关 [Sui CLI](/references/cli.mdx) 的信息，这是探索 Sui 网络的最直接方式。
+- [了解可用的网络](./connect.mdx) 并连接到其中一个。
+- 在开发网络上 [获取一些硬币](./get-coins.mdx)。
+- [构建您的第一个 dApp](../first-app.mdx) 以开始您的链上之旅。

@@ -1,18 +1,18 @@
 ---
-title: Building Programmable Transaction Blocks
-description: Using the Sui TypeScript SDK, you can create programmable transaction blocks to perform multiple commands in a single transaction.
+title: 构建可编程交易块
+description: 使用 Sui TypeScript SDK，您可以创建可编程交易块以在单个事务中执行多个命令。
 ---
 
-This guide explores creating a programmable transaction block (PTB) on Sui using the TypeScript SDK. For an overview of what a PTB is, see [Programmable Transaction Blocks](/concepts/transactions/prog-txn-blocks.mdx) in the Concepts section. If you don't already have the Sui TypeScript SDK, follow the [install instructions](https://sdk.mystenlabs.com/typescript/install) on the Sui TypeScript SDK site.
+本指南探讨了如何使用 TypeScript SDK 在 Sui 上创建可编程交易块（PTB）。有关 PTB 是什么的概述，请参阅[可编程交易块](/concepts/transactions/prog-txn-blocks.mdx)的概念部分。如果您尚未安装 Sui TypeScript SDK，请按照[Sui TypeScript SDK 网站上的安装说明](https://sdk.mystenlabs.com/typescript/install)进行操作。
 
-This example starts by constructing a PTB to send Sui. If you are familiar with the legacy Sui transaction types, this is similar to a `paySui` transaction. To construct transactions, import the `TransactionBlock` class, and construct it:
+此示例从构建一个 PTB 开始，以发送 Sui。如果您熟悉传统 Sui 交易类型，这类似于 `paySui` 交易。要构建交易，请导入 `TransactionBlock` 类并进行构建：
 
 ```ts
 import { TransactionBlock } from "@mysten/sui.js";
 const txb = new TransactionBlock();
 ```
 
-Using this, you can then add transactions to this PTB.
+使用它，你可以将交易添加到该 PTB。
 
 ```ts
 // Create a new coin with balance 100, based on the coins used as gas payment.
@@ -23,7 +23,7 @@ const [coin] = txb.splitCoins(txb.gas, [txb.pure(100)]);
 txb.transferObjects([coin], txb.pure("0xSomeSuiAddress"));
 ```
 
-You can attach multiple transaction commands of the same type to a PTB as well. For example, to get a list of transfers, and iterate over them to transfer coins to each of them:
+你还可以将相同类型的多个交易命令附加到 PTB。例如，要获取转账列表，并对它们进行迭代以向每个转账对象转账：
 
 ```ts
 interface Transfer {
@@ -48,42 +48,42 @@ transfers.forEach((transfer, index) => {
 });
 ```
 
-After you have the PTB defined, you can directly execute it with a `signer` using `signAndExecuteTransactionBlock`.
+定义了 PTB 后，您可以使用 `signAndExecuteTransactionBlock` 直接使用 `signer` 执行它。
 
 ```ts
 signer.signAndExecuteTransactionBlock({ transactionBlock: txb });
 ```
 
-## Constructing inputs
+## 构造输入
 
-Inputs are how you provide external values to PTBs. For example, defining an amount of Sui to transfer, or which object to pass into a Move call, or a shared object.
+输入是您向 PTB 提供外部值的方式。例如，定义要转移的 Sui 金额，或传递到 Move 调用或共享对象中的对象。
 
-There are currently two ways to define inputs:
+目前有两种定义输入的方法：
 
-- For objects: the `txb.object(objectId)` function is used to construct an input that contains an object reference.
-- For pure values: the `txb.pure(value, type?)` function is used to construct an input for a non-object input.
-    - If value is a `Uint8Array`, then the value is assumed to be raw bytes and is used directly.
-    - If type is provided, it's used to generate the BCS serialization layout for the value. If not provided, the type is automatically determined based on the value.
+- 对于对象：使用 `txb.object(objectId)` 函数构建包含对象引用的输入。
+- 对于纯值：使用 `txb.pure(value, type?)` 函数构建非对象输入的输入。
+    - 如果值是 `Uint8Array`，则假定该值是原始字节并直接使用。
+    - 如果提供了类型，则使用它来生成值的 BCS 序列化布局。如果未提供，则根据值自动确定类型。
 
-## Available transactions
+## 可用的事务
 
-Sui supports following transaction commands:
+Sui 支持以下事务命令：
 
-- `txb.splitCoins(coin, amounts)`: Creates new coins with the defined amounts, split from the provided coin. Returns the coins so that it can be used in subsequent transactions.
-    - Example: `txb.splitCoins(txb.gas, [txb.pure(100), txb.pure(200)])`
-- `txb.mergeCoins(destinationCoin, sourceCoins)`: Merges the sourceCoins into the destinationCoin.
-    - Example: `txb.mergeCoins(txb.object(coin1), [txb.object(coin2), txb.object(coin3)])`
-- `txb.transferObjects(objects, address)`: Transfers a list of objects to the specified address.
-    - Example: `txb.transferObjects([txb.object(thing1), txb.object(thing2)], txb.pure(myAddress))`
-- `txb.moveCall({ target, arguments, typeArguments })`: Executes a Move call. Returns whatever the Sui Move call returns.
-    - Example: `txb.moveCall({ target: '0x2::devnet_nft::mint', arguments: [txb.pure(name), txb.pure(description), txb.pure(image)] })`
-- `txb.makeMoveVec({ type, objects })`: Constructs a vector of objects that can be passed into a moveCall. This is required as there's no other way to define a vector as an input.
-    - Example: `txb.makeMoveVec({ objects: [txb.object(id1), txb.object(id2)] })`
-- `txb.publish(modules, dependencies)`: Publishes a Move package. Returns the upgrade capability object.
+- `txb.splitCoins(coin, amounts)`: 从提供的代币中拆分具有定义金额的新代币。返回代币，以便在后续事务中使用。
+    - 示例：`txb.splitCoins(txb.gas, [txb.pure(100), txb.pure(200)])`
+- `txb.mergeCoins(destinationCoin, sourceCoins)`: 将源代币合并到目标代币中。
+    - 示例：`txb.mergeCoins(txb.object(coin1), [txb.object(coin2), txb.object(coin3)])`
+- `txb.transferObjects(objects, address)`: 将对象列表转移给指定地址。
+    - 示例：`txb.transferObjects([txb.object(thing1), txb.object(thing2)], txb.pure(myAddress))`
+- `txb.moveCall({ target, arguments, typeArguments })`: 执行 Move 调用。返回 Sui Move 调用返回的任何内容。
+    - 示例：`txb.moveCall({ target: '0x2::devnet_nft::mint', arguments: [txb.pure(name), txb.pure(description), txb.pure(image)] })`
+- `txb.makeMoveVec({ type, objects })`: 构造一个对象向量，可以传递到 moveCall。这是必需的，因为没有其他方法来定义一个输入为向量。
+    - 示例：`txb.makeMoveVec({ objects: [txb.object(id1), txb.object(id2)] })`
+- `txb.publish(modules, dependencies)`: 发布一个 Move 包。返回升级能力对象。
 
-## Passing transaction results as arguments
+## 将事务结果作为参数传递
 
-You can use the result of a transaction command as an argument in subsequent transaction commands. Each transaction command method on the transaction builder returns a reference to the transaction result.
+您可以将事务命令的结果用作后续事务命令的参数。事务构建器上的每个事务命令方法都返回对事务结果的引用。
 
 ```ts
 // Split a coin object off of the gas object:
@@ -100,19 +100,19 @@ const mintMany = txb.moveCall({ target: "0x2::nft::mint_many" });
 txb.transferObjects([mintMany[0], mintMany[1]], txb.pure(address));
 ```
 
-## Use the gas coin
+## 使用 gas 代币
 
-With PTBs, you can use the gas payment coin to construct coins with a set balance using `splitCoin`. This is useful for Sui payments, and avoids the need for up-front coin selection. You can use `txb.gas` to access the gas coin in a PTB, and it is valid as input for any arguments; with the exception of `transferObjects`, `txb.gas` must be used by-reference. Practically speaking, this means you can also add to the gas coin with `mergeCoins` or borrow it for Move functions with `moveCall`.
+通过 PTB，您可以使用 gas 付款代币使用 `splitCoin` 构建具有固定余额的代币。这对于 Sui 付款非常有用，并且避免了需要预先选择代币。您可以使用 `txb.gas` 在 PTB 中访问 gas 代币，并且它是任何参数的有效输入；除了 `transferObjects` 外，`txb.gas` 必须通过引用使用。实际上，这意味着您还可以使用 `mergeCoins` 添加到 gas 代币，或者使用 `moveCall` 借用它进行 Move 函数。
 
-You can also transfer the gas coin using `transferObjects`, in the event that you want to transfer all of your coin balance to another address.
+您还可以使用 `transferObjects` 转移 gas 代币，以便将您的全部代币余额转移到另一个地址。
 
-## Get PTB bytes
+## 获取 PTB 字节
 
-If you need the PTB bytes, instead of signing or executing the PTB, you can use the `build` method on the transaction builder itself.
+如果您需要 PTB 字节，而不是签署或执行 PTB，可以在事务构建器本身上使用 `build` 方法。
 
 :::tip
 
-You might need to explicitly call `setSender()` on the PTB to ensure that the `sender` field is populated. This is normally done by the signer before signing the transaction, but will not be done automatically if you're building the PTB bytes yourself.
+您可能需要在 PTB 上显式调用 `setSender()` 以确保填充 `sender` 字段。这通常由签署者在签署事务之前完成，但如果您自己构建 PTB 字节，则不会自动执行。
 
 :::
 
@@ -124,18 +124,18 @@ const txb = new TransactionBlock();
 await txb.build({ provider });
 ```
 
-In most cases, building requires your JSON RPC provider to fully resolve input values.
+在大多数情况下，构建需要您的 JSON RPC 提供程序完全解析输入值。
 
-If you have PTB bytes, you can also convert them back into a `TransactionBlock` class:
+如果您有 PTB 字节，还可以将它们转换回 `TransactionBlock` 类：
 
 ```ts
 const bytes = getTransactionBlockBytesFromSomewhere();
 const txb = TransactionBlock.from(bytes);
 ```
 
-## Building offline
+## 离线构建
 
-In the event that you want to build a PTB offline (as in with no `provider` required), you need to fully define all of your input values, and gas configuration (see the following example). For pure values, you can provide a `Uint8Array` which is used directly in the transaction. For objects, you can use the `Inputs` helper to construct an object reference.
+如果您希望离线构建 PTB（即无需 `provider`），则需要完全定义所有输入值和 gas 配置（请参阅以下示例）。对于纯值，您可以提供一个 `Uint8Array`，它将直接用于事务。对于对象，您可以使用 `Inputs` 辅助程序构建对象引用。
 
 ```ts
 import { Inputs } from "@mysten/sui.js";
@@ -150,27 +150,27 @@ txb.object(Inputs.ObjectRef({ digest, objectId, version }));
 txb.object(Inputs.SharedObjectRef({ objectId, initialSharedVersion, mutable }));
 ```
 
-You can then omit the `provider` object when calling `build` on the transaction. If there is any required data that is missing, this will throw an error.
+然后，在调用事务的 `build` 时，可以省略 `provider` 对象。如果缺少任何必需的数据，这将引发错误。
 
-## Gas configuration
+## gas 配置
 
-The new transaction builder comes with default behavior for all gas logic, including automatically setting the gas price, budget, and selecting coins to be used as gas. This behavior can be customized.
+新的事务构建器具有所有 gas 逻辑的默认行为，包括自动设置 gas 价格、预算和选择用作 gas 的代币。此行为可以定制。
 
-### Gas price
+### gas 价格
 
-By default, the gas price is set to the reference gas price of the network. You can also explicitly set the gas price of the PTB by calling `setGasPrice` on the transaction builder.
+默认情况下，gas 价格设置为网络的参考 gas 价格。您还可以通过在事务构建器上调用 `setGasPrice` 明确设置 PTB 的 gas 价格。
 
 ```ts
 txb.setGasPrice(gasPrice);
 ```
 
-### Budget
+### 预算
 
-By default, the gas budget is automatically derived by executing a dry-run of the PTB beforehand. The dry run gas consumption is then used to determine a balance for the transaction. You can override this behavior by explicitly setting a gas budget for the transaction, by calling `setGasBudget` on the transaction builder.
+默认情况下，gas 预算通过预先执行 PTB 的干扰运行自动推导。然后，干扰运行的 gas 消耗用于确定事务的余额。您可以通过在事务构建器上调用 `setGasBudget` 明确为事务设置 gas 预算来覆盖此行为。
 
 :::info
 
-The gas budget is represented in Sui, and should take the gas price of the PTB into account.
+gas 预算以 Sui 表示，并应考虑 PTB 的 gas 价格。
 
 :::
 
@@ -178,11 +178,11 @@ The gas budget is represented in Sui, and should take the gas price of the PTB i
 txb.setGasBudget(gasBudgetAmount);
 ```
 
-### Gas payment
+### gas 付款
 
-By default, the gas payment is automatically determined by the SDK. The SDK selects all coins at the provided address that are not used as inputs in the PTB.
+默认情况下，gas 付款由 SDK 自动确定。SDK 选择在 PTB 中未用作输入的提供的地址的所有代币。
 
-The list of coins used as gas payment will be merged down into a single gas coin before executing the PTB, and all but one of the gas objects will be deleted. The gas coin at the 0-index will be the coin that all others are merged into.
+在执行 PTB 之前，将将用作 gas 付款的代币列表合并为单个 gas 代币，并删除除一个以外的所有 gas 对象。索引为 0 的 gas 代币将是所有其他代币合并到其中的代币。
 
 ```ts
 // NOTE: You need to ensure that the coins do not overlap with any
@@ -190,15 +190,15 @@ The list of coins used as gas payment will be merged down into a single gas coin
 txb.setGasPayment([coin1, coin2]);
 ```
 
-### dApp / Wallet integration
+### dApp / 钱包集成
 
-The Wallet Standard interface has been updated to support the `TransactionBlock` kind directly. All `signTransaction` and `signAndExecuteTransaction` calls from dApps into wallets is expected to provide a `TransactionBlock` class. This PTB class can then be serialized and sent to your wallet for execution.
+钱包标准接口已更新，以直接支持 `TransactionBlock` 类型。从 dApp 到钱包的所有 `signTransaction` 和 `signAndExecuteTransaction` 调用都预期提供一个 `TransactionBlock` 类。然后，可以将此 PTB 类序列化并发送到您的钱包以进行执行。
 
-To serialize a PTB for sending to a wallet, Sui recommends using the `txb.serialize()` function, which returns an opaque string representation of the PTB that can be passed from the wallet standard dApp context to your wallet. This can then be converted back into a `TransactionBlock` using `TransactionBlock.from()`.
+为了将 PTB 序列化以发送到钱包，Sui 建议使用 `txb.serialize()` 函数，该函数返回 PTB 的不透明字符串表示形式，可以从钱包标准 dApp 上下文传递到您的钱包。然后，可以使用 `TransactionBlock.from()` 将其转换回 `TransactionBlock`。
 
 :::tip
 
-You should not build the PTB from bytes in the dApp code. Using `serialize` instead of `build` allows you to build the PTB bytes within the wallet itself. This allows the wallet to perform gas logic and coin selection as needed.
+不应在 dApp 代码中从字节构建 PTB。使用 `serialize` 而不是 `build` 允许您在钱包内部构建 PTB 字节。这允许钱包根据需要执行 gas 逻辑和选择代币。
 
 :::
 
@@ -218,9 +218,9 @@ function handleSignRequest(input) {
 }
 ```
 
-## Sponsored PTBs
+## 赞助 PTB
 
-The PTB builder can support sponsored PTBs by using the `onlyTransactionKind` flag when building the PTB.
+PTB 构建器可以通过在构建 PTB 时使用 `onlyTransactionKind` 标志来支持赞助 PTB。
 
 ```ts
 const txb = new TransactionBlock();
