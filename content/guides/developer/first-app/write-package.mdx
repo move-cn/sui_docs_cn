@@ -1,19 +1,19 @@
 ---
-title: Write a Move Package
-description: The first step in getting a package on chain is to write the Move code that defines the logic of your package. The structure of a Move package is similar to those in Rust.
+title: 编写 Move 包
+description: 在将包上链的第一步是编写定义包逻辑的 Move 代码。Move 包的结构类似于 Rust 中的包。
 ---
 
-Before you can build a Move package and run its code, you must first [install Sui binaries](../getting-started/sui-install.mdx) for your operating system.
+在构建 Move 包并运行其代码之前，您必须首先为您的操作系统[安装 Sui 二进制文件](../getting-started/sui-install.mdx)。
 
-### Create the package
+### 创建包
 
-To begin, open a terminal or console at the location you plan to store your package. Use the `sui move new` command to create an empty Move package with the name `my_first_package`:
+首先，在您计划存储包的位置打开一个终端或控制台。使用 `sui move new` 命令创建一个名为 `my_first_package` 的空 Move 包：
 
 ``` shell
 sui move new my_first_package
 ```
 
-Running the previous command creates a directory with the name you provide (`my_first_package`). The command populates the new directory with a skeleton Move project that consists of a `sources` directory and a `Move.toml` manifest file. Open the manifest with a text editor to review its contents:
+运行上述命令将创建一个以您提供的名称（`my_first_package`）命名的目录。该命令使用一个骨架 Move 项目填充新目录，其中包括一个 `sources` 目录和一个 `Move.toml` 清单文件。使用文本编辑器打开清单文件以查看其内容：
 
 ```shell
 cat my_first_package/Move.toml
@@ -29,15 +29,15 @@ my_first_package = "0x0"
 sui = "0000000000000000000000000000000000000000000000000000000000000002"
 ```
 
-### Defining the package
+### 定义包
 
-You have a package now but it doesn't do anything. To make your package useful, you must add logic contained in `.move` source files that define *modules*. Use a text editor or the command line to create your first package source file named `my_module.move` in the `sources` directory of the package:
+现在您有一个包，但它什么都不做。为了使您的包有用，您必须添加包含在 `.move` 源文件中的逻辑，这些文件定义了*模块*。使用文本编辑器或命令行，在包的 `sources` 目录中创建名为 `my_module.move` 的第一个包源文件：
 
 ``` shell
 touch my_first_package/sources/my_module.move
 ```
 
-Populate the `my_module.move` file with the following code:
+使用以下代码填充 `my_module.move` 文件：
 
 ```move
 module my_first_package::my_module {
@@ -89,16 +89,17 @@ module my_first_package::my_module {
 }
 ```
 
-The comments in the preceding code highlight different parts of a typical Move source file.
+前面代码中的注释突出显示了典型 Move 源文件的不同部分。
 
-* **Part 1: Imports** - Code reuse is a necessity in modern programming. Move supports this concept with imports that allow your module to use types and functions declared in other modules. In this example, the module imports from `object`, `transfer`, and `tx_content` modules. These modules are available to the package because the `Move.toml` file defines the Sui dependency (along with the `sui` named address) where they are defined.
+* **第一部分：导入** - 在现代编程中，代码重用是必需的。Move 通过允许模块使用在其他模块中声明的类型和函数的导入来支持这一概念。在这个例子中，模块从 `object`、`transfer` 和 `tx_content` 模块导入。这些模块在包中可用，因为 `Move.toml` 文件定义了 Sui 依赖项（以及它们被定义的 `sui` 命名地址）。
 
-* **Part 2: Struct declarations** - Structs define types that a module can create or destroy. Struct definitions can include abilities provided with the `has` keyword. The structs in this example, for instance, have the `key` ability, which indicates that these structs are Sui objects that you can transfer between addresses. The `store` ability on the structs provide the ability to appear in other struct fields and be transferred freely.
+* **第二部分：结构声明** - 结构定义了模块可以创建或销毁的类型。结构定义可以包括使用 `has` 关键字提供的能力。例如，此示例中的结构具有 `key` 能力，表示这些结构是可以在地址之间转移的 Sui 对象。结构上的 `store` 能力提供了在其他结构字段中出现并自由传输的能力。
 
-* **Part 3: Module initializer** - A special function that is invoked exactly once when the module publishes.
+* **第三部分：模块初始化器** - 一个特殊的函数，在模块发布时确切地调用一次。
 
-* **Part 4: Accessor functions** - These functions allow the fields of the module's structs to be read from other modules.
+* **第四部分：访问器函数** - 这些函数允许从其他模块读取模块结构的字段。
 
-After you save the file, you have a complete Move package.
+保存文件后，您就拥有了一个完整的 Move 包。
 
-In the next topic, you learn to build and test your package to get it ready for publishing.
+在下一个主题中，您将学习构建和测试您的包，使其准备好发布。
+

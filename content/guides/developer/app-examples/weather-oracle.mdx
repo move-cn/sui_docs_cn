@@ -1,27 +1,27 @@
 ---
-title: Sui Weather Oracle
-description: Write a module (smart contract) in Move that fetches the weather data from the OpenWeather API every 10 minutes and updates the weather conditions for over 1,000 locations around the world.
+title: Sui 天气 Oracle
+description: 编写一个在 Move 中从 OpenWeather API 获取天气数据并每10分钟更新全球 1000 多个地点天气状况的模块（智能合约）。
 ---
 
-This guide demonstrates writing a module (smart contract) in Move, deploying it on Devnet, and adding a backend, which fetches the weather data from the OpenWeather API every 10 minutes and updates the weather conditions for each city. The dApp created in this guide is called Sui Weather Oracle and it provides real-time weather data for over 1,000 locations around the world.
+本指南演示了如何在Move中编写一个模块（智能合约），在Devnet上部署它，并添加一个后端，每10分钟从OpenWeather API获取天气数据并更新每个城市的天气状况。本指南创建的dApp称为Sui天气Oracle，它为全球1000多个地点提供实时天气数据。
 
-You can access and use the weather data from the OpenWeather API for various applications, such as randomness, betting, gaming, insurance, travel, education, or research. You can also mint a weather NFT based on the weather data of a city, using the `mint` function of the SUI Weather Oracle smart contract.
+您可以访问并使用OpenWeather API的天气数据用于各种应用，例如随机性、投注、游戏、保险、旅行、教育或研究。您还可以基于城市的天气数据使用SUI天气Oracle智能合约的`mint`函数铸造天气NFT。
 
-This guide assumes you have [installed Sui](../getting-started/sui-install.mdx) and understand Sui fundamentals.
+本指南假定您已经[安装了Sui](../getting-started/sui-install.mdx)并了解Sui的基本知识。
 
-## Move smart contract
+## Move智能合约
 
-As with all Sui dApps, a Move package on chain powers the logic of Sui Weather Oracle. The following instruction walks you through creating and publishing the module.
+与所有Sui dApps一样，Move链上的一个Move包支持Sui天气Oracle的逻辑。以下说明将指导您创建和发布该模块。
 
-### Weather Oracle module
+### 天气Oracle模块
 
-Before you get started, you must initialize a Move package. Open a terminal or console in the directory you want to store the example and run the following command to create an empty package with the name `weather_oracle`:
+在开始之前，您必须初始化一个Move包。在要存储示例的目录中打开终端或控制台，并运行以下命令以创建一个名为 `weather_oracle` 的空包：
 
 ```bash
 sui move new weather_oracle
 ```
 
-With that done, it's time to jump into some code. Create a new file in the `sources` directory with the name `weather.move` and populate the file with the following code:
+现在，一切准备就绪，是时候开始编写一些代码了。在 `sources` 目录中创建一个名为 `weather.move` 的新文件，并将文件填充为以下代码：
 
 ```rust title='weather.move'
 // Copyright (c) Mysten Labs, Inc.
@@ -38,12 +38,12 @@ module oracle::weather {
 }
 ```
 
-There are few details to take note of in this code:
+在这段代码中有一些细节需要注意：
 
-1. The fourth line declares the module name as `weather` within the package `oracle`.
-1. Seven lines begin with the `use` keyword, which enables this module to use types and functions declared in other modules.
+1. 第四行将模块名称声明为 `oracle` 包中的 `weather`。
+1. 七行以 `use` 关键字开头，该关键字使得该模块能够使用在其他模块中声明的类型和函数。
 
-Next, add some more code to this module:
+接下来，在这个模块中添加一些代码：
 
 ```rust title='weather.move'
 /// Define a capability for the admin of the oracle.
@@ -98,13 +98,13 @@ fun init(otw: WEATHER, ctx: &mut TxContext) {
 }
 ```
 
-- The first struct, `AdminCap`, is a [capability](concepts/sui-move-concepts/patterns/capabilities.mdx).
-- The second struct, `WEATHER`, is a [one-time witness](concepts/sui-move-concepts/one-time-witness.mdx) that ensures only a single instance of this `Weather` ever exists.
-- The `WeatherOracle` struct works as a registry and stores the `geoname_id`s of the `CityWeatherOracle`s as [dynamic fields](concepts/dynamic-fields.mdx).
-- The [`init` function](concepts/sui-move-concepts/init.mdx) creates and sends the `Publisher` and `AdminCap` objects to the sender. Also, it creates a [shared object](concepts/object-ownership/shared.mdx) for all the `CityWeatherOracle`s.
+- 第一个结构体，`AdminCap`，是一个[能力（capability）](concepts/sui-move-concepts/patterns/capabilities.mdx)。
+- 第二个结构体，`WEATHER`，是一个[一次性见证（one-time witness）](concepts/sui-move-concepts/one-time-witness.mdx)，确保只存在一个 `Weather` 的实例。
+- `WeatherOracle` 结构体充当注册表，并将 `CityWeatherOracle` 的 `geoname_id` 存储为[动态字段（dynamic fields）](concepts/dynamic-fields.mdx)。
+- [`init` 函数](concepts/sui-move-concepts/init.mdx)创建并发送 `Publisher` 和 `AdminCap` 对象给发送方。此外，它为所有的 `CityWeatherOracle` 创建一个[共享对象（shared object）](concepts/object-ownership/shared.mdx)。
 
-So far, you've set up the data structures within the module.
-Now, create a function that initializes a `CityWeatherOracle` and adds it as [dynamic fields](concepts/dynamic-fields.mdx) to the `WeatherOracle` object:
+到目前为止，你已经在模块中设置了数据结构。
+现在，创建一个函数，该函数初始化一个 `CityWeatherOracle` 并将其添加为[动态字段（dynamic fields）](concepts/dynamic-fields.mdx)到 `WeatherOracle` 对象中：
 
 ```rust title='weather.move'
 public fun add_city(
@@ -144,9 +144,9 @@ public fun add_city(
 }
 ```
 
-The `add_city` function is a public function that allows the owner of the `AdminCap` of the Sui Weather Oracle smart contract to add a new `CityWeatherOracle`. The function requires the admin to provide a capability object that proves their permission to add a city. The function also requires a mutable reference to the oracle object, which is the main object that stores the weather data on the blockchain. The function takes several parameters that describe the city, such as the geoname ID, name, country, latitude, longitude, and positive latitude and longitude. The function then creates a new city weather oracle object, which is a sub-object that stores and updates the weather data for a specific city. The function initializes the city weather oracle object with the parameters provided by the admin, and sets the weather data to be zero or none. The function then adds a new dynamic object field to the oracle object, using the geoname ID as the key and the city weather oracle object as the value. This way, the function adds a new city to the oracle, and makes it ready to receive and update the weather data from the backend service.
+`add_city` 函数是一个公共函数，允许 Sui 天气 Oracle 智能合约的 `AdminCap` 持有者添加一个新的 `CityWeatherOracle`。该函数要求管理员提供一个能证明其有权限添加城市的能力对象。该函数还需要对 Oracle 对象的可变引用，该对象是在区块链上存储天气数据的主要对象。该函数接受描述城市的多个参数，例如 geoname ID、名称、国家、纬度、经度以及正纬度和经度。然后，该函数创建一个新的城市天气 Oracle 对象，这是一个存储和更新特定城市天气数据的子对象。该函数使用管理员提供的参数初始化城市天气 Oracle 对象，并将天气数据设置为零或无。然后，该函数使用 geoname ID 作为键，城市天气 Oracle 对象作为值，向 Oracle 对象添加一个新的动态对象字段。通过这种方式，函数向 Oracle 添加一个新城市，并使其准备好从后端服务接收和更新天气数据。
 
-If you want to delete a city from the Sui Weather Oracle, call the `remove_city` function of the smart contract. The `remove_city` function allows the admin of the smart contract to remove a city from the oracle. The function requires the admin to provide a capability object that proves their permission to remove a city. The function also requires a mutable reference to the oracle object, which is the main object that stores and updates the weather data on the blockchain. The function takes the geoname ID of the city as a parameter, and deletes the city weather oracle object for the city. The function also removes the dynamic object field for the city from the oracle object. This way, the function deletes a city from the oracle, and frees up some storage space on the blockchain.
+如果想要从 Sui 天气 Oracle 中删除一个城市，请调用智能合约的 `remove_city` 函数。`remove_city` 函数允许智能合约的管理员从 Oracle 中删除一个城市。该函数要求管理员提供一个能证明其有权限删除城市的能力对象。该函数还需要对 Oracle 对象的可变引用，该对象是在区块链上存储天气数据的主要对象。该函数以城市的 geoname ID 作为参数，并删除该城市的城市天气 Oracle 对象。该函数还从 Oracle 对象中删除城市的动态对象字段。通过这种方式，函数从 Oracle 中删除一个城市，并在区块链上释放一些存储空间。
 
 ```rust title='weather.move'
 public fun remove_city(
@@ -177,7 +177,7 @@ public fun remove_city(
 }
 ```
 
-Now that you have implemented the `add_city` and `remove_city` functions, you can move on to the next step, which is to see how you can update the weather data for each city. The backend service fetches the weather data from the OpenWeather API every 10 minutes, and then passes the data to the `update` function of the Sui Weather Oracle smart contract. The `update` function takes the geoname ID and the new weather data of the city as parameters, and updates the city weather oracle object with the new data. This way, the weather data on the blockchain is always up to date and accurate.
+现在您已经实现了 `add_city` 和 `remove_city` 函数，可以继续下一步，即了解如何更新每个城市的天气数据。后端服务每隔 10 分钟从 OpenWeather API 获取天气数据，然后将数据传递给 Sui 天气 Oracle 智能合约的 `update` 函数。`update` 函数以城市的 geoname ID 和城市的新天气数据作为参数，并使用新数据更新城市天气 Oracle 对象。通过这种方式，区块链上的天气数据始终保持最新和准确。
 
 ```rust title='weather.move'
 public fun update(
@@ -209,7 +209,7 @@ public fun update(
 }
 ```
 
-You have defined the data structure of the Sui Weather Oracle smart contract, but you need some functions to access and manipulate the data. Now, add some helper functions that read and return the weather data for a `WeatherOracle` object. These functions allow you to get the weather data for a specific city in the oracle. These functions also allow you to format and display the weather data in a user-friendly way.
+您已经定义了 Sui 天气 Oracle 智能合约的数据结构，但是您需要一些函数来访问和操作数据。现在，添加一些辅助函数，以读取并返回 `WeatherOracle` 对象的天气数据。这些函数允许您获取 Oracle 中特定城市的天气数据。这些函数还允许您以用户友好的方式格式化和显示天气数据。
 
 ```rust title='weather.move'
 // --------------- Read-only References ---------------
@@ -344,7 +344,7 @@ public fun city_weather_oracle_dt(
 }
 ```
 
-Finally, add an extra feature that allows anyone to mint a `WeatherNFT` with the current conditions of a city by passing the geoname ID. The `mint` function is a public function that allows anyone to mint a weather NFT based on the weather data of a city. The function takes the `WeatherOracle` shared object and the geoname ID of the city as parameters, and returns a new `WeatherNFT` object for the city. The `WeatherNFT` object is a unique and non-fungible token that represents the weather of the city at the time of minting. The `WeatherNFT` object has the same data as the `CityWeatherOracle` object, such as the `geonameID`, `name`, `country`, `latitude`, `longitude`, `positive latitude` and `longitude`, `weather ID`, `temperature`, `pressure`, `humidity`, `visibility`, `wind speed`, `wind degree`, `wind gust`, `clouds`, and `timestamp`. The function creates the `WeatherNFT` object by borrowing a reference to the `CityWeatherOracle` object with the geoname ID as the key, and assigning a unique ID (`UID`) to the `WeatherNFT` object. The function then transfers the ownership of the `WeatherNFT` object to the sender of the transaction. This way, the function allows anyone to mint a weather NFT and own a digital representation of the weather of a city. You can use this feature to create your own collection of weather NFTs, or to use them for other applications that require verifiable and immutable weather data.
+最后，添加一个额外的功能，允许任何人通过传递 geoname ID 铸造一个带有城市当前条件的 `WeatherNFT`。`mint` 函数是一个公共函数，允许任何人根据城市的天气数据铸造一个天气 NFT。该函数以 `WeatherOracle` 共享对象和城市的 geoname ID 作为参数，并返回该城市的新 `WeatherNFT` 对象。`WeatherNFT` 对象是一个独特且不可替代的代币，代表了铸造时城市的天气情况。`WeatherNFT` 对象具有与 `CityWeatherOracle` 对象相同的数据，如 `geonameID`、`name`、`country`、`latitude`、`longitude`、`positive latitude` 和 `longitude`、`weather ID`、`temperature`、`pressure`、`humidity`、`visibility`、`wind speed`、`wind degree`、`wind gust`、`clouds` 和 `timestamp`。该函数通过使用 geoname ID 作为键借用引用 `CityWeatherOracle` 对象，并为 `WeatherNFT` 对象分配唯一的 ID（`UID`）来创建 `WeatherNFT` 对象。然后，该函数将 `WeatherNFT` 对象的所有权转移给交易发起者。通过这种方式，该函数允许任何人铸造天气 NFT 并拥有城市天气的数字表示。您可以使用此功能创建自己的天气 NFT 收藏，或在需要可验证和不可变天气数据的其他应用中使用它们。
 
 ```rust title='weather.move'
 struct WeatherNFT has key, store {
@@ -397,40 +397,41 @@ public fun mint(
 }
 ```
 
-And with that, your `weather.move` code is complete.
+至此，您的 `weather.move` 代码已经完成。
 
-## Deployment
+## 部署
 
 {@include: ../../../snippets/initialize-sui-client-cli.mdx}
 
 {@include: ../../../snippets/publish-to-devnet-with-coins.mdx}
 
-## Backend
+## 后端
 
-You have successfully deployed the Sui Weather Oracle smart contract on the blockchain. Now, it's time to create an Express backend that can interact with it. The Express backend performs the following tasks:
+您已成功在区块链上部署了 Sui 天气 Oracle 智能合约。现在，是时候创建一个可以与其进行交互的 Express 后端了。Express 后端执行以下任务：
 
-- Initialize the smart contract with 1,000 cities using the `add_city` function of the smart contract. The backend passes the geoname ID, name, country, latitude, longitude, and positive latitude and longitude of each city as parameters to the function.
-- Fetch the weather data for each city from the OpenWeather API every 10 minutes, using the API key that you obtained from the website. The backend parses the JSON response and extracts the weather data for each city, such as the weather ID, temperature, pressure, humidity, visibility, wind speed, wind degree, wind gust, clouds, and timestamp.
-- Update the weather data for each city on the blockchain, using the `update` function of the smart contract. The backend passes the geoname ID and the new weather data of each city as parameters to the function.
+- 使用智能合约的 `add_city` 函数，通过将每个城市的 geoname ID、名称、国家、纬度、经度以及正纬度和经度作为参数，对智能合约进行初始化，添加 1,000 个城市。
+- 每隔 10 分钟从 OpenWeather API 获取每个城市的天气数据，使用您从该网站获取的 API 密钥。后端解析 JSON 响应，并提取每个城市的天气数据，如天气 ID、温度、气压、湿度、能见度、风速、风向、阵风、云量和时间戳。
+- 使用智能合约的 `update` 函数，在区块链上更新每个城市的天气数据。后端将每个城市的 geoname ID 和新的天气数据作为参数传递给该函数。
 
-The Express backend uses the [Sui Typescript SDK](https://sdk.mystenlabs.com/typescript), a TypeScript library that enables you to interact with the Sui blockchain and smart contracts. With the Sui Typescript SDK, you can connect to the Sui network, sign and submit transactions, and query the state of the smart contract. You also use the OpenWeather API to fetch the weather data for each city and update the smart contract every 10 minutes. Additionally, you can mint weather NFTs, if you want to explore that feature of the smart contract.
+Express 后端使用 [Sui Typescript SDK](https://sdk.mystenlabs.com/typescript)，这是一个 TypeScript 库，使您能够与 Sui 区块链和智能合约进行交互。使用 Sui Typescript SDK，您可以连接到 Sui 网络，签名并提交交易，并查询智能合约的状态。您还将使用 OpenWeather API 每隔 10 分钟获取每个城市的天气数据并更新智能合约。此外，如果您希望探索智能合约的该功能，还可以铸造天气 NFT。
 
-### Initialize the project
+### 初始化项目
 
-First, initialize your backend project. To do this, you need to follow these steps:
-- Create a new folder named `weather-oracle-backend` and navigate to it in your terminal.
-- Run `npm init -y` to create a package.json file with default values.
-- Run `npm install express --save` to install Express as a dependency and save it to your package.json file.
-- Run `npm install @mysten/bcs @mysten/sui.js axios csv-parse csv-parser dotenv pino retry-axios --save` to install the other dependencies and save them to your package.json file. These dependencies are:
-    - **@mysten/bcs**: a library for blockchain services.
-    - **@mysten/sui.js**: a library for smart user interfaces.
-    - **axios**: a library for making HTTP requests.
-    - **csv-parse**: a library for parsing CSV data.
-    - **csv-parser**: a library for transforming CSV data into JSON objects.
-    - **dotenv**: a library for loading environment variables from a .env file.
-    - **pino**: a library for fast and low-overhead logging.
-    - **retry-axios**: a library for retrying failed axios requests.
-- Create a new file named `init.ts`
+首先，初始化您的后端项目。要执行此操作，您需要按照以下步骤操作：
+
+- 创建一个名为 `weather-oracle-backend` 的新文件夹，并在终端中导航到该文件夹。
+- 运行 `npm init -y` 以使用默认值创建一个带有 package.json 文件的项目。
+- 运行 `npm install express --save` 以将 Express 安装为依赖项并将其保存到 package.json 文件中。
+- 运行 `npm install @mysten/bcs @mysten/sui.js axios csv-parse csv-parser dotenv pino retry-axios --save` 以安装其他依赖项并将其保存到 package.json 文件中。这些依赖项包括：
+    - **@mysten/bcs**：用于区块链服务的库。
+    - **@mysten/sui.js**：用于智能用户界面的库。
+    - **axios**：用于进行 HTTP 请求的库。
+    - **csv-parse**：用于解析 CSV 数据的库。
+    - **csv-parser**：用于将 CSV 数据转换为 JSON 对象的库。
+    - **dotenv**：从 .env 文件中加载环境变量的库。
+    - **pino**：用于快速且低开销的日志记录的库。
+    - **retry-axios**：用于重试失败的 axios 请求的库。
+- 创建一个名为 `init.ts` 的新文件
 
 ```typescript title='init.ts'
 import {
@@ -531,26 +532,26 @@ async function signAndExecuteTransactionBlock(
 
 addCityWeather();
 ```
-The code of init.ts does the following:
-- Imports the necessary modules and classes from the library, such as `Connection`, `Ed25519Keypair`, `JsonRpcProvider`, `RawSigner`, and `TransactionBlock`.
-- Imports the `dotenv` module to load environment variables from a .env file.
-- Imports some custom modules and functions from the local files, such as `City`, `get1000Geonameids`, `getCities`, `getWeatherOracleDynamicFields`, and `logger`.
-- Derives a key pair from a phrase stored in the `ADMIN_PHRASE` environment variable.
-- Creates a provider object that connects to a Full node specified by the `FULLNODE` environment variable.
-- Creates a signer object that uses the key pair and the provider to sign and execute transactions on the blockchain.
-- Reads some other environment variables, such as `PACKAGE_ID`, `ADMIN_CAP_ID`, `WEATHER_ORACLE_ID`, and `MODULE_NAME`, which are used to identify the weather oracle contract and its methods.
-- Defines a constant `NUMBER_OF_CITIES`, which is the number of cities to be added to the weather oracle in each batch.
-- Defines an async function `addCityWeather`, which does the following:
-    - Gets an array of cities from the `getCities` function.
-    - Gets an array of 1,000 geonameids from the `get1000Geonameids` function.
-    - Gets an array of weather oracle dynamic fields from the `getWeatherOracleDynamicFields` function, which contains the geonameids of the existing cities in the weather oracle.
-    - Initializes a counter and a transaction block object.
-    - Loops through the cities array and checks if the city's geonameid is not in the weather oracle dynamic fields array and is in the 1,000 geonameids array.
-    - If the condition is met, adds a `moveCall` to the transaction block, which calls the `add_city` method of the weather oracle contract with the city's information, such as `geonameid`, `asciiname`, `country`, `latitude`, and `longitude`.
-    - Increments the counter and checks if it reaches the `NUMBER_OF_CITIES`. If so, calls another async function, `signAndExecuteTransactionBlock`, with the transaction block as an argument, which signs and executes the transaction block on the blockchain and logs the result. The code then resets the counter and the transaction block.
-    - After the loop ends, calls the `signAndExecuteTransactionBlock` function again with the remaining transaction block.
+`init.ts` 代码执行以下操作：
+- 从库中导入必要的模块和类，例如 `Connection`、`Ed25519Keypair`、`JsonRpcProvider`、`RawSigner` 和 `TransactionBlock`。
+- 从 `dotenv` 模块中导入以从 .env 文件加载环境变量。
+- 从本地文件导入一些自定义模块和函数，例如 `City`、`get1000Geonameids`、`getCities`、`getWeatherOracleDynamicFields` 和 `logger`。
+- 从存储在 `ADMIN_PHRASE` 环境变量中的短语派生密钥对。
+- 创建一个连接到由 `FULLNODE` 环境变量指定的全节点的提供程序对象。
+- 创建一个使用密钥对和提供程序来签署和执行区块链上交易的签名者对象。
+- 读取其他一些环境变量，例如 `PACKAGE_ID`、`ADMIN_CAP_ID`、`WEATHER_ORACLE_ID` 和 `MODULE_NAME`，用于标识天气 Oracle 合约及其方法。
+- 定义一个常量 `NUMBER_OF_CITIES`，表示每批次要添加到天气 Oracle 中的城市数量。
+- 定义一个异步函数 `addCityWeather`，执行以下操作：
+    - 从 `getCities` 函数获取城市数组。
+    - 从 `get1000Geonameids` 函数获取 1,000 个地理名称 ID 的数组。
+    - 从 `getWeatherOracleDynamicFields` 函数获取包含天气 Oracle 中现有城市的地理名称 ID 的数组。
+    - 初始化计数器和事务块对象。
+    - 循环遍历城市数组，检查城市的地理名称 ID 是否不在天气 Oracle 动态字段数组中且在 1,000 个地理名称 ID 数组中。
+    - 如果满足条件，则向事务块添加一个 `moveCall`，调用天气 Oracle 合约的 `add_city` 方法，提供城市的信息，如 `geonameid`、`asciiname`、`country`、`latitude` 和 `longitude`。
+    - 增加计数器，并检查是否达到 `NUMBER_OF_CITIES`。如果是，则使用事务块调用另一个异步函数 `signAndExecuteTransactionBlock`，将事务块作为参数，该函数会在区块链上签署和执行事务块，并记录结果。然后代码重置计数器和事务块。
+    - 循环结束后，再次使用剩余事务块调用 `signAndExecuteTransactionBlock` 函数。
 
-You have now initialized the `WeatherOracle` shared object. The next step is to learn how to update them every 10 minutes with the latest weather data from the OpenWeatherMap API.
+现在您已初始化了 `WeatherOracle` 共享对象。下一步是学习如何每隔 10 分钟使用来自 OpenWeatherMap API 的最新天气数据更新它们。
 
 ```typescript title='index.ts'
 import {

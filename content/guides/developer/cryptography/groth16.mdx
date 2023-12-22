@@ -2,23 +2,24 @@
 title: Groth16
 ---
 
-A zero-knowledge proof allows a prover to validate that a statement is true without revealing any information about the inputs. For example, a prover can validate that they know the solution to a sudoku puzzle without revealing the solution.
+零知识证明允许证明者验证一个陈述是否为真，而无需透露有关输入的任何信息。例如，证明者可以验证他们知道数独谜题的解决方案，而不透露解决方案。
 
-Zero-knowledge succinct non-interactive argument of knowledge (zk-SNARKs) are a family of zero-knowledge proofs that are non-interactive, have succinct proof size and efficient verification time. An important and widely used variant of them is pairing-based zk-SNARKs like the [Groth16](https://eprint.iacr.org/2016/260.pdf) proof system, which is one of the most efficient and widely used.
+零知识简洁非交互知识论证（zk-SNARKs）是一类零知识证明，它们是非交互式的，具有简洁的证明大小和高效的验证时间。其中一个重要且广泛使用的变体是基于配对的 zk-SNARKs，例如 [Groth16](https://eprint.iacr.org/2016/260.pdf) 证明系统，它是最高效且广泛使用的之一。
 
-The Move API in Sui enables you to verify any statement that can be expressed in a NP-complete language efficiently using Groth16 zk-SNARKs over either the BN254 or BLS12-381 elliptic curve constructions.
+Sui 中的 Move API 使您能够使用 Groth16 zk-SNARKs 在 BN254 或 BLS12-381 椭圆曲线构造上高效验证可以用 NP 完全语言表示的任何陈述。
 
-There are high-level languages for expressing these statements, such as [Circom](https://docs.circom.io), used in the following example.
+有一些用于表达这些陈述的高级语言，例如 [Circom](https://docs.circom.io)，在以下示例中使用。
 
-Groth16 requires a trusted setup for each circuit to generate the verification key. The API is not pinning any particular verification key and each user can generate their own parameters or use an existing verification to their apps.
+Groth16 需要为每个电路进行可信设置，以生成验证密钥。API 不钉住任何特定的验证密钥，每个用户都可以为其应用程序生成自己的参数或使用现有的验证密钥。
 
-## Usage
+## 用法
 
-The following example demonstrates how to create a Groth16 proof from a statement written in Circom and then verify it using the Sui Move API. The API currently supports up to eight public inputs.
+以下示例演示了如何从 Circom 中编写的陈述中创建 Groth16 证明，然后使用 Sui Move API 进行验证。API 当前支持最多八个公共输入。
 
-### Create circuit
+### 创建电路
 
-The proof demonstrates that we know a secret input to a hash function which gives a certain public output.
+该证明表明我们知道哈希函数的秘密输入，该输入给出某个公共输出。
+
 ```circom
 pragma circom 2.1.5;
 
@@ -34,15 +35,19 @@ template Main() {
 
 component main = Main();
 ```
-We use the [Poseidon hash function](https://www.poseidon-hash.info) which is a ZK-friendly hash function. Assuming that the [circom compiler has been installed](https://docs.circom.io/getting-started/installation/), the above circuit is compiled using the following command:
+
+我们使用 [Poseidon 哈希函数](https://www.poseidon-hash.info)，这是一种 ZK-friendly 的哈希函数。假设已经安装了 [circom 编译器](https://docs.circom.io/getting-started/installation/)，可以使用以下命令编译上述电路：
+
 ```shell
 circom main.circom --r1cs --wasm
+
 ```
-This outputs the constraints in R1CS format and the circuit in Wasm format.
 
-### Generate proof
+这将输出 R1CS 格式的约束和 Wasm 格式的电路。
 
-To generate a proof verifiable in Sui, you need to generate a witness. This example uses Arkworks' [ark-circom](https://github.com/gakonst/ark-circom) Rust library. The code constructs a witness for the circuit and generates a proof for it for a given input. Finally, it verifies that the proof is correct.
+### 生成证明
+
+要生成在 Sui 中可验证的证明，您需要生成一个见证。此示例使用 Arkworks 的 [ark-circom](https://github.com/gakonst/ark-circom) Rust 库。该代码为电路构建了一个见证，并为给定的输入生成了一个证明。最后，它验证了证明的正确性。
 
 ```rust
 use ark_bn254::Bn254;
@@ -82,15 +87,12 @@ fn main() {
     assert!(verified);
 }
 ```
-The proof shows that an input (7) which, when hashed with the Poseidon hash function, gives a certain output (which in this case is `inputs[0] = 7061949393491957813657776856458368574501817871421526214197139795307327923534`).
 
-### Verification in Sui
+验证证明的 Sui API 需要一个特殊处理过的验证密钥，其中仅使用值的子集。理想情况下，此准备好的验证密钥的计算每个电路只需进行一次。您可以使用 Sui Move API 的 `sui::groth16::prepare_verifying_key` 方法，使用先前用过的 `params.vk` 值的序列化进行此处理。
 
-The API in Sui for verifying a proof expects a special processed verification key, where only a subset of the values are used. Ideally, computation for this prepared verification key happens only once per circuit. You can perform this processing using the `sui::groth16::prepare_verifying_key` method of the Sui Move API with a serialization of the `params.vk` value used previously.
+`prepare_verifying_key` 函数的输出是一个包含四个字节数组的向量，对应于 `vk_gamma_abc_g1_bytes`、`alpha_g1_beta_g2_bytes`、`gamma_g2_neg_pc_bytes`、`delta_g2_neg_pc_bytes`。
 
-The output of the `prepare_verifying_key` function is a vector with four byte arrays, which corresponds to the `vk_gamma_abc_g1_bytes`, `alpha_g1_beta_g2_bytes`, `gamma_g2_neg_pc_bytes`, `delta_g2_neg_pc_bytes`.
-
-To verify a proof, you also need two more inputs, `proof_inputs_bytes` and `proof_points_bytes`, which contain the public inputs and the proof respectively. These are serializations of the `inputs` and `proof` values from the previous example, which you can compute in Rust as follows:
+要验证证明，您还需要两个输入，即 `proof_inputs_bytes` 和 `proof_points_bytes`，其中包含公共输入和证明。这些是从先前示例的 `inputs` 和 `proof` 值计算的序列化，您可以在 Rust 中进行如下计算：
 
 ```rust
 let mut proof_inputs_bytes = Vec::new();
@@ -102,7 +104,7 @@ proof.b.serialize_compressed(&mut proof_points_bytes).unwrap();
 proof.c.serialize_compressed(&mut proof_points_bytes).unwrap();
 ```
 
-The following example smart contract prepares a verification key and verifies the corresponding proof. This example uses the BN254 elliptic curve construction, which is given as the first parameter to the `prepare_verifying_key` and `verify_groth16_proof` functions. You can use the `bls12381` function instead for BLS12-381 construction.
+以下示例智能合约准备了一个验证密钥并验证相应的证明。此示例使用 BN254 椭圆曲线构造，该构造作为 `prepare_verifying_key` 和 `verify_groth16_proof` 函数的第一个参数给出。对于 BLS12-381 构造，您可以改用 `bls12381` 函数。
 
 ```rust
 module test::groth16_test {

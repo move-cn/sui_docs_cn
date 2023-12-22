@@ -1,29 +1,30 @@
 ---
-title: Debugging
+title: 调试
 ---
 
-At the moment, there isn't a debugger for Move. To aid with debugging, however, you can use the `std::debug` module to print out arbitrary values. To do so, first import the debug module in your source file:
+目前，Move 没有调试器。然而，为了辅助调试，您可以使用 `std::debug` 模块打印出任意值。为此，首先在您的源文件中导入调试模块：
 
 ```move
 use std::debug;
 ```
 
-Then in places where you want to print out a value `v`, regardless of its type, add the following code:
+然后，在您想要打印值 `v` 的地方，无论其类型如何，添加以下代码：
 
 ```move
 debug::print(&v);
 ```
 
-or the following if `v` is already a reference:
+如果 `v` 已经是一个引用，则添加以下代码：
 
 ```move
 debug::print(v);
 ```
 
-The debug module also provides a function to print out the current stacktrace:
+调试模块还提供了一个函数来打印当前的堆栈跟踪：
 
 ```move
 debug::print_stack_trace();
 ```
 
-Alternatively, any call to abort or assertion failure also prints the stacktrace at the point of failure.
+或者，任何对 `abort` 的调用或断言失败也会在失败点打印堆栈跟踪。
+
