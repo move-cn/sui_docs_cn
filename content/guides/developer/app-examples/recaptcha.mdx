@@ -1,26 +1,26 @@
 ---
-title: Prevent Bots
-description: Write and deploy a smart contract in Move that uses reCAPTCHA to verify users are human (and not bots) before they interact with the contract.
+title: 预防机器人
+description: 编写并部署一个使用 reCAPTCHA 验证用户在与合同交互之前是否为人类（而不是机器人）的 Move 智能合约。
 draft: true
 ---
 
-This guide shows you how to write and deploy a smart contract in Move that uses reCAPTCHA to verify users are human (and not bots) before they interact with the contract. CAPTCHA is a method of bot mitigation that requires you to pass a challenge test to prove that you are human. CAPTCHA tests are effective in preventing bots from performing tasks, but the tests can become annoying or frustrating for legitimate users if they are too difficult or frequent. reCAPTCHA is a form of CAPTCHA testing.
+本指南将向您展示如何编写并部署一个使用 reCAPTCHA 验证用户在与合同交互之前是否为人类（而不是机器人）的 Move 智能合约。CAPTCHA 是一种机器人缓解方法，要求您通过挑战测试来证明您是人类。CAPTCHA 测试在阻止机器人执行任务方面是有效的，但如果测试过于困难或频繁，对于合法用户来说可能变得令人讨厌或令人沮丧。reCAPTCHA 是 CAPTCHA 测试的一种形式。
 
-This guide assumes you have [installed Sui](../getting-started/sui-install.mdx) and understand Sui fundamentals.
+本指南假定您已经 [安装了 Sui](../getting-started/sui-install.mdx) 并了解 Sui 的基础知识。
 
-## Move smart contract
+## Move 智能合约
 
-As with all Sui dApps, a Move package on chain powers the logic of the reCAPTCHA module. The following instruction walks you through creating and publishing the module.
+与所有 Sui dApp 一样，链上的一个 Move 包驱动着 reCAPTCHA 模块的逻辑。以下说明将引导您创建和发布该模块。
 
-### reCAPTCHA module
+### reCAPTCHA 模块
 
-Before you get started, you must initialize a Move package. Open a terminal or console in the directory you want to store the example and run the following command to create an empty package with the name `recaptcha`:
+在开始之前，您必须初始化一个 Move 包。在您要存储示例的目录中打开终端或控制台，并运行以下命令以创建一个名为 `recaptcha` 的空包：
 
 ```bash
 sui move new recaptcha
 ```
 
-With that done, it's time to jump into some code. Create a new file in the `sources` directory with the name `recaptcha.move` and populate the file with the following code:
+完成后，就可以开始编写一些代码了。 在 `ources` 目录中创建一个名为 `recaptcha.move` 的新文件，并使用以下代码填充该文件：
 
 ```rust title='recaptcha.move'
 // Copyright (c) Mysten Labs, Inc.
@@ -59,14 +59,14 @@ module recaptcha::recaptcha {
 }
 ```
 
-There are few details to take note of in this code:
+有一些在这段代码中需要注意的细节：
 
-1. The fourth line declares the module name as `recaptcha` within the package `recaptcha`.
-1. The next eight lines use the use keyword to import types and functions from other modules, such as `sui::clock::Clock`, `sui::dynamic_field as df`, `sui::ed25519::ed25519_verify`, `sui::event::emit,sui::math`, `sui::object::{Self, UID}`, `sui::transfer`, and `sui::tx_context::{sender, TxContext}`. These modules are needed for the implementation of the reCAPTCHA verification and the interaction logic.
-1. The following three lines declare the error codes, namely: `EVerificationExpired`, `EInvalidSignature`, and `ENotYetVerified`, that are used to check the validity of the reCAPTCHA test result and the eligibility of the user. The error codes are also used in the unit tests to verify the correctness of the program.
-1. The last line declares the constant `TIME_WINDOW`, which specifies the duration of the time window in milliseconds. The time window is the period of time that the user is eligible to interact with the smart contract after passing the reCAPTCHA test.
+1. 第四行将模块名称声明为 `recaptcha`，在包 `recaptcha` 中。
+1. 接下来的八行使用 `use` 关键字从其他模块导入类型和函数，例如 `sui::clock::Clock`、`sui::dynamic_field as df`、`sui::ed25519::ed25519_verify`、`sui::event::emit, sui::math`、`sui::object::{Self, UID}`、`sui::transfer` 和 `sui::tx_context::{sender, TxContext}`。这些模块对于实现 reCAPTCHA 验证和交互逻辑是必要的。
+1. 接下来的三行声明了错误代码，分别是：`EVerificationExpired`、`EInvalidSignature` 和 `ENotYetVerified`，它们用于检查 reCAPTCHA 测试结果的有效性和用户的资格。这些错误代码也用于单元测试，以验证程序的正确性。
+1. 最后一行声明了常量 `TIME_WINDOW`，指定时间窗口的持续时间（以毫秒为单位）。时间窗口是用户在通过 reCAPTCHA 测试后有资格与智能合约交互的时间段。
 
-Next, add some more code to this module:
+接下来，在此模块中添加一些代码：
 
 ```rust title='recaptcha.move'
 struct Interaction has copy, drop {
@@ -92,12 +92,12 @@ fun init(ctx: &mut TxContext) {
 }
 ```
 
-- The `Interaction` struct is used to define the data that is emitted as an event when a user successfully interacts with the smart contract. The `Interaction` event has two fields: the sender's address and the timestamp in milliseconds. The sender's address is the account that initiated the interaction, and the timestamp is the current time when the event is triggered.
-- The `Registry` struct stores the mapping of the user’s address to the expiration time of the eligibility to interact with the smart contract. It also has a `window` field that specifies the length of the time window in milliseconds. The time window is the period of time that the user is eligible to interact with the smart contract after passing the reCAPTCHA test.
-- The [`init` function](concepts/sui-move-concepts/init.mdx) creates a [shared object](concepts/object-ownership/shared.mdx) for the `Registry`. The function is called when the smart contract is deployed to the blockchain. The function creates a new registry object with a unique id and sets the time window to the constant value.
+- `Interaction` 结构用于定义在用户成功与智能合约交互时作为事件发出的数据。`Interaction` 事件有两个字段：发送者的地址和时间戳（以毫秒为单位）。发送者的地址是启动交互的帐户，时间戳是事件触发时的当前时间。
+- `Registry` 结构存储用户地址与有资格与智能合约交互的过期时间的映射。它还有一个 `window` 字段，指定时间窗口的长度（以毫秒为单位）。时间窗口是用户在通过 reCAPTCHA 测试后有资格与智能合约交互的时间段。
+- [`init` 函数](concepts/sui-move-concepts/init.mdx) 为 `Registry` 创建一个[共享对象](concepts/object-ownership/shared.mdx)。该函数在智能合约部署到区块链时调用。该函数创建一个具有唯一 ID 的新注册表对象，并将时间窗口设置为常量值。
 
-So far, you've set up the data structures within the module.
-Now, create a function that verifies the message
+到目前为止，您已经在模块中设置了数据结构。
+现在，创建一个验证消息的函数
 
 ```rust title='recaptcha.move'
 /// @param registry: The registry object.
@@ -142,23 +142,23 @@ public fun msg_to_ts(
 }
 ```
 
-The `verify` function is a public function that allows anyone to register themselves as non-bot using the function call. The function takes five parameters:
+`verify` 函数是一个公共函数，允许任何人通过函数调用注册自己为非机器人。该函数接受五个参数：
 
-- `registry`: The registry object that stores the mapping of the user's address to the expiration time of the eligibility.
-- `signature`: The 32-byte signature that is a point on the Ed25519 elliptic curve. The signature is generated by the oracle using its private key and the message that contains the user's address and the current timestamp.
-- `public_key`: The 32-byte public key that is a point on the Ed25519 elliptic curve. The public key is the oracle's public key that is used to verify the signature.
-- `msg`: The message that contains the user's address and the current timestamp. The message is encoded as a vector of bytes.
-- `ctx`: The transaction context that provides information about the sender, the gas limit, and the gas price.
+- `registry`：存储用户地址与资格到期时间的注册表对象。
+- `signature`：32 字节的签名，是 Ed25519 椭圆曲线上的一个点。签名是由 Oracle 使用其私钥和包含用户地址和当前时间戳的消息生成的。
+- `public_key`：32 字节的公钥，是 Ed25519 椭圆曲线上的一个点。公钥是用于验证签名的 Oracle 的公钥。
+- `msg`：包含用户地址和当前时间戳的消息。消息被编码为字节向量。
+- `ctx`：提供有关发送者、燃气限制和燃气价格的交易上下文的信息。
 
-The function performs the following steps:
+该函数执行以下步骤：
 
-- It calls the `ed25519_verify` function from the `sui::ed25519` module to check if the signature is valid for the given public key and message. The `ed25519_verify` function returns a boolean value that indicates the validity of the signature.
-- It asserts that the signature is valid, otherwise it aborts the execution with the error code `EInvalidSignature`.
-- It checks if the user's address exists as a key in the dynamic field of the registry object. The dynamic field is a way of storing key-value pairs in an object without declaring them in advance and it can be accessed, modified, or deleted using the `sui::dynamic_field` module.
-- If the user's address does not exist as a key in the dynamic field, it adds a new key-value pair to the dynamic field. The key is the user's address and the value is the expiration time of the eligibility. The expiration time is calculated by calling the `msg_to_ts` function that converts the message to a timestamp in milliseconds.
-- If the user's address already exists as a key in the dynamic field, it updates the value of the key to the new expiration time of the eligibility.
+- 调用 `sui::ed25519` 模块的 `ed25519_verify` 函数，检查签名是否对给定的公钥和消息有效。`ed25519_verify` 函数返回一个布尔值，指示签名的有效性。
+- 断言签名有效，否则使用错误代码 `EInvalidSignature` 中止执行。
+- 检查用户地址是否作为注册表对象的动态字段中的键存在。动态字段是一种在对象中存储键值对的方式，无需预先声明，可以使用 `sui::dynamic_field` 模块访问、修改或删除。
+- 如果用户地址在动态字段中不存在作为键，它将在动态字段中添加一个新的键值对。键是用户地址，值是资格到期时间。到期时间通过调用 `msg_to_ts` 函数计算，该函数将消息转换为以毫秒为单位的时间戳。
+- 如果用户地址在动态字段中已存在作为键，它将更新键的值为新的资格到期时间。
 
-Now that you have implemented `verify`, you can move on to the next step, which is to demonstrate how someone can interact with the contract. Write an `interact` function that checks whether the user is verified or not.
+现在您已经实现了 `verify`，可以继续下一步，演示如何与合约交互。编写一个 `interact` 函数，检查用户是否已验证。
 
 ```rust title='recaptcha.move'
 // Define a public function for interacting with the registry object
@@ -190,40 +190,40 @@ public fun interact(
 }
 ```
 
-The `interact` function is a public function that allows the user to interact with the smart contract after passing the reCAPTCHA test. The function is linked to the `verify` function, which verifies the reCAPTCHA test result and registers the user's eligibility to interact with the smart contract.
-The function takes three parameters:
+`interact` 函数是一个公共函数，允许用户在通过 reCAPTCHA 测试后与智能合约进行交互。该函数与 `verify` 函数相关联，后者验证 reCAPTCHA 测试结果并注册用户与智能合约交互的资格。
+该函数接受三个参数：
 
-- `registry`: A mutable reference to the registry object that stores the mapping of the user's address to the expiration time of the eligibility.
-- `clock`: A reference to the clock object that provides the current timestamp in milliseconds.
-- `ctx`: A mutable reference to the transaction context that provides information about the sender, the gas limit, and the gas price.
+- `registry`：对注册表对象的可变引用，该对象存储用户地址到资格到期时间的映射。
+- `clock`：时钟对象的引用，提供以毫秒为单位的当前时间戳。
+- `ctx`：对事务上下文的可变引用，提供有关发送者、燃气限制和燃气价格的信息。
 
-The function performs the following steps:
+该函数执行以下步骤：
 
-- It checks if there is an existing interaction history for the sender address with the registry object. The interaction history is stored as a dynamic field in the registry object. The dynamic field is a way of storing key-value pairs in an object without declaring them in advance. The dynamic field can be accessed, modified, or deleted using the `sui::dynamic_field` module.
-- If there is an existing interaction history, it borrows a mutable reference to the interaction history object. The interaction history object contains the expiration time of the eligibility in milliseconds.
-- It gets the current timestamp in milliseconds from the clock object and compares it with the expiration time of the eligibility. If the current timestamp is within the time window of the eligibility, it emits an interaction event. The interaction event is a struct that contains the sender address and the timestamp in milliseconds. The interaction event can be used to implement the logic of the decentralized application, such as voting, bidding, or playing.
-- If the current timestamp is outside the time window of the eligibility, it aborts the execution with the error code `EVerificationExpired`. This means that the user has to pass the reCAPTCHA test again to interact with the smart contract.
-- If there is no existing interaction history, it aborts the execution with the error code `ENotYetVerified`. This means that the user has not passed the reCAPTCHA test yet and cannot interact with the smart contract.
+- 它检查是否存在与注册表对象的发送者地址相关的现有交互历史记录。交互历史记录存储在注册表对象的动态字段中。动态字段是一种在对象中存储键值对的方式，无需预先声明。可以使用 `sui::dynamic_field` 模块访问、修改或删除动态字段。
+- 如果存在现有的交互历史记录，它借用对交互历史记录对象的可变引用。交互历史记录对象包含资格到期时间（以毫秒为单位）。
+- 它从时钟对象获取当前时间戳（以毫秒为单位），并将其与资格到期时间进行比较。如果当前时间戳在资格的时间窗口内，它将触发一个交互事件。交互事件是一个结构，包含发送者地址和时间戳（以毫秒为单位）。交互事件可用于实现去中心化应用程序的逻辑，例如投票、竞标或游戏。
+- 如果当前时间戳超出资格的时间窗口，它将使用错误代码 `EVerificationExpired` 中止执行。这意味着用户必须再次通过 reCAPTCHA 测试才能与智能合约进行交互。
+- 如果不存在现有的交互历史记录，它将使用错误代码 `ENotYetVerified` 中止执行。这意味着用户尚未通过 reCAPTCHA 测试，不能与智能合约进行交互。
 
-And with that, your `recaptcha.move` code is complete.
+至此，您的 `recaptcha.move` 代码已完成。
 
-## Deployment
+## 部署
 
 {@include: ../../../snippets/initialize-sui-client-cli.mdx}
 
 {@include: ../../../snippets/publish-to-devnet-with-coins.mdx}
 
-The package should successfully deploy. Next, set up a backend server that verifies whether the user has successfully completed the reCAPTCHA challenge and then signs a message that should be passed to the `verify` function.
+包应该已成功部署。接下来，设置一个后端服务器，验证用户是否成功完成了 reCAPTCHA 挑战，然后签署一个应传递给 `verify` 函数的消息。
 
-## Backend
+## 后端
 
-To implement the backend for the reCAPTCHA, you need to create an `express` app that can handle HTTP requests and responses. You also need to install some dependencies, such as `@noble/ed25519`, `axios`, `cors`, `helmet`, `morgan`, and `dotenv`. These packages help you with cryptography, HTTP requests, cross-origin resource sharing, security, logging, and environment variables.
+要实现 reCAPTCHA 的后端，您需要创建一个可以处理 HTTP 请求和响应的 `express` 应用程序。您还需要安装一些依赖项，如 `@noble/ed25519`、`axios`、`cors`、`helmet`、`morgan` 和 `dotenv`。这些包可帮助您处理密码学、HTTP 请求、跨域资源共享、安全性、日志记录和环境变量。
 
-Here are the steps to create the backend:
+以下是创建后端的步骤：
 
-1. Initialize a new project with `npm init -y`.
-2. Install the dependencies with `npm install --save @noble/ed25519 axios cors helmet morgan dotenv` or `yarn add @noble/ed25519 axios cors helmet morgan dotenv`.
-3. Create a file named `app.ts` and paste the following code.
+1. 使用 `npm init -y` 初始化一个新项目。
+2. 使用 `npm install --save @noble/ed25519 axios cors helmet morgan dotenv` 或 `yarn add @noble/ed25519 axios cors helmet morgan dotenv` 安装依赖项。
+3. 创建一个名为 `app.ts` 的文件，并粘贴以下代码。
 
 ```typescript title='app.ts'
 import * as ed from "@noble/ed25519";
@@ -326,50 +326,50 @@ app.use(middlewares.errorHandler);
 export default app;
 ```
 
-4. Examine the code to see what it does.
+4. 研究一下代码看它是如何工作的。
 
-- First, you import the modules that you need for your app.
-- Next, you create an express app and use some middlewares to enhance its functionality. You use `morgan` for logging, `helmet` for security, `cors` for cross-origin resource sharing, and `express.json` for parsing JSON data.
-- Then, you define a `GET` route for the root path (`/`) that returns a simple JSON message.
-- After that, you define an interface for the reCAPTCHA API response. This is the data that you receive from Google when you verify the user's response token. It contains some fields such as `success`, `challenge_ts`, `hostname`, and `error-codes`. It also has some optional fields that you will add later, such as `signature`, `pubKey`, and `message`.
-- Next, you define a `POST` route for the `/verify-token` path that handles the verification of the user's response token. This is the main logic of your backend. Here are the steps that you follow in this route:
-  - Get the current time in milliseconds and store it in a variable named `now`.
-  - Get the secret key from the environment variable `SK` and store it in a variable named `privKey`. This is the key that you use to sign your message and verify your identity to the smart contract.
-  - Use the `@noble/ed25519` module to get the public key from the private key and store it in a variable named `pubKey`. This is the key that you share with the smart contract and the user.
-  - Get the response token, the secret key, and the user's address from the request body and store them in variables named `response`, `secret`, and `userAddress`.
-  - Log the values of these variables for debugging purposes.
-  - Create a message that consists of the user's address (without the `0x` prefix) and the current time, and convert it to a hexadecimal string. Store it in a variable named `message`.
-  - Use the `@noble/ed25519` module to sign the message with the private key and store the signature in a variable named `signature`.
-  - Use the `@noble/ed25519` module to verify the signature with the message and the public key and store the result in a variable named `isValid`.
-  - Log the values of these variables for debugging purposes.
-  - Use the axios module to send a POST request to the reCAPTCHA API with the secret key and the response token as parameters. Store the response in a variable named `axiosResponse`.
-  - Check if the response data has a success field and if it is true. If so, return a JSON object with the following fields:
-    - `success`: true
-    - `verificationInfo`: the response data from the reCAPTCHA API
-    - `signature`: the signature converted to an array of numbers
-    - `pubKey`: the public key converted to an array of numbers
-    - `message`: the message converted to an array of numbers
-  - If not, catch the error and return a JSON object with the following field:
-    - `success`: false
-- Next, define a helper function named `stringToHex` that takes a string as an input and returns a hexadecimal string as an output. This function is used to convert the message to a hexadecimal format.
-- Finally, use some custom middlewares to handle not found and error cases, and export the app as a default module.
+   - 首先，导入你在应用程序中需要的模块。
+   - 接下来，创建一个 express 应用程序并使用一些中间件来增强其功能。你使用 `morgan` 进行日志记录，`helmet` 进行安全性，`cors` 进行跨域资源共享，以及 `express.json` 用于解析 JSON 数据。
+   - 然后，为根路径 (`/`) 定义一个 `GET` 路由，返回一个简单的 JSON 消息。
+   - 之后，为 reCAPTCHA API 响应定义一个接口。这是你从 Google 在验证用户响应令牌时收到的数据。它包含一些字段，如 `success`、`challenge_ts`、`hostname` 和 `error-codes`。它还具有一些稍后将添加的可选字段，如 `signature`、`pubKey` 和 `message`。
+   - 接下来，为 `/verify-token` 路径定义一个 `POST` 路由，处理用户响应令牌的验证。这是你后端的主要逻辑。在这个路由中，你遵循以下步骤：
+     - 获取当前时间的毫秒数并将其存储在名为 `now` 的变量中。
+     - 从环境变量 `SK` 中获取密钥，并将其存储在名为 `privKey` 的变量中。这是你用于签署消息并验证你的身份给智能合约的密钥。
+     - 使用 `@noble/ed25519` 模块从私钥获取公钥，并将其存储在名为 `pubKey` 的变量中。这是你与智能合约和用户共享的密钥。
+     - 从请求体中获取响应令牌、密钥和用户地址，并将它们存储在名为 `response`、`secret` 和 `userAddress` 的变量中。
+     - 为调试目的记录这些变量的值。
+     - 创建一个消息，由用户的地址（不带 `0x` 前缀）和当前时间组成，并将其转换为十六进制字符串。将其存储在名为 `message` 的变量中。
+     - 使用 `@noble/ed25519` 模块用私钥对消息进行签名，并将签名存储在名为 `signature` 的变量中。
+     - 使用 `@noble/ed25519` 模块使用消息和公钥验证签名，并将结果存储在名为 `isValid` 的变量中。
+     - 为调试目的记录这些变量的值。
+     - 使用 axios 模块向 reCAPTCHA API 发送带有密钥和响应令牌的 POST 请求。将响应存储在名为 `axiosResponse` 的变量中。
+     - 检查响应数据是否具有 `success` 字段，以及它是否为 true。如果是，返回一个具有以下字段的 JSON 对象：
+       - `success`: true
+       - `verificationInfo`: 来自 reCAPTCHA API 的响应数据
+       - `signature`: 转换为数字数组的签名
+       - `pubKey`: 转换为数字数组的公钥
+       - `message`: 转换为数字数组的消息
+     - 如果不是，捕获错误并返回具有以下字段的 JSON 对象：
+       - `success`: false
+   - 接下来，定义一个名为 `stringToHex` 的辅助函数，该函数接受一个字符串作为输入，并返回一个十六进制字符串作为输出。此函数用于将消息转换为十六进制格式。
+   - 最后，使用一些自定义中间件来处理未找到和错误情况，并将应用程序导出为默认模块。
 
-That's it! You have implemented the backend for the reCAPTCHA. To run the app, you can use `node app.ts` or `ts-node app.ts` if you have TypeScript installed. You can also use a tool like `nodemon` to automatically restart the app when you make changes. To test the app, you can use a tool like Postman or curl to send requests to the app and see the responses.
+这就是全部！你已经实现了 reCAPTCHA 的后端。要运行应用程序，你可以使用 `node app.ts` 或者如果你安装了 TypeScript，可以使用 `ts-node app.ts`。你还可以使用类似 `nodemon` 的工具，在进行更改时自动重新启动应用程序。要测试应用程序，你可以使用 Postman 或 curl 这样的工具向应用程序发送请求并查看响应。
 
-## Frontend
+## 前端
 
-To implement the frontend for the reCAPTCHA, you need to create a react app that can render a user interface and interact with the backend and the smart contract. You also need to install some dependencies, such as `@mysten/dapp-kit`, `@mysten/sui.js`, `axios`, and `react-google-recaptcha`. These packages help you with wallet integration, transaction execution, HTTP requests, and reCAPTCHA rendering.
+要实现 reCAPTCHA 的前端，您需要创建一个 React 应用程序，它可以渲染用户界面并与后端和智能合约交互。您还需要安装一些依赖项，如 `@mysten/dapp-kit`、`@mysten/sui.js`、`axios` 和 `react-google-recaptcha`。这些包可帮助您集成钱包、执行事务、处理 HTTP 请求以及呈现 reCAPTCHA。
 
-Here are the steps to create the frontend:
+以下是创建前端的步骤：
 
-1. Initialize a new project with `pnpm create vite recaptcha-app --template react-ts`.
-2. Install the dependencies with `pnpm install --save @mysten/dapp-kit @mysten/sui.js axios react-google-recaptcha`.
-3. Create a file named `.env` and add the following environment variables:
-    - `VITE_reCAPTCHA_SITE_KEY`: the site key that you get from Google when you register your site for reCAPTCHA
-    - `VITE_reCAPTCHA_SECRET_KEY`: the secret key that you get from Google when you register your site for reCAPTCHA
-    - `VITE_PACKAGE_ID`: the package ID of the smart contract that you want to interact with
-    - `VITE_REGISTRY_ID`: the registry ID of the smart contract that you want to interact with
-4. Create a file named `App.tsx` and paste the code you have provided.
+1. 使用 `pnpm create vite recaptcha-app --template react-ts` 初始化一个新项目。
+2. 使用 `pnpm install --save @mysten/dapp-kit @mysten/sui.js axios react-google-recaptcha` 安装依赖项。
+3. 创建一个名为 `.env` 的文件，并添加以下环境变量：
+    - `VITE_reCAPTCHA_SITE_KEY`：从 Google 注册 reCAPTCHA 时获得的站点密钥
+    - `VITE_reCAPTCHA_SECRET_KEY`：从 Google 注册 reCAPTCHA 时获得的秘密密钥
+    - `VITE_PACKAGE_ID`：要与之交互的智能合约的包 ID
+    - `VITE_REGISTRY_ID`：要与之交互的智能合约的注册表 ID
+4. 创建一个名为 `App.tsx` 的文件，并粘贴你提供的代码。
 
 ```typescript title='App.tsx'
 import "./App.css";
@@ -518,28 +518,28 @@ function App() {
 export default App;
 ```
 
-5. Examine the code to see what it does.
+5. 研究一下代码看它是如何工作的。
 
-- First, import the modules that you need for your app.
-- Next, use hooks from `@mysten/dapp-kit` to get access to the current wallet, the current account, and the `signAndExecuteTransactionBlock` function. These help you connect to the wallet and execute transactions on the blockchain.
-- Then, define some constants for the site key, the secret key, the package ID, the registry ID, and the module ID. These are the values that you use to interact with the reCAPTCHA API and the smart contract.
-- After that, define some state variables to store the status of the reCAPTCHA validation, the verification result, and the message, the public key, and the signature that you get from the backend. Use the `useState` hook from React to manage these state variables.
-- Next, define a function named `onChange` that takes a token as an input and handles the change of the reCAPTCHA component. This function is triggered when the user completes the reCAPTCHA challenge. Here are the steps that you follow in this function:
-  - Check if the token is null. If so, set the reCAPTCHA validation state to false.
-  - If not, call the `verifyToken` function with the token as an argument and store the result in a variable named `recaptchaApiResponse`. This function sends a POST request to the backend and gets the verification result and the data that you need to interact with the smart contract.
-  - Set the reCAPTCHA validation state to true.
-  - Check if the `verificationPassedOneTime` state is false. If so, set it to true. This state is used to enable the interact button only once after the user passes the verification.
-  - Check if the `recaptchaApiResponse` has the message, the `pubKey`, and the `signature` fields. If so, set the corresponding state variables with the values from the response.
-- Next, define a function named `verifyToken` that takes a token as an input and returns a promise of the reCAPTCHA API response. This function is used to communicate with the backend. Here are the steps that you follow in this function:
-  - Try to send a POST request to the backend URL with the token, the secret key, and the user's address as the body parameters. Use the `axios` module to send the request and store the response in a variable named `response`.
-  - Return the data field of the response as the reCAPTCHA API response.
-  - Catch any error and log it to the console.
-  - Return an empty object as the default reCAPTCHA API response.
-- Next, use the `useEffect` hook from React to run some code when the `currentWallet` state changes. In this case, you don't do anything, but you could add some logic here if you want to.
-- Finally, return a JSX element that renders the app. The app consists of the following components:
-  - A `ConnectButton` component from `@mysten/dapp-kit` that allows the user to connect to their wallet.
-  - A button that allows the user to interact with the smart contract. This button is disabled unless the user passes the verification at least once. When the user clicks this button, create a new `TransactionBlock` object from `@mysten/sui.js` and add a `moveCall` action that calls the `interact` function of the smart contract with the registry ID and the clock object ID as arguments. Then, use the `signAndExecuteTransactionBlock` function from `@mysten/dapp-kit` to sign and execute the transaction block on the blockchain. You also log the result to the console.
-  - A button that allows the user to verify their identity to the smart contract. This button is disabled unless the user passes the reCAPTCHA challenge. When the user clicks this button, create a new `TransactionBlock` object from `@mysten/sui.js` and add a `moveCall` action that calls the verify function of the smart contract with the registry ID, the signature, the public key, and the message as arguments. Then, use the `signAndExecuteTransactionBlock` function from `@mysten/dapp-kit` to sign and execute the transaction block on the blockchain. You also log the result to the console.
-  - A `ReCAPTCHA` component from `react-google-recaptcha` that renders the reCAPTCHA widget. You pass the site key and the `onChange` function as props to this component.
+   - 首先，导入你在应用程序中需要的模块。
+   - 接下来，使用 `@mysten/dapp-kit` 提供的钩子获取当前钱包、当前账户以及 `signAndExecuteTransactionBlock` 函数的访问权限。这些帮助你连接到钱包并在区块链上执行事务。
+   - 然后，为站点密钥、秘密密钥、包 ID、注册表 ID 和模块 ID 定义一些常量。这些是你用来与 reCAPTCHA API 和智能合约进行交互的值。
+   - 之后，定义一些状态变量，用于存储 reCAPTCHA 验证的状态、验证结果以及来自后端的消息、公钥和签名。使用 React 中的 `useState` 钩子来管理这些状态变量。
+   - 接下来，定义一个名为 `onChange` 的函数，它接受一个令牌作为输入，并处理 reCAPTCHA 组件的更改。此函数在用户完成 reCAPTCHA 挑战时触发。在这个函数中，你遵循以下步骤：
+     - 检查令牌是否为 null。如果是，则将 reCAPTCHA 验证状态设置为 false。
+     - 如果不是，则使用令牌调用 `verifyToken` 函数，并将结果存储在名为 `recaptchaApiResponse` 的变量中。此函数发送一个 POST 请求到后端，获取验证结果和与智能合约交互所需的数据。
+     - 将 reCAPTCHA 验证状态设置为 true。
+     - 检查 `verificationPassedOneTime` 状态是否为 false。如果是，则设置为 true。此状态用于在用户通过验证后仅启用一次交互按钮。
+     - 检查 `recaptchaApiResponse` 是否具有消息、`pubKey` 和 `signature` 字段。如果是，则使用响应中的值设置相应的状态变量。
+   - 接下来，定义一个名为 `verifyToken` 的函数，它接受一个令牌作为输入，并返回 reCAPTCHA API 响应的 promise。此函数用于与后端通信。在这个函数中，你遵循以下步骤：
+     - 尝试使用令牌、秘密密钥和用户地址作为请求体参数发送 POST 请求到后端 URL。使用 `axios` 模块发送请求，并将响应存储在名为 `response` 的变量中。
+     - 将响应的数据字段作为 reCAPTCHA API 响应返回。
+     - 捕获任何错误并将其记录到控制台。
+     - 以默认的 reCAPTCHA API 响应返回一个空对象。
+   - 接下来，使用 React 中的 `useEffect` 钩子在 `currentWallet` 状态更改时运行一些代码。在这种情况下，你什么也不做，但如果你想的话，可以在这里添加一些逻辑。
+   - 最后，返回一个 JSX 元素，用于渲染应用程序。该应用程序包括以下组件：
+     - 来自 `@mysten/dapp-kit` 的 `ConnectButton` 组件，允许用户连接到他们的钱包。
+     - 一个按钮，允许用户与智能合约交互。除非用户通过验证至少一次，否则此按钮将被禁用。当用户点击此按钮时，从 `@mysten/sui.js` 创建一个新的 `TransactionBlock` 对象，并添加一个调用智能合约的 `interact` 函数的 `moveCall` 操作，其中包含注册表 ID 和时钟对象 ID 作为参数。然后，使用 `@mysten/dapp-kit` 中的 `signAndExecuteTransactionBlock` 函数对区块链上的事务块进行签名和执行。你还将结果记录到控制台。
+     - 一个按钮，允许用户向智能合约验证其身份。除非用户通过 reCAPTCHA 挑战，否则此按钮将被禁用。当用户点击此按钮时，从 `@mysten/sui.js` 创建一个新的 `TransactionBlock` 对象，并添加一个调用智能合约的 `verify` 函数的 `moveCall` 操作，其中包含注册表 ID、签名、公钥和消息作为参数。然后，使用 `@mysten/dapp-kit` 中的 `signAndExecuteTransactionBlock` 函数对区块链上的事务块进行签名和执行。你还将结果记录到控制台。
+     - 来自 `react-google-recaptcha` 的 `ReCAPTCHA` 组件，用于呈现 reCAPTCHA 小部件。你将站点密钥和 `onChange` 函数作为 props 传递给此组件。
 
-That's it! You have implemented the frontend for the reCAPTCHA. To run the app, you can use `pnpm run dev`. To test the app, you can open the browser and go to the `localhost:5173` URL. You should see the app and can interact with the reCAPTCHA and the smart contract.
+就是这样！你已经实现了 reCAPTCHA 的前端。要运行应用程序，你可以使用 `pnpm run dev`。要测试应用程序，可以打开浏览器并转到 `localhost:5173` URL。你应该能够看到应用程序并与 reCAPTCHA 和智能合约进行交互。

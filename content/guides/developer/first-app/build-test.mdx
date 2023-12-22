@@ -1,18 +1,18 @@
 ---
-title: Build and Test Packages
+title: 构建和测试包
 ---
 
-If you followed [Write a Move Package](./write-package.mdx), you have a basic module that you need to build. If you didn't, then either start with that topic or use your package, substituting that information where appropriate.
+如果您遵循了[编写 Move 包](./write-package.mdx)，那么您有一个需要构建的基本模块。如果没有，请从那个主题开始，或者使用您的包，在适当的地方替代相应的信息。
 
-## Building your package
+## 构建您的包
 
-Make sure your terminal or console is in the directory that contains your package (`my_first_package` if you're following along). Use the following command to build your package:
+确保您的终端或控制台在包含您的包的目录中（如果您一直在关注，那么是 `my_first_package`）。使用以下命令构建您的包：
 
 ```bash
 sui move build
 ```
 
-A successful build returns a response similar to the following:
+成功构建会返回类似以下的响应：
 
 ```bash
 UPDATING GIT DEPENDENCY https://github.com/MystenLabs/sui.git
@@ -21,21 +21,21 @@ INCLUDING DEPENDENCY MoveStdlib
 BUILDING my_first_package
 ```
 
-If the build fails, you can use the verbose error messaging in output to troubleshoot and resolve root issues.
+如果构建失败，您可以使用输出中的详细错误消息来排查和解决根本问题。
 
-Now that you have designed your asset and its accessor functions, it's time to test the package code before publishing.
+现在您已经设计了您的资产及其访问函数，是时候在发布之前测试包代码了。
 
-## Testing a package {#testing-a-package}
+## 测试包 {#testing-a-package}
 
-Sui includes support for the Move testing framework that enables you to write unit tests that analyze Move code much like test frameworks for other languages (for example, the built-in Rust testing framework or the JUnit framework for Java).
+Sui 包含对 Move 测试框架的支持，该框架使您能够编写分析 Move 代码的单元测试，类似于其他语言的测试框架（例如，内置的 Rust 测试框架或 Java 的 JUnit 框架）。
 
-An individual Move unit test is encapsulated in a public function that has no parameters, no return values, and has the `#[test]` annotation. The testing framework executes such functions when you call the `sui move test` command from the package root (`my_move_package` directory as per the current running example):
+一个独立的 Move 单元测试封装在一个没有参数、没有返回值且具有 `#[test]` 注解的公共函数中。当您从包根目录（按当前运行示例的示例，即 `my_move_package` 目录）调用 `sui move test` 命令时，测试框架会执行这样的函数：
 
 ```bash
 sui move test
 ```
 
-If you execute this command for the package created in [Write a Package](./write-package.mdx), you see the following output. Unsurprisingly, the test result has an `OK` status because there are no tests written yet to fail.
+如果您对[Write a Package](./write-package.mdx)中创建的包执行此命令，您将看到以下输出。并不奇怪，测试结果具有 `OK` 状态，因为尚未编写任何测试来失败。
 
 ```bash
 BUILDING Sui
@@ -45,7 +45,7 @@ Running Move unit tests
 Test result: OK. Total tests: 0; passed: 0; failed: 0
 ```
 
-To actually test your code, you need to add test functions. Start with adding a basic test function to the `my_module.move` file, inside the module definition:
+要实际测试您的代码，您需要添加测试函数。首先在 `my_module.move` 文件中，在模块定义内添加一个基本的测试函数：
 
 ```move
     #[test]
@@ -66,17 +66,17 @@ To actually test your code, you need to add test functions. Start with adding a 
     }
 ```
 
-As the code shows, the unit test function (`test_sword_create()`) creates a dummy instance of the `TxContext` struct and assigns it to `ctx`. The function then creates a sword object using `ctx` to create a unique identifier and assigns `42` to the `magic` parameter and `7` to `strength`. Finally, the test calls the `magic` and `strength` accessor functions to verify that they return correct values.
+正如代码所示，单元测试函数（`test_sword_create()`）创建了 `TxContext` 结构的虚构实例，并将其分配给 `ctx`。然后，该函数使用 `ctx` 创建一个剑对象，以创建唯一标识符，并将 `42` 分配给 `magic` 参数和 `7` 分配给 `strength`。最后，测试调用 `magic` 和 `strength` 访问函数，以验证它们返回正确的值。
 
-The function passes the dummy context, `ctx`, to the `object::new` function as a mutable reference argument (`&mut`), but passes `sword` to its accessor functions as a read-only reference argument, `&sword`.
+该函数将虚构上下文 `ctx` 作为可变引用参数（`&mut`）传递给 `object::new` 函数，但将 `sword` 作为只读引用参数（`&sword`）传递给其访问函数。
 
-Now that you have a test function, run the test command again:
+现在您有了一个测试函数，再次运行测试命令：
 
 ```bash
 sui move test
 ```
 
-After running the `test` command, however, you get a compilation error instead of a test result:
+然而，在运行 `test` 命令后，您得到的是一个编译错误而不是测试结果：
 
 ```bash
 error[E06001]: unused value without 'drop'
@@ -98,19 +98,19 @@ error[E06001]: unused value without 'drop'
    │                                                                   ^ Invalid return
 ```
 
-The error message contains all the necessary information to debug the code. The faulty code is meant to highlight one of the Move language's safety features.
+错误消息包含了调试代码所需的所有信息。有问题的代码是为了突出 Move 语言的一个安全特性。
 
-The `Sword` struct represents a game asset that digitally mimics a real-world item. Obviously, a real sword cannot simply disappear (though it can be explicitly destroyed), but there is no such restriction on a digital one. In fact, this is exactly what's happening in the `test` function - you create an instance of a `Sword` struct that simply disappears at the end of the function call. If you saw something disappear before your eyes, you'd be dumbfounded, too.
+`Sword` 结构表示数字化模拟现实世界物品的游戏资产。显然，真正的剑不可能简单地消失（尽管可以显式销毁），但对数字剑没有这样的限制。事实上，这正是 `test` 函数中发生的情况 - 您创建了一个 `Sword` 结构的实例，该实例在函数调用结束时简单地消失。如果您看到一些东西在你眼前消失，您也会感到惊讶。
 
-One of the solutions (as suggested in the error message), is to add the `drop` ability to the definition of the `Sword` struct, which would allow instances of this struct to disappear (be dropped). The ability to drop a valuable asset is not a desirable asset property in this case, so another solution is needed. Another way to solve this problem is to transfer ownership of the `sword`.
+其中一个解决方案（正如错误消息中建议的那样）是在 `Sword` 结构的定义中添加 `drop` 能力，这将允许该结构的实例消失（被丢弃）。在这种情况下，放弃有价值的资产是不可取的资产属性，因此需要另一种解决方案。解决这个问题的另一种方法是转移 `sword` 的所有权。
 
-To get the test to work, add the following line to the beginning of the testing function to import the Transfer module:
+为了使测试正常工作，添加以下行到测试函数的开头，以导入 `Transfer` 模块：
 
 ```move
 use sui::transfer;
 ```
 
-With the Transfer module imported, add the following lines to the end of the test function (after the `!assert` call) to transfer ownership of the `sword` to a freshly created dummy address:
+导入 `Transfer` 模块后，在测试函数的末尾（在 `!assert` 调用之后）添加以下行，将 `sword` 的所有权转移给一个新创建的虚构地址：
 
 ```move
 // Create a dummy address and transfer the sword
@@ -118,7 +118,7 @@ let dummy_address = @0xCAFE;
 transfer::transfer(sword, dummy_address);
 ```
 
-Run the test command again. Now the output shows a single successful test has run:
+再次运行测试命令。现在输出显示运行了一个成功的测试：
 
 ```
 BUILDING MoveStdlib
@@ -131,32 +131,33 @@ Test result: OK. Total tests: 1; passed: 1; failed: 0
 
 :::tip
 
-Use a filter string to run only a matching subset of the unit tests. With a filter string provided, the `sui move test` checks the fully qualified (`<address>::<module_name>::<fn_name>`) name for a match.
+使用过滤字符串仅运行匹配的单元测试子集。提供了过滤字符串后，`sui move test` 会检查完全合格的（`<address>::<module_name>::<fn_name>`）名称是否匹配。
 
 :::
 
-Example:
+例子:
 
 ```bash
 sui move test sword
 ```
 
-The previous command runs all tests whose name contains `sword`.
+上面的命令运行所有名称包含 `sword` 的测试。
 
-You can discover more testing options through:
+您可以通过以下方式了解更多测试选项：
+
 ```bash
 sui move test -h
 ```
 
-## Sui-specific testing
+## Sui 特定的测试
 
-The previous testing example is largely pure Move and isn't specific to Sui beyond using some Sui packages, such as `sui::tx_context` and `sui::transfer`. While this style of testing is already useful for writing Move code for Sui, you might also want to test additional Sui-specific features. In particular, a Move call in Sui is encapsulated in a Sui transaction, and you might want to test interactions between different transactions within a single test (for example, one transaction creating an object and the other one transferring it).
-Sui-specific testing is supported through the `test_scenario` module that provides Sui-related testing functionality otherwise unavailable in pure Move and its testing framework.
+前面的测试示例在很大程度上是纯 Move，并且除了使用一些 Sui 包（如 `sui::tx_context` 和 `sui::transfer`）之外，并不特定于 Sui。虽然这种测试风格已经对于为 Sui 编写 Move 代码很有用，但您可能还想测试其他 Sui 特定的功能。特别是，在 Sui 中的 Move 调用封装在 Sui 交易中，您可能想在单个测试中测试不同交易之间的交互（例如，一个交易创建一个对象，另一个交易转移它）。
+Sui 特定的测试通过 `test_scenario` 模块进行支持，该模块提供了与纯 Move 及其测试框架中无法使用的 Sui 相关的测试功能。
 
-The `test_scenario` module provides a scenario that emulates a series of Sui transactions, each with a potentially different user executing them. A test using this module typically starts the first transaction using the `test_scenario::begin` function. This function takes an address of the user executing the transaction as its argument and returns an instance of the `Scenario` struct representing a scenario.
+`test_scenario` 模块提供了一个场景，模拟了一系列 Sui 交易，每个交易可能由不同的用户执行。使用此模块的测试通常使用 `test_scenario::begin` 函数启动第一笔交易。此函数将执行交易的用户的地址作为其参数，并返回表示场景的 `Scenario` 结构的实例。
 
-An instance of the `Scenario` struct contains a per-address object pool emulating Sui object storage, with helper functions provided to manipulate objects in the pool. After the first transaction finishes, subsequent test transactions start with the `test_scenario::next_tx` function. This function takes an instance of the `Scenario` struct representing the current scenario and an address of a user as arguments.
-Update your `my_module.move` file to include entry functions callable from Sui that implement `sword` creation and transfer. With these in place, you can then add a multi-transaction test that uses the `test_scenario` module to test these new capabilities. Put these functions after the accessors (Part 5 in comments).
+`Scenario` 结构的实例包含一个模拟 Sui 对象存储的每地址对象池，并提供了用于操作池中对象的帮助函数。第一笔交易完成后，后续的测试交易从 `test_scenario::next_tx` 函数开始。此函数接受表示当前场景的 `Scenario` 结构的实例和一个用户地址作为参数。
+更新您的 `my_module.move` 文件，以包含可从 Sui 调用的入口函数，实现 `sword` 的创建和转移。有了这些函数，然后您可以添加一个使用 `test_scenario` 模块测试这些新功能的多交易测试。将这些函数放在访问函数之后（注释中的 Part 5）。
 
 ```move
     public fun sword_create(magic: u64, strength: u64, recipient: address, ctx: &mut TxContext) {
@@ -179,9 +180,9 @@ Update your `my_module.move` file to include entry functions callable from Sui t
     }
 ```
 
-The code of the new functions uses struct creation and Sui-internal modules (`TxContext` and `Transfer`) in a way similar to what you have seen in the previous sections. The important part is for the entry functions to have correct signatures.
+新函数的代码使用了结构创建和 Sui 内部模块（`TxContext` 和 `Transfer`）的方式，类似于您在前面部分看到的。重要的是入口函数要有正确的签名。
 
-With the new entry functions included, add another test function to make sure they behave as expected.
+在包含新入口函数的情况下，添加另一个测试函数，确保它们表现如预期。
 
 ```move
     #[test]
@@ -227,22 +228,22 @@ With the new entry functions included, add another test function to make sure th
     }
 ```
 
-There are some details of the new testing function to pay attention to. The first thing the code does is create some addresses that represent users participating in the testing scenario. The assumption is that there is one game administrator user and two regular users representing players. The test then creates a scenario by starting the first transaction on behalf of the administrator address.
-The administrator executes the second transaction. The transaction creates a `sword` where the `initial_owner` is the receiver.
+要注意新测试函数的一些细节。代码首先做的是创建一些地址，代表参与测试场景的用户。假设有一个游戏管理员用户和两个代表玩家的常规用户。然后，测试通过代表管理员地址启动第一笔交易来创建一个场景。
+管理员执行第二笔交易。该交易创建了一个 `sword`，其中 `initial_owner` 是接收者。
 
-The initial owner then executes the third transaction (passed as an argument to the `test_scenario::next_tx` function), who then transfers the `sword` they now own to the final owner. In pure Move there is no notion of Sui storage; consequently, there is no easy way for the emulated Sui transaction to retrieve it from storage. This is where the `test_scenario` module helps - its `take_from_sender` function allows an address-owned object of a given type (`Sword`) executing the current transaction to be available for Move code manipulation. For now, assume that there is only one such object. In this case, the test transfers the object it retrieves from storage to another address.
+然后，初始所有者执行第三笔交易（作为参数传递给 `test_scenario::next_tx` 函数），然后将他们现在拥有的 `sword` 转移给最终所有者。在纯 Move 中，没有 Sui 存储的概念；因此，在模拟的 Sui 交易中没有简单的方法可以从存储中检索它。这就是 `test_scenario` 模块发挥作用的地方 - 它的 `take_from_sender` 函数允许执行当前交易的地址拥有的给定类型的对象（`Sword`）在 Move 代码中进行操作。目前，假设只有一个这样的对象。在这种情况下，测试将从存储中检索到的对象转移给另一个地址。
 
 :::tip
 
-Transaction effects, such as object creation and transfer become visible only after a given transaction completes. For example, if the second transaction in the running example created a `sword` and transferred it to the administrator's address, it would only become available for retrieval from the administrator's address (via `test_scenario`, `take_from_sender`, or `take_from_address` functions) in the third transaction.
+交易效果，如对象创建和转移，只有在给定交易完成后才会可见。例如，在正在运行的示例中，如果第二笔交易创建了一个 `sword` 并将其转移到管理员的地址，它只会在第三笔交易中对管理员的地址（通过 `test_scenario`、`take_from_sender` 或 `take_from_address` 函数）可用。
 
 :::
 
-The final owner executes the fourth and final transaction that retrieves the `sword` object from storage and checks if it has the expected properties. Remember, as described in [Testing a package](#testing-a-package), in the pure Move testing scenario, after an object is available in Move code (after creation or retrieval from emulated storage), it cannot simply disappear.
+最终所有者执行第四笔也是最后一笔交易，从存储中检索 `sword` 对象并检查它是否具有预期的属性。请记住，如 [Testing a package](#testing-a-package) 中所述，在纯 Move 测试场景中，一旦对象在 Move 代码中可用（创建或从模拟存储中检索），它就不能简单地消失。
 
-In the pure Move testing function, the function transfers the `sword` object to the fake address to handle the disappearing problem. The `test_scenario` package provides a more elegant solution, however, which is closer to what happens when Move code actually executes in the context of Sui - the package simply returns the `sword` to the object pool using the `test_scenario::return_to_sender` function.
+在纯 Move 测试函数中，函数将 `sword` 对象转移给虚假地址以处理消失的问题。然而，`test_scenario` 包提供了一个更优雅的解决方案，更接近 Move 代码在 Sui 上下文中实际执行时发生的情况 - 该包只需使用 `test_scenario::return_to_sender` 函数将 `sword` 返回到对象池中。
 
-Run the test command again to see two successful tests for our module:
+再次运行测试命令，以查看我们的模块的两个成功的测试：
 
 ```bash
 BUILDING Sui
@@ -254,4 +255,5 @@ Running Move unit tests
 Test result: OK. Total tests: 2; passed: 2; failed: 0
 ```
 
-Now that you have built a tested package, the next topic walks you through publishing your package to a Sui network.
+现在你已经构建并测试了软件包，接下来的主题将指导你将软件包发布到 Sui 网络。
+

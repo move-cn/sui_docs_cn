@@ -1,20 +1,20 @@
 ---
-title: Hashing
-description: Sui supports SHA2-256, SHA3-256, Keccak256, Blake2b-256 cryptographic hash functions.
+title: 哈希
+description: Sui 支持 SHA2-256、SHA3-256、Keccak256、Blake2b-256 密码哈希函数。
 ---
 
-A cryptographic hash function is a widely used cryptographic primitive that maps an arbitrary length input to a fixed length output, the hash value. The hash function is designed to be a one-way function, which means that it is infeasible to invert the function to find the input data from a given hash value, and to be collision resistant, which means that it is infeasible to find two different inputs that map to the same hash value.
+密码哈希函数是广泛使用的密码原语，将任意长度的输入映射到固定长度的输出，即哈希值。哈希函数被设计为一种单向函数，这意味着从给定的哈希值中找到输入数据是不可行的，同时它还需要具备碰撞抵抗性，这意味着找到两个不同的输入映射到相同的哈希值是不可行的。
 
-The Sui Move API supports the following cryptographic hash functions:
+Sui 的 Move API 支持以下密码哈希函数：
 
-* SHA2-256 as `std::hash::sha2_256`
-* SHA3-256 as `std::hash::sha3_256`
-* Keccak256 as `sui::hash::keccak256`
-* Blake2b-256 as `sui::hash::blake2b256`
+* SHA2-256，标识为 `std::hash::sha2_256`
+* SHA3-256，标识为 `std::hash::sha3_256`
+* Keccak256，标识为 `sui::hash::keccak256`
+* Blake2b-256，标识为 `sui::hash::blake2b256`
 
-## Usage
+## 用法
 
-The SHA2-256 and SHA3-256 hash functions are available in the Move Standard Library in the `std::hash` module. The following example shows how to use the SHA2-256 hash function in a smart contract:
+SHA2-256 和 SHA3-256 哈希函数可在 Move 标准库的 `std::hash` 模块中找到。以下示例演示了如何在智能合约中使用 SHA2-256 哈希函数：
 
 ```move
 module test::hashing_std {
@@ -41,7 +41,7 @@ module test::hashing_std {
 }
 ```
 
-The Keccak256 and Blake2b-256 hash functions are available through the `sui::hash` module in the Sui Move Library. An example of how to use the Keccak256 hash function in a smart contract is shown below. Notice that here, the input to the hash function is given as a reference. This is the case for both Keccak256 and Blake2b-256.
+Keccak256 和 Blake2b-256 哈希函数通过 Sui Move Library 中的 `sui::hash` 模块提供。以下是在智能合约中使用 Keccak256 哈希函数的示例。请注意，这里哈希函数的输入是作为引用给出的。对于 Keccak256 和 Blake2b-256，情况都是如此。
 
 ```move
 module test::hashing_sui {

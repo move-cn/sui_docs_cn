@@ -1,25 +1,25 @@
 ---
-title: Sui On-Chain Signatures Verification in Move
+title: 在 Move 中进行 Sui On-Chain 签名验证
 ---
 
-Move contracts in Sui support verifications for several signature schemes on-chain. Not all signatures supported in on-chain verification are supported as user signature verification. See [Sui Signatures](/concepts/cryptography/transaction-auth/signatures.mdx#user-signature) for valid signature schemes for transaction authorization.
+Sui 中的 Move 合约支持在链上对多种签名方案进行验证。并非所有在链上验证中支持的签名都支持作为用户签名验证。有关交易授权的有效签名方案，请参阅 [Sui 签名](/concepts/cryptography/transaction-auth/signatures.mdx#user-signature)。
 
-This topic covers:
-1. How to use [fastcrypto](https://github.com/MystenLabs/fastcrypto)'s CLI tool to create a signature of a given scheme. For testing and debugging only, DO NOT use in production.
-1. Call the Move method on-chain to verification by submitting the signature, the message and the public key. 
+本主题涵盖以下内容：
+1. 如何使用 [fastcrypto](https://github.com/MystenLabs/fastcrypto) 的 CLI 工具为给定方案创建签名。仅用于测试和调试，请勿在生产中使用。
+1. 在链上调用 Move 方法进行验证，提交签名、消息和公钥。
 
-Signature schemes covered: 
-- Ed25519 signature (64 bytes)
-- Secp256k1 non-recoverable signature (64 bytes)
-- Secp256k1 recoverable signature (65 bytes)
-- Secp256r1 non-recoverable signature (64 bytes)
-- Secp256r1 recoverable signature (65 bytes)
-- BLS G1 signature (minSig setting)
-- BLS G2 signature (minPk setting)
+支持的签名方案：
+- Ed25519 签名（64 字节）
+- Secp256k1 不可恢复签名（64 字节）
+- Secp256k1 可恢复签名（65 字节）
+- Secp256r1 不可恢复签名（64 字节）
+- Secp256r1 可恢复签名（65 字节）
+- BLS G1 签名（minSig 设置）
+- BLS G2 签名（minPk 设置）
 
-## Usage
+## 使用方法
 
-### Set up fastcrypto CLI binary
+### 设置 fastcrypto CLI 二进制文件
 
 ```shell
 git@github.com:MystenLabs/fastcrypto.git
@@ -27,11 +27,11 @@ cd fastcrypto/
 cargo build --bin sigs-cli
 ```
 
-### Sign with CLI and submit to on-chain Move method
+#### 使用 CLI 进行签名并提交至链上 Move 方法
 
-#### Ed25519 signature (64 bytes)
+#### Ed25519 签名（64 字节）
 
-1. Generate a key and sign a message. 
+1. 生成密钥并对消息进行签名。
 
 ```shell
 target/debug/sigs-cli keygen --scheme ed25519 --seed 0000000000000000000000000000000000000000000000000000000000000000                
@@ -44,7 +44,7 @@ Signature in hex: $SIG
 Public key in hex: $PK
 ```
 
-2. Call the verify method in Move. All inputs are represented in bytes in hex format:
+2. 调用 Move 中的 verify 方法。所有输入都以十六进制格式的字节表示：
 
 ```move
     use sui::ed25519;
@@ -56,9 +56,9 @@ Public key in hex: $PK
     assert!(verify == true, 0);
 ```
 
-#### Secp256k1 non-recoverable signature (64 bytes)
+#### Secp256k1 不可恢复签名（64 字节）
 
-1. Generate a key and sign a message. 
+1. 生成密钥并对消息进行签名。
 
 ```shell
 target/debug/sigs-cli keygen --scheme secp256k1 --seed 0000000000000000000000000000000000000000000000000000000000000000                
@@ -71,7 +71,7 @@ Signature in hex: $SIG
 Public key in hex: $PK
 ```
 
-2. Call the verify method in Move.
+2. 调用 Move 中的 verify 方法。
 
 ```move
     use sui::ecdsa_k1;
@@ -84,9 +84,9 @@ Public key in hex: $PK
     assert!(verify == true, 0);
 ```
 
-#### Secp256k1 recoverable signature (65 bytes)
+#### Secp256k1 可恢复签名 (65 bytes)
 
-1. Generate a key and sign a message. 
+1. 生成密钥并对消息进行签名。
 
 ```shell
 target/debug/sigs-cli keygen --scheme secp256k1-rec --seed 0000000000000000000000000000000000000000000000000000000000000000                
@@ -99,7 +99,7 @@ Signature in hex: $SIG
 Public key in hex: $PK
 ```
 
-2. Call the ecrecover method in Move and check equality.
+2. 在 Move 中调用 ecrecover 方法并检查相等性。
 ```move
     use sui::ecdsa_k1;
 
@@ -111,9 +111,9 @@ Public key in hex: $PK
     assert!(pk == recovered, 0);
 ```
 
-#### Secp256r1 non-recoverable signature (64 bytes)
+#### Secp256r1 不可恢复的签名 (64 bytes)
 
-1. Generate a key and sign a message. 
+1. 生成密钥并签署消息。
 
 ```shell
 target/debug/sigs-cli keygen --scheme secp256r1 --seed 0000000000000000000000000000000000000000000000000000000000000000                
@@ -126,7 +126,7 @@ Signature in hex: $SIG
 Public key in hex: $PK
 ```
 
-2. Call the verify method in Move.
+2. 调用 Move 中的 verify 方法。
 
 ```move
     use sui::ecdsa_r1;
@@ -139,9 +139,9 @@ Public key in hex: $PK
     assert!(verify == true, 0);
 ```
 
-#### Secp256r1 recoverable signature (65 bytes)
+#### Secp256r1 可恢复的签名 (65 bytes)
 
-1. Generate a key and sign a message. 
+1. 生成密钥并签署消息。 
 
 ```shell
 target/debug/sigs-cli keygen --scheme secp256r1-rec --seed 0000000000000000000000000000000000000000000000000000000000000000                
@@ -154,7 +154,7 @@ Signature in hex: $SIG
 Public key in hex: $PK
 ```
 
-2. Call the ecrecover method in Move and check equality.
+2. 在 Move 中调用 ecrecover 方法并检查相等性。
 
 ```move
     use sui::ecdsa_r1;
@@ -169,7 +169,7 @@ Public key in hex: $PK
 
 #### BLS G1 signature (48 bytes, minSig setting)
 
-1. Generate a key and sign a message. 
+1. 生成密钥并签署消息。
 
 ```shell
 target/debug/sigs-cli keygen --scheme bls12381-minsig --seed 0000000000000000000000000000000000000000000000000000000000000000                
@@ -182,7 +182,7 @@ Signature in hex: $SIG
 Public key in hex: $PK
 ```
 
-2. Call the verify method in Move.
+2. 调用 Mov 中的 verify 方法。
 
 ```move
     use sui::bls12381;
@@ -194,9 +194,9 @@ Public key in hex: $PK
     assert!(verified == true, 0);
 ```
 
-#### BLS G1 signature (96 bytes, minPk setting)
+#### BLS G1 签名 (96 bytes, 最小峰值设置)
 
-1. Generate a key and sign a message. 
+1. 生成密钥并签署消息。
 
 ```shell
 target/debug/sigs-cli keygen --scheme bls12381-minpk --seed 0000000000000000000000000000000000000000000000000000000000000000                
@@ -209,7 +209,7 @@ Signature in hex: $SIG
 Public key in hex: $PK
 ```
 
-2. Call the verify method in Move.
+2. 调用 Move 中的 verify 方法。
 
 ```move
     use sui::bls12381;

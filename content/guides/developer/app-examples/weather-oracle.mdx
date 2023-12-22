@@ -1,21 +1,21 @@
 ---
-title: Sui Weather Oracle
-description: Write a module (smart contract) in Move that fetches the weather data from the OpenWeather API every 10 minutes and updates the weather conditions for over 1,000 locations around the world.
+title: Sui 天气 Oracle
+description: 编写一个在 Move 中从 OpenWeather API 获取天气数据并每10分钟更新全球 1000 多个地点天气状况的模块（智能合约）。
 ---
 
-This guide demonstrates writing a module (smart contract) in Move, deploying it on Devnet, and adding a backend, which fetches the weather data from the OpenWeather API every 10 minutes and updates the weather conditions for each city. The dApp created in this guide is called Sui Weather Oracle and it provides real-time weather data for over 1,000 locations around the world.
+本指南演示了如何在Move中编写一个模块（智能合约），在Devnet上部署它，并添加一个后端，每10分钟从OpenWeather API获取天气数据并更新每个城市的天气状况。本指南创建的dApp称为Sui天气Oracle，它为全球1000多个地点提供实时天气数据。
 
-You can access and use the weather data from the OpenWeather API for various applications, such as randomness, betting, gaming, insurance, travel, education, or research. You can also mint a weather NFT based on the weather data of a city, using the `mint` function of the SUI Weather Oracle smart contract.
+您可以访问并使用OpenWeather API的天气数据用于各种应用，例如随机性、投注、游戏、保险、旅行、教育或研究。您还可以基于城市的天气数据使用SUI天气Oracle智能合约的`mint`函数铸造天气NFT。
 
-This guide assumes you have [installed Sui](../getting-started/sui-install.mdx) and understand Sui fundamentals.
+本指南假定您已经[安装了Sui](../getting-started/sui-install.mdx)并了解Sui的基本知识。
 
-## Move smart contract
+## Move智能合约
 
-As with all Sui dApps, a Move package on chain powers the logic of Sui Weather Oracle. The following instruction walks you through creating and publishing the module.
+与所有Sui dApps一样，Move链上的一个Move包支持Sui天气Oracle的逻辑。以下说明将指导您创建和发布该模块。
 
-### Weather Oracle module
+### 天气Oracle模块
 
-Before you get started, you must initialize a Move package. Open a terminal or console in the directory you want to store the example and run the following command to create an empty package with the name `weather_oracle`:
+在开始之前，您必须初始化一个Move包。在要存储示例的目录中打开终端或控制台，并运行以下命令以创建一个名为`weather_oracle`的空包：
 
 ```bash
 sui move new weather_oracle

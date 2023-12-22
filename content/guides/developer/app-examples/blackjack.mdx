@@ -1,101 +1,101 @@
 ---
-title: Blackjack
+title: 二十一点
 ---
 
-The following documentation goes through an example implementation of the popular casino game blackjack on Sui. This guide walks through its components, providing a detailed look at the module's functions, structures, constants, and their significance in the overall gameplay mechanism.
+以下文档演示了在 Sui 上实现流行的赌场游戏二十一点的示例。本指南详细介绍了其组件，提供了对模块的函数、结构、常量以及它们在整体游戏机制中的重要性的详细查看。
 
-Building an on-chain blackjack game shares a lot of similarities with a coin flip game. For that reason, this example covers only the smart contracts (Move modules) and frontend logic.
+构建链上的二十一点游戏与硬币翻转游戏有很多相似之处。因此，此示例仅涵盖智能合约（Move 模块）和前端逻辑。
 
 :::info
 
-For more details on building a backend and deploying to Sui, check out the [Coin Flip app example](./coin-flip.mdx).
+有关构建后端并部署到 Sui 的更多详细信息，请查看[硬币翻转应用示例](./coin-flip.mdx)。
 
-You can also find the [full repository for this example here](https://github.com/MystenLabs/blackjack-sui).
+您还可以在[此示例的完整存储库](https://github.com/MystenLabs/blackjack-sui)中找到。
 
 :::
 
-## Gameplay
-In this single-player version of blackjack, the player competes against a dealer, which is automated by the system. The dealer is equipped with a public BLS key that plays a central role in the game's mechanics. Players generate randomness for the game by interacting with their mouse on the screen, after which they place their bet to start the game. Upon initiating the game, the dealer's backend, actively listening for the start transaction, processes it by signing and subsequently dealing two cards to the player and one to itself.
+## 游戏玩法
+在这个单人版本的二十一点中，玩家与由系统自动操作的庄家竞争。庄家配备了一个在游戏机制中发挥关键作用的公共 BLS 密钥。玩家通过与屏幕上的鼠标交互生成游戏的随机性，然后下注开始游戏。启动游戏后，庄家的后端主动监听启动交易，通过签名并随后向玩家发放两张牌，向自己发放一张牌。
 
-The player has the options to 'Hit' or 'Stand.' Selecting 'Stand' triggers the dealer to draw cards until the total reaches 17 or higher. After the dealer stops, typically at a sum of 17 or more, the smart contract steps in to compare the totals and declare the winner. On the other hand, choosing 'Hit' prompts the dealer to draw an additional card for the player.
+玩家可以选择'要牌'或'停牌'。选择'停牌'将触发庄家抽取牌直到总数达到 17 或更高。在庄家停牌后，通常在总和为 17 或更多时，智能合约介入比较总数并宣布获胜者。另一方面，选择'要牌'将提示庄家为玩家抽取一张额外的牌。
 
-## Smart contracts
+## 智能合约
 
-### Game module
+### 游戏模块
 
-The [`single_player_blackjack.move`](https://github.com/MystenLabs/blackjack-sui/blob/main/move/blackjack/sources/single_player_blackjack.move) module includes several constants that define game statuses and help track the game's progress:
+[`single_player_blackjack.move`](https://github.com/MystenLabs/blackjack-sui/blob/main/move/blackjack/sources/single_player_blackjack.move) 模块包括定义游戏状态并帮助跟踪游戏进度的多个常量：
 
 - `IN_PROGRESS`
 - `PLAYER_WON_STATUS`
 - `HOUSE_WON_STATUS`
 - `TIE_STATUS`
 
-There are also constants for error handling, such as `EInvalidBlsSig`, `EInsufficientBalance`, and others, ensuring robust game mechanics.
+还有一些用于错误处理的常量，例如 `EInvalidBlsSig`、`EInsufficientBalance` 等，确保强大的游戏机制。
 
-Structs like `GameCreatedEvent`, `GameOutcomeEvent`, `HitRequested`, and `StandRequested` capture the various events and actions within a game. `HouseAdminCap` and `HouseData` are crucial for maintaining the house's data, including balance and public key, while the `Game` struct contains all the necessary information about each game, such as player data, cards, and the current status.
+像 `GameCreatedEvent`、`GameOutcomeEvent`、`HitRequested` 和 `StandRequested` 这样的结构捕捉游戏中的各种事件和操作。`HouseAdminCap` 和 `HouseData` 对于维护房屋数据至关重要，包括余额和公钥，而 `Game` 结构包含有关每个游戏的所有必要信息，如玩家数据、卡片和当前状态。
 
-The module's functions can be broadly categorized into initialization, game management, and utility functions. The `init` function sets up the house admin capability, while `initialize_house_data` prepares the house for the game by setting up the balance and public key. `place_bet_and_create_game` is the entry point for players to start a new game, involving a bet and random input. The functions `first_deal`, `hit`, and `stand` govern the core gameplay, handling the dealing of cards and player choices.
+该模块的函数可以广泛分为初始化、游戏管理和实用程序函数。`init` 函数设置房屋管理员权限，而 `initialize_house_data` 通过设置余额和公钥为游戏准备房屋。`place_bet_and_create_game` 是玩家启动新游戏的入口点，涉及投注和随机输入。`first_deal`、`hit` 和 `stand` 函数管理核心游戏玩法，处理牌的发放和玩家选择。
 
-Utility functions like `get_next_random_card` and `get_card_sum` are essential for the game's mechanics, generating random cards and calculating hand values. The module also includes accessors for retrieving various pieces of game and house data.
+像 `get_next_random_card` 和 `get_card_sum` 这样的实用程序函数对于游戏机制至关重要，它们生成随机卡片并计算手牌值。该模块还包括用于检索各种游戏和房屋数据的访问器。
 
-For testing purposes, the module provides special functions like `set_init_hash_for_testing`, `get_house_admin_cap_for_testing`, and `destroy_for_testing`, ensuring that developers can thoroughly test the game mechanics and house data handling.
+出于测试目的，该模块提供了一些特殊函数，例如 `set_init_hash_for_testing`、`get_house_admin_cap_for_testing` 和 `destroy_for_testing`，确保开发人员可以彻底测试游戏机制和房屋数据处理。
 
-### Counter module
+### 计数器模块
 
-The next module, [`counter_nft.move`](https://github.com/MystenLabs/blackjack-sui/blob/main/move/blackjack/sources/counter_nft.move), introduces the Counter NFT, a key component in the game's mechanics. It serves as the [Verifiable Random Function (VRF)](../cryptography/ecvrf.mdx) input, ensuring uniqueness in each game. The Counter NFT's value increases after each use, maintaining its distinctiveness for every new game. For first-time players, the creation of a Counter NFT is mandatory. To enhance user experience, the user interface can automate this process by integrating the Counter NFT's creation with the game initiation in a single transaction block. This seamless integration simplifies the process for the player, allowing them to focus on the gameplay. This counter serves the same purpose as the one in the [Coin Flip example](./coin-flip.mdx).
+下一个模块，[`counter_nft.move`](https://github.com/MystenLabs/blackjack-sui/blob/main/move/blackjack/sources/counter_nft.move)，引入了计数器 NFT，这是游戏机制中的关键组件。它充当 [可验证随机函数（VRF）](../cryptography/ecvrf.mdx) 输入，确保每场新游戏的唯一性。计数器 NFT 的值在每次使用后增加，保持其对于每场新游戏的独特性。对于第一次玩家，创建计数器 NFT 是强制性的。为了增强用户体验，用户界面可以通过将计数器 NFT 的创建与游戏启动集成到单个事务块中，自动完成此过程。这种无缝集成简化了玩家的流程，使他们可以专注于游戏玩法。此计数器与 [硬币翻转示例](./coin-flip.mdx) 中的计数器具有相同的目的。
 
-## Frontend
+## 前端
 
-The [`BlackjackBoard` component](https://github.com/MystenLabs/blackjack-sui/blob/main/app/src/app/Blackjack.tsx), a central element of the blackjack game's frontend module, is structured to create an interactive and responsive gaming experience. Written in React, it integrates several features and functions to handle the game's logic and user interactions effectively.
+[`BlackjackBoard` 组件](https://github.com/MystenLabs/blackjack-sui/blob/main/app/src/app/Blackjack.tsx) 是二十一点游戏前端模块的核心元素，旨在创建交互式和响应式的游戏体验。使用 React 编写，它集成了多个功能和函数，以有效处理游戏逻辑和用户交互。
 
-### State management and setup
+### 状态管理和设置
 
-- **State Hooks:** The module uses React's `useState` to manage various game states, including `playerHand`, `dealerHand`, `playerTotal`, `dealerTotal`, and more. These states are vital for tracking the current game status and updating the UI accordingly.
+- **状态 Hooks：** 该模块使用 React 的 `useState` 来管理各种游戏状态，包括 `playerHand`、`dealerHand`、`playerTotal`、`dealerTotal` 等。这些状态对于跟踪当前游戏状态并相应更新 UI 非常重要。
 
-- **Randomness Generation:** A unique feature of this component is the generation of randomness based on the user's mouse movements (`handleMouseMove`), used to ensure fair game outcomes. The `userCreatedRandomness` state stores this data, which is then converted to a hexadecimal string (`randomnessHex`) for use in the game.
+- **随机数生成：** 该组件的一个独特特性是根据用户的鼠标移动（`handleMouseMove`）生成随机数，用于确保公平的游戏结果。`userCreatedRandomness` 状态存储此数据，然后将其转换为十六进制字符串（`randomnessHex`）以在游戏中使用。
 
-- **Modal for Game Initialization:** A modal is implemented to facilitate the creation of a new game. It captures the randomness and uses `handlePlayGame` from the `useGame` hook to initiate the game with the backend.
+- **游戏初始化的模态框：** 实施了一个模态框以便于创建新游戏。它捕获了随机性，并使用来自 `useGame` 钩子的 `handlePlayGame` 来启动与后端的游戏。
 
-- **Card Management:** The component generates a deck of cards and maps them to a `Map` object (`cards`) for easy retrieval and display.
+- **卡片管理：** 该组件生成一副牌，并将其映射到 `Map` 对象（`cards`）中，以便轻松检索和显示。
 
-### UI components and styling
+### UI 组件和样式
 
-- **Card Display:** Cards are rendered using a combination of JSX and CSS, displaying the suit symbols and values, with conditional styling (`getSuitColor`) based on the card suit.
+- **卡片显示：** 使用 JSX 和 CSS 的组合来呈现卡片，显示花色符号和值，并根据卡片花色进行条件样式化（`getSuitColor`）。
 
-- **Game Status Updates:** The UI provides immediate feedback on game events, such as a bust or game completion, using toasts (`toast`) and loading indicators (`Hearts` from `react-loader-spinner`).
+- **游戏状态更新：** UI 通过弹出消息框（`toast`）和加载指示器（`react-loader-spinner` 中的 `Hearts`）提供游戏事件的即时反馈，如爆牌或游戏完成。
 
-### User interaction and feedback
+### 用户交互和反馈
 
-- **Game Creation and Exploration:** Players can start new games using a dedicated button that triggers the `openNewGameModal` function. Links are also provided for players to view game details on the Sui explorer, enhancing transparency and engagement.
+- **游戏创建和探索：** 玩家可以使用专用按钮开始新游戏，触发 `openNewGameModal` 函数。还提供了链接，供玩家在 Sui 浏览器上查看游戏详情，增强透明度和参与度。
 
-- **Mouse Movement Tracking:** The module includes functionality to track and utilize mouse movements, contributing to the game's randomness generation, which is crucial for fair play and unpredictability.
+- **鼠标移动跟踪：** 该模块包括跟踪和利用鼠标移动的功能，有助于生成游戏的随机性，这对于公平游戏和不可预测性至关重要。
 
-## Comparison: Blackjack and Coin Flip
+## 比较：二十一点和硬币翻转
 
-### Similarities
+### 相似之处
 
-- **Blockchain-Based Logic:** Both games are built on Sui, leveraging its capabilities for decentralized applications. The core game logic for each resides in Move modules, ensuring secure and verifiable gameplay.
+- **基于区块链的逻辑：** 两个游戏都构建在 Sui 上，利用其用于去中心化应用的能力。每个游戏的核心游戏逻辑都位于 Move 模块中，确保游戏过程安全可验证。
 
-- **State Management:** In both games, state management is crucial. For blackjack, this involves managing the player and dealer's hands and scores using React state hooks. In Satoshi Coin Flip, the state is managed through Move structs like `HouseData`, which track the house's balance and other game-related details.
+- **状态管理：** 在两个游戏中，状态管理至关重要。对于二十一点，这涉及使用 React 状态钩子管理玩家和庄家的手牌和得分。对于 Satoshi Coin Flip，状态通过像 `HouseData` 这样的 Move 结构进行管理，该结构跟踪房屋的余额和其他与游戏相关的详细信息。
 
-- **Randomness and Fair Play:** Both games emphasize randomness for fairness. Blackjack uses a Counter NFT and player mouse movements to generate randomness, while Satoshi Coin Flip only uses a Counter NFT as a unique input for the [Verifiable Random Function (VRF)](../cryptography/ecvrf.mdx) in each game.
+- **随机性和公平游戏：** 两个游戏强调公平性的随机性。二十一点使用计数器 NFT 和玩家鼠标移动生成随机性，而 Satoshi Coin Flip 仅在每场游戏的 [可验证随机函数（VRF）](../cryptography/ecvrf.mdx) 中使用计数器 NFT 作为唯一输入。
 
-- **Smart Contract Interactions:** Each game involves smart contract interactions for game actions like placing bets, dealing cards (Blackjack), or making guesses (Coin Flip). These interactions are crucial for executing the game's logic on the blockchain.
+- **智能合约交互：** 每个游戏都涉及智能合约交互，用于执行在区块链上的游戏操作，如下注、发牌（二十一点）或猜测（硬币翻转）。这些交互对于在区块链上执行游戏逻辑至关重要。
 
-### Differences
+### 不同之处
 
-- **Game Mechanics and Complexity:** Blackjack is a more complex game with multiple actions (hit, stand, deal) and state updates, requiring a more dynamic frontend. In contrast, Satoshi Coin Flip has a simpler mechanic centered around a single bet and guess outcome.
+- **游戏机制和复杂性：** 二十一点是一个更复杂的游戏，有多个操作（要牌、停牌、发牌）和状态更新，需要更动态的前端。相比之下，Satoshi Coin Flip 的机制更简单，集中在单个下注和猜测结果上。
 
-- **User Interface (UI) Complexity:** The Blackjack game involves a more intricate UI to display cards, manage game states, and player interactions. Satoshi Coin Flip, being simpler in gameplay, requires a less complex UI.
+- **用户界面（UI）复杂性：** 二十一点游戏涉及更为复杂的 UI，用于显示卡片、管理游戏状态和玩家交互。Satoshi Coin Flip 在游戏玩法上更简单，需要一个不太复杂的 UI。
 
-- **Backend Processing:** In Blackjack, the dealer is automated (the machine), and the player's actions directly influence game outcomes. In the Coin Flip game, the house (smart contract) plays a more passive role, primarily in initializing and finalizing the game based on the player's guess.
+- **后端处理：** 在二十一点中，庄家是自动化的（机器），玩家的操作直接影响游戏结果。在硬币翻转游戏中，房屋（智能合约）扮演更被动的角色，主要在初始化和根据玩家的猜测完成游戏时起作用。
 
-- **Module Structure and Focus:** The Blackjack game focuses more on frontend interactions and real-time updates. The Satoshi Coin Flip game, however, delves deeper into backend logic, with structures like `HouseCap` and `house_data` for initializing and managing game data securely on the blockchain.
+- **模块结构和重点：** 二十一点游戏更注重前端交互和实时更新。然而，Satoshi Coin Flip 游戏更深入地探讨后端逻辑，具有诸如 `HouseCap` 和 `house_data` 之类的结构，用于在区块链上安全地初始化和管理游戏数据。
 
-- **Multi-Version Implementation:** The Satoshi Coin Flip game mentions two versions – one susceptible to MEV attacks and another that is resistant, indicating a focus on security and user experience variations. Such variations aren't implemented in Blackjack.
+- **多版本实现：** Satoshi Coin Flip 游戏提到了两个版本 —— 一个容易受到 MEV 攻击，另一个抵抗攻击，显示了对安全性和用户体验变化的关注。这样的变化在二十一点中没有实现。
 
 :::info
 
-The complete app example can be found in [the balackjack-sui repo](https://github.com/MystenLabs/blackjack-sui).
+完整的应用示例可以在[二十一点 Sui 存储库中找到](https://github.com/MystenLabs/blackjack-sui)。
 
 :::

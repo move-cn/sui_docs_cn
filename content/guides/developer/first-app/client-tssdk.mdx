@@ -1,8 +1,8 @@
 ---
-title: Client App with Sui TypeScript SDK
+title: 使用 Sui TypeScript SDK 的客户端应用
 ---
 
-This exercise walks you through setting up dApp Kit in a React App, allowing you to connect to wallets, and query data from Sui RPC nodes to display in your app. If you want to get a fully functional app up and running quickly, run the following command in a terminal or console to scaffold a new app with all steps in this exercise already implemented:
+本练习将引导您在 React 应用中设置 dApp Kit，使您能够连接钱包并从 Sui RPC 节点查询数据以在您的应用中显示。如果您想快速启动一个完全功能的应用程序，请在终端或控制台中运行以下命令，以使用本练习中的所有步骤生成一个新的应用：
 
 {@include: ../../../snippets/info-pnpm-required.mdx}
 
@@ -10,39 +10,39 @@ This exercise walks you through setting up dApp Kit in a React App, allowing you
 pnpm create @mysten/dapp --template react-client-dapp
 ```
 
-## What is the Sui TypeScript SDK?
+## 什么是 Sui TypeScript SDK？
 
-The Sui TypeScript SDK (@mysten/sui.js) provides all the low-level functionality needed to interact with Sui ecosystem from TypeScript. You can use it in any TypeScript or JavaScript project, including web apps, Node.js apps, or mobile apps written with tools like React Native that support TypeScript.
+Sui TypeScript SDK（@mysten/sui.js）提供了与 Sui 生态系统进行交互所需的所有低级功能。您可以在任何 TypeScript 或 JavaScript 项目中使用它，包括 Web 应用程序、Node.js 应用程序或使用支持 TypeScript 的工具（如 React Native）编写的移动应用程序。
 
-For more information on the Sui TypeScript SDK, see the [Sui TypeScript SDK documentation](https://sdk.mystenlabs.com/typescript).
+有关 Sui TypeScript SDK 的更多信息，请参阅 [Sui TypeScript SDK 文档](https://sdk.mystenlabs.com/typescript)。
 
-## What is dApp Kit?
+## 什么是 dApp Kit？
 
-dApp Kit (@mysten/dapp-kit) is a collection of React hooks, components, and utilities that make building dApps on Sui straightforward. For more information on dApp Kit, see the [dApp Kit documentation](https://sdk.mystenlabs.com/dapp-kit).
+dApp Kit（@mysten/dapp-kit）是一组 React hooks、组件和实用工具，使在 Sui 上构建 dApp 变得简单。有关 dApp Kit 的更多信息，请参阅 [dApp Kit 文档](https://sdk.mystenlabs.com/dapp-kit)。
 
-## Installing dependencies
+## 安装依赖项
 
-To get started, you need a React app. The following steps apply to any React, so you can follow the same steps to add dApp Kit to an existing React app. If you are starting a new project, you can use Vite to scaffold a new React app.
+要开始使用，您需要一个 React 应用程序。以下步骤适用于任何 React，因此您可以按照相同的步骤向现有的 React 应用程序添加 dApp Kit。如果您正在启动一个新项目，您可以使用 Vite 来生成一个新的 React 应用程序。
 
-Run the following command in your terminal or console, and select React as the framework, and then select one of the TypeScript templates:
+在您的终端或控制台中运行以下命令，并选择 React 作为框架，然后选择其中一个 TypeScript 模板：
 
 ```bash npm2yarn
 npm init vite
 ```
 
-Now that you have a React app, you can install the necessary dependencies to use dApp Kit:
+现在您有了一个 React 应用程序，您可以安装必要的依赖项来使用 dApp Kit：
 
 ```bash npm2yarn
 npm install @mysten/sui.js @mysten/dapp-kit @tanstack/react-query
 ```
 
-## Setting up Provider components
+## 设置提供者组件
 
-To use all the features of dApp Kit, wrap your app with a couple of `Provider` components.
+为了使用 dApp Kit 的所有功能，请使用一对 `Provider` 组件包装您的应用程序。
 
-Open the root component that renders your app (the default location the Vite template uses is `src/main.tsx`) and integrate or replace the current code with the following.
+打开渲染您的应用程序的根组件（Vite 模板默认使用的位置是 `src/main.tsx`），并集成或替换当前的代码如下。
 
-The first `Provider` to set up is the `QueryClientProvider` from `@tanstack/react-query`. This `Provider` manages request state for various hooks in dApp kit. If you're already using `@tanstack/react-query`, dApp Kit can share the same `QueryClient` instance.
+第一个要设置的 `Provider` 是来自 `@tanstack/react-query` 的 `QueryClientProvider`。这个 `Provider` 管理 dApp Kit 中各种 hooks 的请求状态。如果您已经在使用 `@tanstack/react-query`，dApp Kit 可以共享相同的 `QueryClient` 实例。
 
 ```ts
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
@@ -58,7 +58,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
 );
 ```
 
-Next, set up the `SuiClientProvider`. This `Provider` delivers a `SuiClient` instance from `@mysten/sui.js` to all the hooks in dApp Kit. This provider manages which network dApp Kit connects to, and can accept configuration for multiple networks. This exercise connects to `devnet`.
+接下来，设置 `SuiClientProvider`。这个 `Provider` 从 `@mysten/sui.js` 传递一个 `SuiClient` 实例给 dApp Kit 中的所有 hooks。此提供者管理 dApp Kit 连接到的网络，并可以接受多个网络的配置。此练习连接到 `devnet`。
 
 ```ts
 import { SuiClientProvider } from '@mysten/dapp-kit';
@@ -82,7 +82,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
 );
 ```
 
-Finally, set up the `WalletProvider` from `@mysten/dapp-kit`, and import styles for the `dapp-kit` components.
+最后，设置来自 `@mysten/dapp-kit` 的 `WalletProvider`，并导入 `dapp-kit` 组件的样式。
 
 ```ts
 import '@mysten/dapp-kit/dist/index.css';
@@ -110,9 +110,9 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
 );
 ```
 
-## Connecting to a wallet
+## 连接钱包
 
-With all `Providers` set up, you can use dApp Kit hooks and components. To allow users to connect their wallets to your dApp, add a `ConnectButton`.
+使用所有设置好的 `Providers`，您可以使用 dApp Kit 提供的 hooks 和组件。为了允许用户将他们的钱包连接到您的 dApp，添加一个 `ConnectButton`。
 
 ```ts
 import { ConnectButton } from '@mysten/dapp-kit';
@@ -128,11 +128,11 @@ function App() {
 }
 ```
 
-The `ConnectButton` component displays a button that opens a modal on click, enabling the user to connect their wallet. Upon connection, it displays their address, and provides the option to disconnect.
+`ConnectButton` 组件显示一个按钮，点击按钮会打开一个模态框，允许用户连接他们的钱包。连接成功后，它会显示他们的地址，并提供断开连接的选项。
 
-## Getting the connected wallet address
+## 获取已连接钱包的地址
 
-Now that you have a way for users to connect their wallets, you can start using the `useCurrentAccount` hook to get details about the connected wallet account.
+现在您已经让用户连接他们的钱包，您可以开始使用 `useCurrentAccount` hook 获取有关已连接钱包账户的详细信息。
 
 ```ts
 import { ConnectButton, useCurrentAccount } from '@mysten/dapp-kit';
@@ -160,9 +160,9 @@ function ConnectedAccount() {
 }
 ```
 
-## Querying data from Sui RPC nodes
+## 从 Sui RPC 节点查询数据
 
-Now that you have the account to connect to, you can query for objects the connected account owns:
+现在您已经有了要连接的账户，您可以查询连接账户拥有的对象：
 
 ```ts
 import { useCurrentAccount, useSuiClientQuery } from '@mysten/dapp-kit';
@@ -204,12 +204,12 @@ function OwnedObjects({ address }: { address: string }) {
 }
 ```
 
-You now have a dApp connected to wallets and can query data from RPC nodes.
+您现在已经有了一个连接到钱包并能够从 RPC 节点查询数据的 dApp。
 
-## Related links
+## 相关链接
 
-The next step from here is to start interacting with Move modules, constructing transaction blocks, and making Move calls. This exercise continues in the end to end example.
+从这里开始的下一步是开始与 Move 模块互动，构建交易块，并进行 Move 调用。这个练习在端到端的例子中继续。
 
-- [End-to-End Example](../app-examples/e2e-counter.mdx): Continue this exercise by creating an app.
-- [Sui 101](../sui-101.mdx): Learn the basics of the Sui network and how to interact with on-chain objects using Move.
-- [Sui Move CLI](/references/cli/move.mdx): The `move` commands in the Sui CLI provide console or terminal interaction with the Move VM.
+- [端到端例子](../app-examples/e2e-counter.mdx)：通过创建一个应用程序继续这个练习。
+- [Sui 101](../sui-101.mdx)：学习 Sui 网络的基础知识以及如何使用 Move 与链上对象互动。
+- [Sui Move CLI](/references/cli/move.mdx)：Sui CLI 中的 `move` 命令提供了与 Move VM 的控制台或终端交互。

@@ -1,73 +1,71 @@
 ---
-title: Asset Tokenization
-description: Learn how to tokenize assets on the Sui blockchain. Asset tokenization refers to the process of representing real-world assets, such as real estate, art, commodities, stocks, or other valuable assets, as digital tokens on the blockchain network.
+title: 资产代币化
+description: 学习如何在 Sui 区块链上进行资产代币化。资产代币化是指将现实世界的资产（如房地产、艺术品、大宗商品、股票或其他有价值的资产）表示为区块链网络上的数字代币的过程。
 ---
 
 import TabItem from '@theme/TabItem';
 import Tabs from '@theme/Tabs';
 
-Asset tokenization refers to the process of representing real-world assets, such as real estate, art, commodities, stocks, or other valuable assets, as digital tokens on the blockchain network. This involves converting the ownership or rights of an asset into digital tokens, which are then recorded and managed on the blockchain.
+资产代币化是指将现实世界的资产（如房地产、艺术品、大宗商品、股票或其他有价值的资产）表示为区块链网络上的数字代币的过程。这涉及将资产的所有权或权利转换为数字代币，然后在区块链上记录和管理这些代币。
 
-## High-level overview
+## 高层次概述
 
-The concept is to divide high-value assets into smaller, more affordable units, representing ownership or a fraction of the asset. 
+该概念是将高价值资产分割成更小、更经济实惠的单位，代表资产的所有权或资产的一部分。
 
-This strategy enables wider participation from investors who might want to mitigate risk by investing in a portion of a digital asset rather than being the sole owner, thereby expanding accessibility to a broader range of investors.
+这种策略使得更多的投资者能够参与，他们可能希望通过投资于数字资产的一部分来降低风险，而不是成为唯一的所有者，从而扩大了对更广泛投资者的可访问性。
 
-This pattern is similar to the [ERC1155](https://eips.ethereum.org/EIPS/eip-1155) multi-token standard with additional functionality. This makes it a suitable choice for Solidity based use cases that one might want to implement on Sui.
+这个模式类似于 [ERC1155](https://eips.ethereum.org/EIPS/eip-1155) 多令牌标准，并具有额外的功能。这使其成为在 Sui 上实现的基于 Solidity 的用例的合适选择。
 
-- **Asset creation**
+- **资产创建**
     
-    Each asset is fractionalized into a total supply, with each fraction represented as either a non-fungible token (NFT) or fungible token (FT) type collectible. This ensures that each individual fraction maintains a balance equal to or greater than one, and when combined, all fractions collectively reach the total supply of the asset.
+    每个资产都被分成总供应量，每个分数都表示为非同质代币（NFT）或可替代代币（FT）类型的可收藏品。这确保每个单独的分数保持大于等于一的余额，而当合并时，所有分数共同达到资产的总供应量。
 
-    Besides the total supply, each asset is defined by various other fields such as name, description, and more. These fields collectively form the metadata for the asset, and they remain consistent across all fractions of the asset.
-    
-- **NFTs vs FTs distinction**
-    
-    Each time a tokenized asset is minted, there's a possibility for it to be created with new metadata. If new metadata is incorporated, the tokenized asset is deemed unique, transforming it into an NFT. In this case, its balance is limited to one, signifying that only a single instance of this asset exists.
-    
-    If there's no additional metadata, the tokenized asset is categorized as an FT, allowing its balance to exceed one, enabling multiple identical instances of the asset to exist. 
-    
-    FTs possess the capability to merge (join) among themselves or be split when the balance is greater than one. This functionality allows for the aggregation or division of units of the token, offering flexibility in handling varying quantities as needed.
-    
-    As previously mentioned, all the collectibles of tokenized assets, whether NFTs or FTs, when combined, can amount to the maximum total supply of the asset.
-    
-- **Burnability**
-    
-    When you create the asset, you can define whether the fractions of the asset are eligible for removal or destruction from circulation. The process of removing or destroying assets is called burning. 
-    
-    If a tokenized asset is burnable, then burning a fraction causes the circulating supply to decrease by the balance of the burnt item. The total supply, however, remains constant, allowing you to mint the burned fractions again if needed, thus maintaining the predetermined total supply of the asset.
+    除了总供应量，每个资产还由诸如名称、描述等各种其他字段定义。这些字段共同形成资产的元数据，并且它们在资产的所有分数中保持一致。
 
-## Move packages
+- **NFT 与 FT 区别**
+    
+    每当代币化资产被铸造时，它可能会被创建为具有新元数据的形式。如果合并了新的元数据，则认为代币化资产是唯一的，将其转化为 NFT。在这种情况下，它的余额被限制为一，表示该资产的唯一实例存在。
 
-As with all smart contracts on Sui, Move provides the logic that powers asset tokenization.
+    如果没有额外的元数据，代币化的资产被归类为 FT，允许其余额超过一，从而允许存在多个相同的资产实例。
 
-### asset_tokenization package
+    FT 具有在余额大于一时合并（合并）在一起或拆分的能力。此功能允许对代币的单元进行聚合或分割，以根据需要灵活处理不同数量。
+
+    正如前面提到的，代币化资产的所有收藏品，无论是 NFT 还是 FT，在组合时都可以达到资产的最大总供应量。
+
+- **销毁能力**
+    
+    在创建资产时，您可以定义资产的分数是否有资格从流通中删除或销毁。删除或销毁资产的过程称为燃烧。
+
+    如果一个代币化的资产可以被销毁，那么燃烧一部分会导致流通供应减少燃烧物品的余额。然而，总供应保持不变，允许在需要时再次铸造被燃烧的分数，从而保持资产的预定总供应量。
+
+## Move 包
+
+与 Sui 上的所有智能合约一样，Move 提供了支持资产代币化的逻辑。
+
+### asset_tokenization 包
 
 :::info
 
-This reference implementation uses the Kiosk primitive to ensure that TAs created operate within their creator's defined policy. We recommend you use the implementation as it is in order to have marketable TAs that support Rules (e.g: royalties, commissions etc).
-If operating within the Kiosk primitive is not a requirement, then the unlock module & some of the proxy's methods related to Transfer Policies can be excluded.
+此参考实现使用 Kiosk 原语来确保创建的 TAs 在其创建者定义的策略内运作。我们建议您使用实现，以便拥有支持规则的可销售 TAs（例如：版税、佣金等）。
+如果在 Kiosk 原语内运作不是必需的，则解锁模块及与 Transfer Policies 相关的某些代理方法可以被排除。
 
 :::
 
-Select a module to view its details:
+选择一个模块查看其详情：
 
 <Tabs groupId="modules">
 
 <TabItem label="tokenized_asset" value="tokenized_asset">
 
-The `tokenized_asset` module operates in a manner similar to the `coin` library. 
+`tokenized_asset` 模块的操作方式类似于 `coin` 库。 
 
-When it receives a new [one-time witness](concepts/sui-move-concepts/one-time-witness.mdx) type, it creates a unique representation of a fractional asset. This module employs similar implementations to some methods found in the `Coin` module. It encompasses functionalities pertinent to asset tokenization, including new asset creation, minting, splitting, joining, and burning.
-
-
+当它收到一个新的 [一次性见证](concepts/sui-move-concepts/one-time-witness.mdx) 类型时，它创建一个分数资产的唯一表示。这个模块采用了与 `Coin` 模块中的一些方法相似的实现。它包括与资产代币化相关的功能，包括新资产的创建、铸造、拆分、合并和销毁。
         
-**Structs**
+**结构**
 
-- `AssetCap`
+- `资产上限`
 
-    An AssetCap should be generated for each new Asset we wish to represent as a fractional NFT. In most scenarios, it is recommended to be created as an owned object, which can then be transferred to the platform's administrator for access restricted method invocation.
+    对于我们希望表示为分数 NFT 的每个新资产，都应生成一个 AssetCap。在大多数情况下，建议将其创建为一个所有者对象，然后可以将其转让给平台管理员，以进行受限制的方法调用。
         
     ```rust
     struct AssetCap<phantom T> {
@@ -81,9 +79,9 @@ When it receives a new [one-time witness](concepts/sui-move-concepts/one-time-wi
     }
     ```
             
-- `AssetMetadata`
+- `资产元数据`
 
-    The AssetMetadata struct defines the metadata representing the entire asset that we intend to fractionalize. It is recommended to be a shared object.
+    AssetMetadata 结构定义了表示我们打算分数化的整个资产的元数据。建议将其设计为一个共享对象。
     
     ```rust
     struct AssetMetadata<phantom T> has key, store {
@@ -103,8 +101,8 @@ When it receives a new [one-time witness](concepts/sui-move-concepts/one-time-wi
     
 - `TokenizedAsset`
 
-    The TokenizedAsset will be minted with a specified balance where the balance is less than or equal to the remaining supply. If the VecMap of an asset is populated with values, indicating multiple unique entries, it is considered a NFT. Conversely, if the VecMap of an asset is not populated, indicating an absence of individual entries, it is considered an FT.
-    
+    `TokenizedAsset` 将以指定的余额铸造，其中余额小于或等于剩余供应量。如果一个资产的 VecMap 被填充了值，表示有多个唯一的条目，那么它被视为 NFT。相反，如果一个资产的 VecMap 没有被填充，表示没有单独的条目，那么它被视为 FT。
+
     ```rust
     struct TokenizedAsset<phantom T> has key, store {
             id: UID,
@@ -118,8 +116,8 @@ When it receives a new [one-time witness](concepts/sui-move-concepts/one-time-wi
     ```
     
 - `PlatformCap`
-    
-    The PlatformCap refers to the capability issued to the individual who deploys the contract. This capability grants specific permissions or authority related to the platform's functionalities, allowing the deployer certain controlled actions or access rights within the deployed contract.
+
+    `PlatformCap` 指的是分配给部署合约的个体的能力。该能力授予与平台功能相关的特定权限或权限，允许部署者在已部署的合约中执行某些受控操作或拥有特定的访问权限。
     
     ```rust
     /// Capability that is issued to the one deploying the contract
@@ -131,15 +129,15 @@ When it receives a new [one-time witness](concepts/sui-move-concepts/one-time-wi
 
 - `init`
 
-    This function creates a PlatformCap and sends it to the sender.
-    
+    此函数创建一个 `PlatformCap` 并将其发送给发件人。
+
     ```rust
     fun init(ctx: &mut TxContext) {}
     ```
     
 - `new_asset`
 
-    This function holds the responsibility of creating a fresh representation of an asset, defining its crucial attributes. Upon execution, it returns two distinct objects: the AssetCap and AssetMetadata. These objects encapsulate the necessary information and characteristics defining the asset within the system.
+    此函数负责创建一个资产的新表示，并定义其关键属性。执行后，它返回两个不同的对象：AssetCap 和 AssetMetadata。这些对象封
     
     ```rust
     public fun new_asset<T: drop>(
@@ -156,7 +154,7 @@ When it receives a new [one-time witness](concepts/sui-move-concepts/one-time-wi
     
 - `mint`
 
-    The function performs the minting of a tokenized asset. If new metadata is introduced during this process, the resulting tokenized asset is considered unique, resulting in the creation of an NFT with a balance set to 1. Alternatively, if no new metadata is added, the tokenized asset is classified as an FT, permitting its balance to surpass 1, as specified by a provided argument. Upon execution, the function returns the tokenized asset object.
+    该函数执行代币化资产的铸造。如果在此过程中引入了新的元数据，则生成的代币化资产被视为唯一，导致创建一个余额设置为 1 的 NFT。另外，如果没有添加新的元数据，那么代币化的资产被归类为 FT，允许其余额超过 1，如提供的参数所指定。执行后，该函数返回代币化资产对象。
     
     ```rust
     public fun mint<T>(
@@ -170,8 +168,8 @@ When it receives a new [one-time witness](concepts/sui-move-concepts/one-time-wi
     
 - `split`
 
-    This function, is provided with a tokenized asset of the FT type and a balance greater than 1, along with a value less than the object's balance, and performs a split operation on the tokenized asset. The operation divides the existing tokenized asset into two separate tokenized assets. The newly created tokenized asset will have a balance equal to the given value, while the balance of the provided object is reduced by the specified value. Upon completion, the function returns the newly created tokenized asset. This function does not accept or operate on tokenized assets of the NFT type.
-    
+    此函数接收一个 FT 类型的代币化资产和一个大于 1 的余额，以及一个小于对象余额的值，并对代币化资产执行拆分操作。该操作将现有的代币化资产分割成两个独立的代币化资产。新创建的代币化资产的余额将等于给定的值，而提供的对象的余额将减少指定的值。完成后，该函数返回新创建的代币化资产。此函数不接受或操作 NFT 类型的代币化资产。
+
     ```rust
     public fun split<T>(
             self: &mut TokenizedAsset<T>,
@@ -182,10 +180,10 @@ When it receives a new [one-time witness](concepts/sui-move-concepts/one-time-wi
     
 - `join`
 
-    This function is given two tokenized assets of the FT type and executes a merge operation on the tokenized assets. The operation involves increasing the balance of the first tokenized asset by the balance of the second one. Subsequently, the second tokenized asset will be burned or removed from circulation. After the process concludes, the function returns the ID of the burned tokenized asset.
+    此函数接收两个 FT 类型的代币化资产并对它们执行合并操作。该操作涉及将第一个代币化资产的余额增加第二个代币化资产的余额。随后，第二个代币化资产将被燃烧或从流通中移除。在过程结束后，该函数返回被燃烧代币化资产的 ID。
 
-    This function does not accept or operate on tokenized assets of the NFT type.
-    
+    此函数不接受或操作 NFT 类型的代币化资产。
+
     ```rust
     public fun join<T>(
             self: &mut TokenizedAsset<T>,
@@ -195,8 +193,8 @@ When it receives a new [one-time witness](concepts/sui-move-concepts/one-time-wi
     
 - `burn`
 
-    This function requires the assetCap as a parameter, thereby restricting its invocation solely to the platform admin. Additionally, it accepts a tokenized asset that will be burned as part of its operation. Upon burning the provided tokenized asset, the circulating supply decreases by the balance of the burnt item. It necessitates a tokenized asset which is burnable.
-    
+    该函数需要将 assetCap 作为参数，因此仅限平台管理员调用。此外，它接受一个将作为其操作部分而被燃烧的代币化资产。在燃烧所提供的代币化资产后，流通供应量减少了燃烧项目的余额。它要求提供一个可燃烧的代币化资产。
+
     ```rust
     public fun burn<T>(
             cap: &mut AssetCap<T>,
@@ -206,15 +204,15 @@ When it receives a new [one-time witness](concepts/sui-move-concepts/one-time-wi
     
 - `total_supply`
 
-    This function retrieves and returns the value representing the total supply of the asset.
-    
+    此函数检索并返回表示资产总供应量的值。
+
     ```rust
     public fun total_supply<T>(cap: &AssetCap<T>): u64 {}
     ```
     
 - `supply`
 
-    This function retrieves and returns the value representing the current circulating supply of the asset.
+    此函数检索并返回表示资产当前流通供应量的值。
     
     ```rust
     public fun supply<T>(cap: &AssetCap<T>): u64 {}
@@ -222,7 +220,7 @@ When it receives a new [one-time witness](concepts/sui-move-concepts/one-time-wi
     
 - `value`
 
-    This function takes a tokenized asset as input and retrieves its associated balance value.
+    此函数以代币化资产作为输入，并检索其关联的余额值。
     
     ```rust
     public fun value<T>(tokenized_asset: &TokenizedAsset<T>): u64 {}
@@ -230,7 +228,7 @@ When it receives a new [one-time witness](concepts/sui-move-concepts/one-time-wi
     
 - `create_vec_map_from_arrays`
 
-    This internal helper function is utilized to populate a `VecMap<String, String>`. It assists in the process of filling or setting key-value pairs within the VecMap data structure.
+    这个内部辅助函数用于填充 `VecMap<String, String>`。它有助于在 VecMap 数据结构中填充或设置键值对的过程。
     
     ```rust
     fun create_vec_map_from_arrays(
@@ -243,21 +241,21 @@ When it receives a new [one-time witness](concepts/sui-move-concepts/one-time-wi
 
 <TabItem label="proxy" value="proxy">
 
-The `proxy` module comprises methods that the type owner utilizes to execute publisher-related operations. 
+    `proxy` 模块包括类型所有者用于执行与发布者相关操作的方法。
 
-**Structs**
+**结构体**
 
 - `Proxy`
 
-    The PROXY struct represents the one-time witness (OTW) utilized to claim the publisher.
-    
+    PROXY 结构体表示用于声明发布者的一次性见证（OTW）。
+
     ```rust
     struct PROXY has drop {}
     ```
     
 - `Registry`
 
-    This is a shared object serves as a repository for the Publisher object, specifically intended to control and restrict access to the creation and management of transfer policies for tokenized assets. Mutable access to this object is exclusively granted to the actual publisher.
+    这是一个共享对象，用作 Publisher 对象的存储库，专门用于控制和限制对代币化资产的转让策略创建和管理的访问。对该对象的可变访问权限仅授予实际的发布者。
     
     ```rust
     struct Registry has key {
@@ -267,7 +265,7 @@ The `proxy` module comprises methods that the type owner utilizes to execute pub
     ```
     
 - `ProtectedTP`
-    This is a shared object utilized to store an empty transfer policy. It is required to create one per type `<T>` generated by a user. Its involvement is apparent in the unlock module.
+    这是一个共享对象，用于存储一个空的转让策略。每个用户生成的类型 `<T>` 需要创建一个此类对象。它在 unlock 模块中的作用是显而易见的。
     
     ```rust
     struct ProtectedTP<phantom T> has key, store {
@@ -282,18 +280,18 @@ The `proxy` module comprises methods that the type owner utilizes to execute pub
 
 - `init`
 
-    This function is responsible for creating the Publisher object, encapsulating it within the Registry, and subsequently sharing the Registry object
-    
+    该函数负责创建 Publisher 对象，将其封装在 Registry 中，并随后共享 Registry 对象。
+
     ```rust
     fun init(otw: PROXY, ctx: &mut TxContext) {}
     ```
     
 - `setup_tp`
 
-    This function leverages the publisher nested within the registry and the sender's publisher. It generates and returns a transfer policy and the associated transfer policy cap specific to the `TokenizedAsset<T>`. This type 'T' is derived from the Publisher object. 
+    此函数利用嵌套在 Registry 中的发布者以及发件人的发布者。它生成并返回与 `TokenizedAsset<T>` 特定的转让策略和相关的转让策略 cap。此类型 'T' 源自 Publisher 对象。
 
-    It also generates an empty transfer policy wrapped in a `ProtectedTP<T>` object, which is shared. You can use this functionality under specific conditions to override the kiosk lock rule.
-    
+    它还生成一个包装在 `ProtectedTP<T>` 对象中的空转让策略，该对象是共享的。您可以在特定条件下使用此功能来覆盖 kiosk 锁定规则。
+
     ```rust
     public fun setup_tp<T: drop>(
             registry: &Registry,
@@ -305,8 +303,8 @@ The `proxy` module comprises methods that the type owner utilizes to execute pub
     
 - `new_display`
 
-    This function utilizes the publisher nested within the registry in and the sender's publisher to generate and return an empty Display for the type `TokenizedAsset<T>`, where 'T' is encapsulated within the Publisher object.
-    
+    该函数利用嵌套在注册表中的发布者和发送者的发布者，生成并返回类型为`TokenizedAsset<T>`的空Display，其中'T'被封装在发布者对象中。
+  
     ```rust
     public fun new_display<T: drop>(
             registry: &Registry,
@@ -317,8 +315,8 @@ The `proxy` module comprises methods that the type owner utilizes to execute pub
     
 - `transfer_policy`
 
-    This function provided with the protectedTP, returns the Transfer Policy specifically designed for the type `TokenizedAsset<T>`
-    
+    该函数接受受保护的TP作为参数，返回专为类型`TokenizedAsset<T>`设计的Transfer Policy。
+
     ```rust
     public(friend) fun transfer_policy<T>(
             protected_tp: &ProtectedTP<T>
@@ -328,8 +326,8 @@ The `proxy` module comprises methods that the type owner utilizes to execute pub
     
 - `publisher_mut`
 
-    This function can only be accessed by the owner of the platform cap. It requires the registry as an argument to obtain a mutable reference to the publisher.
-    
+    此函数只能由平台资产的所有者访问。它需要注册表作为参数，以获取对发布者的可变引用。
+
     ```rust
     public fun publisher_mut(
             _: &PlatformCap, 
@@ -341,15 +339,15 @@ The `proxy` module comprises methods that the type owner utilizes to execute pub
 
 <TabItem label="unlock" value="unlock">
 
-The `unlock` module facilitates the unlocking of a tokenized asset specifically for authorized burning and joining.
+`unlock` 模块促进了特定于授权烧毁和联合的代币化资产的解锁。
 
-It allows tokenized asset type creators to enable these operations for Kiosk assets without necessitating adherence to the default set of requirements, such as rules or policies.
+它允许代币化资产类型的创建者为 Kiosk 资产启用这些操作，而无需遵循默认的规则或政策要求。
 
-**Structs**
+**结构体**
 
 - `JoinPromise`
 
-    A promise object is established to prevent attempts of permanently unlocking an object beyond the intended scope of joining.
+    一个 Promise 对象，用于防止在联合的预期范围之外永久解锁对象。
     
     ```rust
     struct JoinPromise {
@@ -364,7 +362,7 @@ It allows tokenized asset type creators to enable these operations for Kiosk ass
     
 - `BurnPromise`
 
-    A promise object created to ensure the permanent burning of a specified object.
+    一个 Promise 对象，用于确保永久销毁指定的对象。
     
     ```rust
     struct BurnPromise {
@@ -377,8 +375,8 @@ It allows tokenized asset type creators to enable these operations for Kiosk ass
 
 - `asset_from_kiosk_to_join`
 
-    This helper function is intended to facilitate the joining of tokenized assets locked in kiosk. It aids in unlocking the tokenized asset that is set for burning and ensures that another tokenized asset of the same type will eventually contain its balance by returning a `JoinPromise.`
-    
+    此辅助函数旨在促进在 kiosk 中锁定的代币化资产的合并。它有助于解锁设置为燃烧的代币化资产，并确保同一类型的另一个代币化资产最终将包含其余额，通过返回 `JoinPromise` 来实现。
+   
     ```rust
     public fun asset_from_kiosk_to_join<T>(
             self: &TokenizedAsset<T>, // A
@@ -390,8 +388,8 @@ It allows tokenized asset type creators to enable these operations for Kiosk ass
     
 - `prove_join`
 
-    A function utilized to demonstrate that the unlocked tokenized asset has been successfully burned and its balance has been incorporated into an existing tokenized asset.
-    
+    用于证明已成功燃烧解锁的代币化资产，并且其余额已合并到现有的代币化资产的函数。
+  
     ```rust
     public fun prove_join<T>(
             self: &TokenizedAsset<T>, 
@@ -401,8 +399,8 @@ It allows tokenized asset type creators to enable these operations for Kiosk ass
     
 - `asset_from_kiosk_to_burn`
 
-    This helper function is intended to facilitate the burning of tokenized assets locked in kiosk. It assists in their unlocking while ensuring a promise that the circulating supply will be reduced, achieved by returning a `BurnPromise`.
-    
+    此辅助函数旨在促使在 Kiosk 中锁定的代币化资产的燃烧。它有助于它们的解锁，同时确保承诺将减少流通供应，通过返回一个 `BurnPromise` 实现。
+
     ```rust
     public fun asset_from_kiosk_to_burn<T>(
             to_burn: &TokenizedAsset<T>,
@@ -414,7 +412,7 @@ It allows tokenized asset type creators to enable these operations for Kiosk ass
     
 - `prove_burn`
 
-    This function ensures that the circulating supply of the asset cap has indeed been reduced by the balance of the burned tokenized asset.
+    该函数确保资产上限的流通供应确实已减少燃烧的代币化资产的余额。
     
     ```rust
     public fun prove_burn<T>(
@@ -428,34 +426,33 @@ It allows tokenized asset type creators to enable these operations for Kiosk ass
 
 ### template package
 
-An example use case package, that enables utilization of Rust WASM functionality to support seamless asset creation on the browser.
-This is similar to the launchpad approach and will serve as the template package whenever a new asset requires representation as a tokenized asset.
-Effectively allowing users to edit fields of this template contract on the fly and publish it with the edits included.
-This package implements two essential modules, each catering to distinct functionalities required for asset tokenization.
-More details regarding how Rust WASM was implemented can be found in the [Web Assembly](#webassembly-wasm-and-template-package) section.
+一个示例用例包，通过启用 Rust WASM 功能，支持在浏览器上无缝创建资产。这类似于启动台方法，并将作为模板包在新资产需要表示为代币化资产时使用。
+实际上，允许用户动态编辑此模板合约的字段，并在发布时包含编辑。
+此包实现了两个关键模块，每个模块都满足资产代币化所需的不同功能。
+有关 Rust WASM 如何实现的更多详细信息，请参见[Web Assembly](#webassembly-wasm-and-template-package)部分。
 
-- **Modules**
+- **模块**
     - template
+
+        这是可以定义新资产的模块。
         
-        This is the module where a new asset can be defined.
+        当需要将新资产表示为分数资产时，此模块将通过将 `<template>`（大写）修改为 `<template>::<TEMPLATE>` 进行修改，其中 `<template>` 是此新资产的 OTW。
         
-        When there's a necessity to represent a new asset as a fractional asset, this module will undergo modification to `<template>::<TEMPLATE>`, with the `<template>` (in capitals) being the OTW of this new asset.
+        此模块设计为调用 `asset_tokenization::tokenized_asset::new_asset(...)` 方法，该方法有助于声明资产的新字段：
         
-        This module is designed to call the `asset_tokenization::tokenized_asset::new_asset(...)` method, which facilitates the declaration of new fields for the asset:
-        
-        - `witness` The OTW `NEW_ASSET`
-        - `total_supply` The total supply allowed to exist at any time
-        - `symbol` The symbol for the asset
-        - `name` The name of the asset
-        - `description` The description of the asset
-        - `icon_url` The URL for the asset logo (optional)
-        - `burnable` Boolean: defines if the asset can be burned by an admin
+        - `witness` OTW `NEW_ASSET`
+        - `total_supply` 随时允许存在的总供应量
+        - `symbol` 资产的符号
+        - `name` 资产的名称
+        - `description` 资产的描述
+        - `icon_url` 资产徽标的 URL（可选）
+        - `burnable` 布尔值：定义是否可以由管理员燃烧资产
         
     - genesis
-        
-        A genesis type of module that should include a OTW so that the sender can claim the publisher.
 
-### Publish and mint tokenized sequence diagram
+        这是一个 Genesis 类型的模块，应包括一个 OTW，以便发件人可以声明发布者。
+
+### 发布和铸造代币化序列图
 
 ```mermaid
 sequenceDiagram
@@ -491,13 +488,13 @@ sequenceDiagram
     Asset Creator->>Kiosk: Place Tokenized Asset
 ```
 
-### Join sequence diagram
+### 加入序列图
 
-The following sequence diagram presenting how the join flow would take place. The following flow assumes that:
+以下序列图展示了加入流程的执行方式。以下流程假设：
 
-- Tokenized assets X & Y have already been minted by the creator of their type.
-- Tokenized assets X & Y are already placed and locked inside the user's Kiosk.
-- Everything is executed in the same programmable transaction block (PTB).
+- 代币化资产 X 和 Y 已由其类型的创建者铸造。
+- 代币化资产 X 和 Y 已放置并锁定在用户的 Kiosk 中。
+- 一切都在同一个可编程事务块（PTB）中执行。
 
 ```mermaid
 sequenceDiagram
@@ -523,13 +520,13 @@ unlock module-->>User: Return Tokenized Asset X
 User->>User's Kiosk: Resolve Promise by returning Tokenized Asset X in user's Kiosk
 ```
 
-### Burn sequence diagram
+### 燃烧序列图
 
-The following sequence diagram shows the burn flow and assumes that:
+以下序列图显示了燃烧流程，并假设：
 
-- Tokenized asset has already been minted by the creator of its type.
-- Tokenized asset is already placed and locked inside the user's Kiosk.
-- Everything is executed in the same PTB.
+- 代币化资产已由其类型的创建者铸造。
+- 代币化资产已放置并锁定在用户的 Kiosk 中。
+- 一切都在同一个可编程事务块 (PTB) 中执行。
 
 ```mermaid
 sequenceDiagram
@@ -552,13 +549,13 @@ User->>unlock module: Use Burn Proof, Asset Cap as input to prove_burn
 unlock module-->>User: Returns Asset Cap
 ```
 
-## Variations
+## 变种
 
-The packages and modules provided demonstrate how you could implement asset tokenization for your project. Your particular use case probably necessitates altering the contract for convenience or to introduce new features.
+提供的包和模块演示了如何为您的项目实现资产代币化。您的特定用例可能需要更改合同以方便使用或引入新功能。
 
-### Example convenience alteration
+### 示例方便更改
 
-Instead of implementing the unlock functionality in multiple steps inside of a PTB, it would also be possible to create a method that performs the purchase, borrowing, unlocking and joining of an asset all on one function. This is how that would look like for the joining operation:
+与其在同一个 PTB 中的多个步骤中实现解锁功能，也可以创建一个方法，该方法可以在一个函数中执行购买、借用、解锁和加入资产的所有操作。以下是加入操作的示例：
 
 ```rust
 public fun kiosk_join<T>(
@@ -587,19 +584,19 @@ public fun kiosk_join<T>(
 }
 ```
 
-### Example alteration for use case 
+### 用例示例更改
 
 :::caution
 
-The following example splits (effectively replacing) the `AssetCap<T>` into two new objects: the `Treasury<T>` and the `AdminCap<T>`. The access to methods defined in the original package, should now be carefully re-designed as this change can introduce unwanted effects. This required re-design is not entirely contained in this example and only some methods are changed for demonstration purposes (or as a thorough exercise).
+以下示例将 `AssetCap<T>` 拆分（实际上替换）为两个新对象：`Treasury<T>` 和 `AdminCap<T>`。对于原始包中定义的方法的访问现在应该仔细重新设计，因为此更改可能引入不希望的效果。这个所需的重新设计并没有完全包含在这个示例中，只有一些方法因演示目的（或全面的练习）而更改。
 
 :::
 
-Assume you want to allow the users to also burn assets, not only admins. This still needs to be an authorized operation but it would allow the flexibility of consuming tokenized assets for a use case specific purpose (for example, burning all of the collectibles you've gathered to combine them). To achieve this, the admin can mint tickets that contain the ID of the asset they are allowed to burn. To support this functionality you must redesign the smart contract and separate the admin from the asset's treasury of each asset, which now holds only supply related information. Sample changes that need to happen follow:
+假设您希望允许用户燃烧资产，而不仅仅是管理员。这仍然需要是一个经过授权的操作，但它将允许以用例特定的目的（例如，燃烧您收集到的所有收藏品以合并它们）使用代币化资产。为了实现这一功能，管理员可以铸造包含他们被允许燃烧的资产ID的门票。为了支持此功能，您必须重新设计智能合同，并将管理员与每个资产的资金库分开，后者现在仅保存与供应相关的信息。需要进行的示例更改如下：
 
-**Structs**
+**结构体**
 
-Create a ticket that has only the `key` ability so that the receiver cannot trade it.
+创建一个仅具有 `key` 能力的门票，以便接收者无法进行交易。
 
 ```rust
 struct BurnTicket<phantom T> has key {
@@ -608,7 +605,7 @@ struct BurnTicket<phantom T> has key {
 }
 ```
 
-The struct that now only holds treasury related information (results from splitting the `AssetCap`, meaning it's no longer part of this design) is created as a shared object. Change functions like `mint` to also take as input both the `Treasury` object and the `AdminCap` object.
+新结构体现在仅保存与资金相关的信息（从拆分 `AssetCap` 中得到的结果，因此不再是这个设计的一部分），并作为一个共享对象创建。更改函数，比如 `mint`，以便它还接受 `Treasury` 对象和 `AdminCap` 对象作为输入。
 
 ```rust
 struct Treasury<phantom T> has key, store {
@@ -618,7 +615,7 @@ struct Treasury<phantom T> has key, store {
 }
 ```
 
-The other half of the `AssetCap` functionality which retains the admin capability and the configuration of burnability is an owned object sent to the creator of type `<T>`.
+`AssetCap` 功能的另一半，其中保留了管理员能力和可燃性的配置，是一个发送给类型 `<T>` 的创建者的所有权对象。
 
 ```rust
 struct AdminCap<phantom T> has key, store {
@@ -627,10 +624,10 @@ struct AdminCap<phantom T> has key, store {
 }
 ```
 
-**Method Signatures**
+**方法签名**
 
-The `AdminCap` here acts both as an admin capability and a type insurance. Encoding the information of both the asset type that is allowed to be deleted with this ticket.
-This function should assert that the asset T is burnable and return a `BurnTicket<T>`.
+这里的 `AdminCap` 同时充当管理员功能和类型保险。编码了允许使用此门票删除的资产类型的信息。
+此函数应断言资产 T 是可燃的，并返回一个 `BurnTicket<T>`。
 
 ```rust
 public fun mint_burn_ticket<T>(
@@ -640,7 +637,7 @@ public fun mint_burn_ticket<T>(
 ): BurnTicket 
 ```
 
-Burning on the user side requires for them to access the shared `Treasury` object. This function burns the tokenized asset and decreases the supply. 
+在用户端进行燃烧需要他们访问共享的 `Treasury` 对象。此函数燃烧代币化资产并减少供应。
 
 ```rust
 public fun burn_with_ticket<T>(
@@ -649,15 +646,15 @@ public fun burn_with_ticket<T>(
 	ticket: BurnTicket<T>)
 ```
 
-# Deployment
+# 部署
 
 {@include: ../../../snippets/initialize-sui-client-cli.mdx}
 
-## Publishing
+## 发布
 
-At this stage, you can choose to manually deploy the contracts or utilize the publish bash script that automatically deploys the contracts and sets up most of the `.env` Asset Tokenization related fields for you.
-The `.env.template` file denotes variables that the script automatically fills in.
-You can see a reference here:
+在这个阶段，您可以选择手动部署合同，或使用自动部署合同并为您设置大多数 `.env` 资产代币化相关字段的 publish bash 脚本。
+`.env.template` 文件表示脚本会自动填写的变量。
+您可以在这里查看一个参考：
 
 ```
 SUI_NETWORK = rpc endpoint of the network of your choice | auto filled by publish script
@@ -682,11 +679,11 @@ TOKENIZED_ASSET = tokenized asset id (created by minting)
 FT1 = tokenized asset id (to be joined)
 FT2 = tokenized asset id (to be joined)
 ```
-For more details on publishing, please check the setup folder's [README](https://github.com/MystenLabs/asset-tokenization/tree/main/setup).
+有关发布的更多详细信息，请查看设置文件夹的 [README](https://github.com/MystenLabs/asset-tokenization/tree/main/setup)。
 
-### Publishing packages
+### 发布包
 
-Select a package for specific instructions.
+选择一个包获取具体的说明。
 
 <Tabs>
 
@@ -694,15 +691,15 @@ Select a package for specific instructions.
 
 ### Manually
 
-In a terminal or console at the `move/asset_tokenization` directory of the project enter:
+在项目的 `move/asset_tokenization` 目录的终端或控制台中输入：
 
 ```bash
 sui client publish --gas-budget <GAS-BUDGET>
 ```
 
-For the gas budget, use a standard value such as `20000000`.
+对于 gas 预算，使用一个标准值，比如 `20000000`。
 
-The package should successfully deploy, and you then see:
+包应该会成功部署，然后您会看到：
 
 ```bash
 UPDATING GIT DEPENDENCY https://github.com/MystenLabs/sui.git
@@ -712,42 +709,42 @@ BUILDING asset_tokenization
 Successfully verified dependencies on-chain against source.
 ```
 
-You can also view a multitude of information and transactional effects. 
+您还可以查看大量信息和交易效果。
 
-You should choose and store the `package ID` and the `registry ID` from the created objects in the respective fields within your .env file.
+您应该选择并在 .env 文件中的相应字段中存储 `package ID` 和 `registry ID`。
 
-Afterward, it's necessary to modify the `Move.toml` file. Under the `[package]` section, add `published-at = <package ID>`. Additionally, under the `[addresses]` section, replace `0x0` with the same `package ID`.
+然后，需要修改 `Move.toml` 文件。在 `[package]` 部分下，添加 `published-at = <package ID>`。此外，在 `[addresses]` 部分下，用相同的 `package ID` 替换 `0x0`。
 
-### Automatically
+### 自动
 
-The fields that are automatically filled are: `SUI_NETWORK`, `ASSET_TOKENIZATION_PACKAGE_ID` and `REGISTRY`. 
+自动填充的字段包括：`SUI_NETWORK`、`ASSET_TOKENIZATION_PACKAGE_ID` 和 `REGISTRY`。
 
-To publish with the bash script run:
+要使用 bash 脚本发布，请运行：
 
 ```bash
 npm run publish-asset-tokenization
 ```
 
-After publishing, you can now edit the `Move.toml` file like described in the Manual flow.
+发布后，您现在可以按照手动流程中的说明编辑 `Move.toml` 文件。
 
-For more details regarding this process, please consult the setup folder's [README](https://github.com/MystenLabs/asset-tokenization/tree/main/setup).
+有关此过程的更多详细信息，请参阅设置文件夹的 [README](https://github.com/MystenLabs/asset-tokenization/tree/main/setup)。
 
 
 </TabItem>
 
 <TabItem label="template" value="template">
 
-### Manually
+### 手动地
 
-In a terminal or console at the `move/template` directory of the project enter:
+在项目的“move/template”目录下的终端或控制台中输入：
 
 ```bash
 sui client publish --gas-budget <GAS-BUDGET>
 ```
 
-For the gas budget, use a standard value such as `20000000`.
+对于 Gas 预算，请使用标准值，例如“20000000”。
 
-The package should successfully deploy, and you then see:
+该包应该成功部署，然后您会看到：
 
 ```bash
 UPDATING GIT DEPENDENCY https://github.com/MystenLabs/sui.git
@@ -758,47 +755,47 @@ BUILDING template
 Successfully verified dependencies on-chain against source.
 ```
 
-You can also view a multitude of information and transactional effects. 
+您还可以查看大量信息和交易效果。
 
-You should choose and store the `package ID`, asset `metadata ID`, `asset cap ID` and the `Publisher ID` from the created objects in the respective fields within your .env file.
+您应该选择并在 .env 文件中的相应字段中存储 `package ID`、资产 `metadata ID`、`asset cap ID` 和 `Publisher ID`。
 
-### Automatically
+### 自动
 
-The process of automatic deployment for the template package refers to publishing a new asset via the WASM library. Quick start steps:
+模板包的自动部署流程指的是通过 WASM 库发布新资产。快速开始步骤：
 
-- Make sure that the `asset_tokenization/Move.toml` file has its published-at field uncommented and populated with the latest deployment of the package.
-- Ensure that the `asset_tokenization` package address is the same as the original deployment (if upgraded otherwise same as published-at).
-- Make any changes to the template fields by changing the input parameters of the `publishNewAsset` function.
-- Run `npm run publish-template`.
-- You should choose and store the *Template Package ID*, *asset metadata ID*, *asset cap ID* and the *publisher ID* from the created objects in the respective fields within your **.env** file.
+- 确保 `asset_tokenization/Move.toml` 文件的 `published-at` 字段已取消注释，并填入包的最新部署信息。
+- 确保 `asset_tokenization` 包地址与原始部署相同（如果升级则与 `published-at` 相同）。
+- 通过更改 `publishNewAsset` 函数的输入参数，对模板字段进行任何更改。
+- 运行 `npm run publish-template`。
+- 您应该选择并在 .env 文件中的相应字段中存储 *Template Package ID*、*asset metadata ID*、*asset cap ID* 和 *publisher ID*。
 
-For more details regarding this process, please consult the setup folder's [README](https://github.com/MystenLabs/asset-tokenization/tree/main/setup).
+有关此过程的更多详细信息，请参阅设置文件夹的 [README](https://github.com/MystenLabs/asset-tokenization/tree/main/setup)。
 
 </TabItem>
 
 </Tabs>
 
-## WebAssembly (WASM) and template package {#webassembly-wasm-and-template-package}
+## WebAssembly (WASM) 和模板包 {#webassembly-wasm-and-template-package}
 
 :::tip
 
-You can find a public facing reference to the WASM library in the [move-binary-format-wasm](https://github.com/MystenLabs/sui/tree/main/sdk/move-binary-format-wasm) Sui repo subfolder.
+您可以在 [move-binary-format-wasm](https://github.com/MystenLabs/sui/tree/main/sdk/move-binary-format-wasm) Sui 存储库的子文件夹中找到 WASM 库的公共引用。
 
 :::
 
-This feature was developed with the intent to enable Move bytecode serialization and deserialization on the web. In essence, this feature allows you to edit existing contracts in a web environment. 
+此功能的开发旨在实现在 Web 环境中对 Move 字节码进行序列化和反序列化。本质上，此功能允许您在 Web 环境中编辑现有合同。
 
-In the case of asset tokenization, these edits allow you to create and publish new types that represent physical or digital assets that we want to tokenize. 
+在资产标记化的情况下，这些编辑允许您创建和发布表示要标记化的实物或数字资产的新类型。
 
-### Bytecode manipulation {#bytecode-manipulation}
+### 字节码操作 {#bytecode-manipulation}
 
 :::caution
 
-On modifications that are made to the template package this process needs to be repeated. Note that some alterations, like changing a constant name, do not affect the produced bytecode.
+对模板包进行的修改需要重复此过程。请注意，某些更改，比如更改常量名称，不会影响生成的字节码。
 
 :::
 
-Before proceeding to how to make these edits, it's important to understand how the library exposes the template module bytecode. The process is currently manual. This requires that you build and retrieve the compiled bytecode. To do this, navigate inside the the template folder and run the following command:
+在进行如何进行这些编辑之前，了解库如何公开模板模块字节码非常重要。这个过程目前是手动的。这要求您构建并检索已编译的字节码。为此，请转到模板文件夹并运行以下命令：
 
 ```bash
 xxd -c 0 -p build/template/bytecode_modules/template.mv | head -n 1 
@@ -811,7 +808,7 @@ xxd -c 0 -p build/template/bytecode_modules/template.mv | head -n 1
   </summary>
 ```
 
-The response you should receive looks similar to the following:
+您应该收到的响应类似于以下内容：
 
 ```bash
 a11ceb0b060000000a010010021026033637046d0a05776807df01ec0108cb03800106cb043
@@ -841,21 +838,21 @@ a6563740f7075626c69635f7472616e736665720673656e64657204736f6d6506737472696e
 </details>
 ```
 
-Copy the output you receive and paste it in the return instruction of the `getBytecode` method, which is located inside the [bytecode-template.ts](https://github.com/MystenLabs/asset-tokenization/blob/main/setup/src/utils/genesis_bytecode.ts) file.
+复制您收到的输出，并将其粘贴到 [bytecode-template.ts](https://github.com/MystenLabs/asset-tokenization/blob/main/setup/src/utils/genesis_bytecode.ts) 文件中的 `getBytecode` 方法的 return 指令中。
 
-Additionally, because the template package contains two modules, and therefore has another dependency, you also need to retrieve the bytecode of the genesis module in a similar fashion. This module bytecode, however, is not edited and isn't used as is. This operation is not directly relevant to the WASM library, but is necessary to successfully deploy the edited template module. To acquire the bytecode for genesis, navigate to the `template` folder and run:
+此外，由于模板包包含两个模块，因此还需要以类似的方式检索 genesis 模块的字节码。但是，这个模块的字节码没有被编辑，也不会被直接使用。这个操作与 WASM 库直接无关，但对于成功部署编辑后的模板模块是必要的。要获取 genesis 的字节码，请转到 `template` 文件夹并运行：
 
 ```bash
 xxd -c 0 -p build/template/bytecode_modules/genesis.mv | head -n 1 
 ```
 
-The output format is similar to the template module but smaller in length. Similarly to what you did with the template module, you need to copy this output but this time paste it in the bytecode constant variable located in the [genesis_bytecode.ts](https://github.com/MystenLabs/asset-tokenization/blob/main/setup/src/utils/genesis_bytecode.ts) file.
+这个输出的格式与模板模块相似，但长度较短。与您在模板模块中所做的操作类似，您需要复制此输出，但这次将其粘贴到 [genesis_bytecode.ts](https://github.com/MystenLabs/asset-tokenization/blob/main/setup/src/utils/genesis_bytecode.ts) 文件中的 bytecode 常量变量中。
 
-With the above setup, the library can now manipulate the bytecode by deserializing it, editing it, and serializing it again so that you can publish it.
+通过上述设置，库现在可以通过反序列化、编辑和再次序列化字节码来操作字节码，以便您可以发布它。
 
-### Closer view of the template module
+### 更近距离查看模板模块
 
-Taking a look at the template module, you should see that a few constants have been defined:
+看一下模板模块，您应该看到已定义了一些常量：
 
 ```rust
 ...
@@ -868,7 +865,7 @@ const BURNABLE: bool = true;
 ...
 ```
 
-These constants act as a reference point that the WASM library is able to modify. If you take a look at the TypeScript code that performs the edit and deploys, you can see in action how these fields are identified and updated:
+这些常量充当 WASM 库能够修改的参考点。如果您查看执行编辑和部署的 TypeScript 代码，可以看到这些字段是如何被识别和更新的：
 
 ```tsx
 ...
@@ -892,18 +889,18 @@ const bytesToPublish = wasm.serialize(JSON.stringify(compiledModule));
 ...
 ```
 
-Examine the `updateConstant` method, which is used to update constants. This method takes four arguments:
+检查 `updateConstant` 方法，该方法用于更新常量。此方法接受四个参数：
 
-- An `idx` (index) that the declared constant would have in the constant pool. The order is sequential, starting from 0 for the first constant defined in the Move file and stepping plus one for each consecutive constant.
-- A `value` that contains an updated value of the constant you want to change.
-- An `expectedValue` that contains the current value of the constant.
-- An `expectedType` that contains the current type of the constant.
+- 一个 `idx`（索引），它是在常量池中声明的常量的顺序。从 Move 文件中定义的第一个常量开始，按照顺序递增，第一个常量的索引为 0。
+- 一个包含您想要更改的常量的更新值的 `value`。
+- 一个包含常量当前值的 `expectedValue`。
+- 一个包含常量当前类型的 `expectedType`。
 
-The last two arguments are requited to minimize the risk of accidentally updating the wrong constant since this library is directly manipulating complied bytecode, which is quite dangerous.
+最后两个参数是必需的，以最小化意外更新错误常量的风险，因为该库直接操作已编译的字节码，这是非常危险的。
 
-Additionally, the `changeIdentifiers` method updates identifiers, which in our case are the module name and the struct name. This method takes a JSON object as an argument with keys of the current identifier names in the module and values being the desired names you want to change them into.
+此外，`changeIdentifiers` 方法会更新标识符，这在我们的案例中是模块名和结构名。该方法接受一个 JSON 对象作为参数，其中键是模块中当前标识符的名称，而值是您要将其更改为的期望名称。
 
-Lastly, to deploy the changed template module, build and publish:
+最后，要部署更改后的模板模块，构建并发布：
 
 ```tsx
 ...
@@ -925,31 +922,31 @@ const tx = new TransactionBlock();
 ...
 ```
 
-As mentioned in the [Bytecode manipulation](#bytecode-manipulation) section, the modules that you need to publish are the template and the genesis, hence the reason you have two elements in the `modules` array. It's also important to include any dependencies defined in the `Move.toml` file of the involved packages. The `packageId` used previously is the address the `asset_tokenization` package has been deployed to. 
+正如 [字节码操纵](#bytecode-manipulation) 部分所述，您需要发布的模块是模板和创世模块，这就是 `modules` 数组中有两个元素的原因。还需要包括涉及包的 `Move.toml` 文件中定义的任何依赖项。之前使用的 `packageId` 是 `asset_tokenization` 包部署到的地址。
 
 ## TypeScript
 
-Now, you can begin interacting with the deployed smart contract and your tokenized asset.
+现在，您可以开始与部署的智能合约和您的代币化资产进行交互。
 
-In a terminal or console within the project's setup directory, utilize the following commands:
+在项目的设置目录中的终端或控制台中，使用以下命令：
 
-- **Create Transfer Policy**
-    
-    First, create a `TransferPolicy` and a `ProtectedTP` with the following command:
+- **创建转账策略**
+
+    首先，使用以下命令创建 `TransferPolicy` 和 `ProtectedTP`：
     
     ```shell
     npm run call create-tp
     ```
     
-    After executing the command, the console displays the effects of the transaction.
+在执行命令后，控制台会显示交易的效果。
 
-    By searching the transaction digest in the Sui Explorer, you can locate the created objects. Subsequently, select and save the `TransferPolicy ID` and the `ProtectedTP ID` from these objects into the respective fields within your .env file.
-    
-- **Add Rules**
-    
-    In the project's file `transferPolicyRules.ts` located in the directory `setup/src/functions`, you can modify the code to include the desired rules for your transfer policy.
-    
-    Code snippet to be modified:
+通过在 Sui Explorer 中搜索交易摘要，您可以找到已创建的对象。随后，从这些对象中选择并保存 `TransferPolicy ID` 和 `ProtectedTP ID` 到您的 .env 文件中的相应字段。
+
+- **添加规则**
+
+    在项目的 `setup/src/functions` 目录中的 `transferPolicyRules.ts` 文件中，您可以修改代码以包含所需的转账策略规则。
+
+    要修改的代码片段：
     
     ```rust
     // A demonstration of using all the available rule add/remove functions.
@@ -965,28 +962,28 @@ In a terminal or console within the project's setup directory, utilize the follo
             // .removePersonalKioskRule()
     ```
     
-    By running the command `npm run call tp-rules`, the rules will be added to your transfer policy.
-    
-    Now, investors can trade the fractions of your asset according to the rules you've set.
-    
-- **Select Kiosk**
-    
-    You must place the tokenized assets within a kiosk if marketable assets are desired. Subsequently, you can list and sell them to other users. It's imperative to lock the objects in the kiosk to prevent any future unauthorized usage outside the defined policy that you set.
-    
-    Best practices recommend a single, comprehensive kiosk for all operations. However, this might not always be the case. Therefore, this project requires the use of only one personal kiosk to ensure consistency and better management, even if you own multiple kiosks.
-    
-    To enforce this rule, execute the command `npm run call select-kiosk`. This provides you with the specific kiosk ID to use for this project.
-    
-    Then, store the provided Kiosk ID in the appropriate field within your .env file.
-    
-- **Mint**
-    
-    In the project's file `mint.ts`, found in the directory `setup/src/functions`, you can edit the code to mint the desired type (NFT/FT) and balance for your asset.
-    
-    As previously mentioned, if additional metadata is provided, the tokenized asset is treated as an NFT with a value of one. However, if there is no extra metadata, the tokenized asset is regarded as an FT, and you have the flexibility to select its balance, which can exceed one.
-    
-    Here is an example from the code that needs modification:
-    
+通过运行命令 `npm run call tp-rules`，您可以将规则添加到您的转账策略。
+
+现在，投资者可以根据您设置的规则交易您资产的部分。
+
+- **选择 Kiosk**
+
+    如果需要可销售的资产，您必须将代币化资产放置在一个 kiosk 中。随后，您可以将它们列出并出售给其他用户。将对象锁定在 kiosk 中是必不可少的，以防止在定义的策略之外进行未经授权的使用。
+
+    最佳实践建议为所有操作使用一个综合性的 kiosk。然而，这可能并不总是适用。因此，该项目要求只使用一个个人 kiosk，以确保一致性和更好的管理，即使您拥有多个 kiosk。
+
+    要强制执行此规则，请执行命令 `npm run call select-kiosk`。这将为您提供用于此项目的特定 kiosk ID。
+
+    然后，在您的 .env 文件中的相应字段中存储提供的 Kiosk ID。
+
+- **铸造**
+
+    在项目的 `setup/src/functions` 目录中找到的 `mint.ts` 文件中，您可以编辑代码以铸造您资产的所需类型（NFT/FT）和余额。
+
+    如前所述，如果提供了额外的元数据，则代币化资产将被视为具有值为一的 NFT。但是，如果没有额外的元数据，代币化资产将被视为 FT，您可以灵活选择其余额，该余额可以超过一。
+
+    以下是代码的示例，需要进行修改：
+
     ```rust
     // example without metadata -> FT
     function getVecMapValues() {
@@ -998,7 +995,7 @@ In a terminal or console within the project's setup directory, utilize the follo
     }
     ```
     
-    or
+    或
     
     ```rust
     // example with metadata -> NFT
@@ -1014,27 +1011,27 @@ In a terminal or console within the project's setup directory, utilize the follo
     }
     ```
     
-    Upon executing the command `npm run call mint`, a new tokenized asset is minted. You can save the object's `ID` in the .env file for future reference.
-    
-- **Lock**
-    
-    Locking the objects within the kiosk is crucial to prevent any unauthorized usage beyond the established policy.
-    
-    Upon executing the command `npm run call lock`, your newly minted tokenized asset is secured within your kiosk.
+通过执行命令 `npm run call mint`，将铸造一个新的代币化资产。您可以将对象的 `ID` 保存在 .env 文件中以供将来参考。
 
-    Before running the command, make sure that the field `TOKENIZED_ASSET` within your `.env` file is populated with the object you intend to lock.
-    
-- **Mint and Lock**
-    
-    Executing the command `npm run call mint-lock` performs both the mint and lock functions sequentially, ensuring the minted asset is created and immediately locked within the kiosk.
-    
-- **List**
-    
-    Now that your tokenized asset is placed and locked within your kiosk, you can proceed to list it for sale.
-    
-    In the project's file `listItem.ts`, found in the directory `setup/src/functions`, you can adjust the code to specify the desired asset for listing.
+- **锁定**
 
-    Code snippet to be modified:
+    在 kiosk 中锁定对象对于防止任何未经授权的使用超出已建立的策略是至关重要的。
+
+    通过执行命令 `npm run call lock`，您的新铸造的代币化资产将被安全地放置在您的 kiosk 中。
+
+    在运行该命令之前，请确保您的 `.env` 文件中的 `TOKENIZED_ASSET` 字段已填充为您打算锁定的对象。
+
+- **铸造和锁定**
+
+    执行命令 `npm run call mint-lock` 会顺序执行铸造和锁定功能，确保新铸造的资产被创建并立即锁定在 kiosk 中。
+
+- **列出**
+
+    现在，您的代币化资产已被放置并锁定在 kiosk 中，您可以继续将其列出出售。
+
+    在项目的 `setup/src/functions` 目录中找到的 `listItem.ts` 文件中，您可以调整代码以指定要列出的所需资产。
+
+    需要修改的代码片段：
     
     ```rust
     const SALE_PRICE = '100000'; 
@@ -1047,12 +1044,12 @@ In a terminal or console within the project's setup directory, utilize the follo
         .finalize();
     ```
     
-    By running the command `npm run call list`, your tokenized asset is listed and made available for sale.
-    
-- **Purchase**
-    
-    When a user intends to purchase an item, it needs to be listed for sale. After the user selects the item to buy, they are required to modify the following snippet of code found in the file `purchaseItem.ts`, located in the `setup/src/functions` directory.
-    
+    通过运行命令 `npm run call list`，您的代币化资产将被列出并可供出售。
+
+- **购买**
+
+    当用户打算购买物品时，需要将其列出出售。用户选择要购买的物品后，他们需要修改在 `setup/src/functions` 目录中找到的 `purchaseItem.ts` 文件中的以下代码片段。
+
     ```rust
     const item = {
         itemType: tokenizedAssetType,
@@ -1062,24 +1059,24 @@ In a terminal or console within the project's setup directory, utilize the follo
     };
     ```
     
-    Apart from specifying the item and its type, the buyer must set the specific price and the seller's kiosk ID to execute the purchase transaction successfully, accomplished by running `npm run call purchase`.
-    
+    除了指定物品及其类型外，买方必须设置特定价格和卖方的自助服务站 ID，以成功执行购买交易，通过运行 `npm run call purchase` 完成。
+
 - **Join**
-    
-    When you execute the command `npm run call join`, two specified tokenized assets of the FT type are merged together. Before running the command, make sure that the fields `FT1` and `FT2` within your `.env` file are populated with the objects you intend to merge.
-    
+
+    当您执行命令 `npm run call join` 时，会合并两个指定的 FT 类型代币化资产。在运行命令之前，请确保您的 `.env` 文件中的字段 `FT1` 和 `FT2` 已填入您打算合并的对象。
+
 - **Burn**
-    
-    When you intend to burn a tokenized asset, execute the command `npm run call burn`. Following this action, the specified asset is destroyed. Before running the command, make sure that the field `TOKENIZED_ASSET` within your `.env` file is populated with the object you intend to burn.
-    
-- **Get Balance**
-    
-    By executing the command `npm run call get-balance`, you can retrieve the balance value associated with the specified tokenized asset.
-    
-- **Get Supply**
-    
-    By executing the command `npm run call get-supply`, you can retrieve the value representing the current circulating supply of the asset.
-    
-- **Get Total Supply**
-    
-    By executing the command `npm run call get-total-supply`, you can retrieve the value representing the current circulating supply of the asset.
+
+    当您打算销毁代币化资产时，请执行 `npm run call burn` 命令。在执行此操作之前，请确保您的 `.env` 文件中的字段 `TOKENIZED_ASSET` 已填入您打算销毁的对象。
+
+- **获取余额**
+
+    通过执行 `npm run call get-balance` 命令，您可以检索与指定代币化资产关联的余额值。
+
+- **获取 Supply**
+
+    通过执行 `npm run call get-supply` 命令，您可以检索表示资产当前流通供应的值。
+
+- **获取 Total Supply**
+
+    通过执行 `npm run call get-total-supply` 命令，您可以检索表示资产当前总流通供应的值。
