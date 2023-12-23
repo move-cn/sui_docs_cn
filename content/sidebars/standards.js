@@ -6,7 +6,7 @@ const standards = [
 	'standards/kiosk',
 	{
 		type: 'category',
-		label: 'DeepBook',
+		label: '深度书籍',
 		link: {
 			type: 'doc',
 			id: 'standards/deepbook',
@@ -24,7 +24,7 @@ const standards = [
 	'standards/wallet-standard',
 	{
 		type: 'category',
-		label: 'Closed Loop Token',
+		label: '闭环代币',
 		link: {
 			type: 'doc',
 			id: 'standards/closed-loop-token',
