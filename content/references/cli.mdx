@@ -1,28 +1,28 @@
 ---
 title: Sui CLI
-description: Sui provides command line tools to interact with the network, its features, and the Move programming language. Individual command groups are referred to as Sui Client CLI, Sui Console CLI, Sui Keytool CLI, Sui Move CLI, and Sui Validator CLI.
+description: Sui提供了命令行工具箱，用于与Sui网络、其功能和Move编程语言进行交互。 包括 Sui Client CLI， Sui Console CLI， Sui Keytool CLI， Sui Move CLI， 以及 Sui Validator CLI。
 ---
 
-Sui provides a command line interface (CLI) tool to interact with the Sui network, its features, and the Move programming language. The complete suite of tools is called the Sui CLI, with commands grouped together by feature. Each group of commands is commonly referred to by its top-level command: Sui Client CLI, Sui Console CLI, Sui Keytool CLI, Sui Move CLI, and Sui Validator CLI.
+Sui提供了命令行工具箱，用于与Sui网络、其功能和Move编程语言进行交互。 包括 Sui Client CLI， Sui Console CLI， Sui Keytool CLI， Sui Move CLI， 以及 Sui Validator CLI。
 
 {@include: ../snippets/cli-check-install.mdx}
 
-## Update CLI
+## 更新 CLI
 
-To get the latest version of the CLI, you can run the following command from a terminal or console. Be sure to replace `<BRANCH-NAME>` with `main`, `devnet`, `testnet`, or `mainnet` to get the desired version. For more information on the branches available, see [Sui Environment Setup](/guides/developer/getting-started/sui-environment.mdx).
+想要获取CLI的最新版本，您可以从终端或控制台运行以下命令。请确保将`<BRANCH-NAME>`替换为`main`、`devnet`、`testnet`或`mainnet`以获取所需版本。有关可用分支的更多信息，请参阅[Sui环境设置](/guides/developer/getting-started/sui-environment.mdx)。
 
 ```shell
 cargo install --locked --git https://github.com/MystenLabs/sui.git --branch <BRANCH-NAME> sui
 ```
 
-## Sui CLI commands
+## Sui CLI 命令
 
-There are a number of top-level commands available, but the five most useful to users are the following. Use the `help` flag for the commands that are not documented yet. For example, `sui validator --help`.  
+Sui CLI 包括以下五种顶级命令，对于尚未记录的命令，请使用help标志。例如，`sui validator --help`。
 
-- **[Sui Client CLI](./cli/client.mdx):** Use the `sui client` commands to interact with the Sui network.
-- **[Sui Console CLI](./cli/console.mdx):** Use `sui console` to open an interactive console with the currently active network.
-- **[Sui Keytool CLI](./cli/keytool.mdx):** Use the `sui keytool` commands to access cryptography utilities.
-- **[Sui Move CLI](./cli/move.mdx):** Use the `sui move` commands to work with the Move programming language.
-- **Sui Validator CLI:** Use the `sui validator` commands to access tools useful for Sui validators.
+- **[Sui Client CLI](./cli/client.mdx):** 使用 `sui client` 命令与Sui网络交互。
+- **[Sui Console CLI](./cli/console.mdx):** 使用 `sui console` 打开一个与当前活动网络交互的交互式控制台。
+- **[Sui Keytool CLI](./cli/keytool.mdx):** 使用 `sui keytool` 命令访问密码工具。
+- **[Sui Move CLI](./cli/move.mdx):** 使用 `sui move` 命令执行与Move编程语言相关的命令。
+- **Sui Validator CLI:** 使用 `sui validator` 命令访问对Sui验证节点有用的工具。
 
 

@@ -1,15 +1,14 @@
 ---
 title: Sui Client CLI
-description: The Sui Client CLI provides command-level access to interact with the Sui network.
+description: Sui 客户端 CLI 提供了通过命令行与 Sui 网络交互的功能。
 ---
 
-The Sui CLI `client` command provides command-level access to interact with the Sui network. Typical uses for `sui client` include publishing Move smart contracts, getting the information of an object, executing transactions, or managing addresses.
-
+Sui CLI 的 client 命令提供了直接通过命令行与 Sui 网络交互的能力。使用 sui client 常见的操作包括发布 Move 智能合约、查询对象信息、执行交易，以及管理地址等。
 {@include: ../../snippets/cli-check-install.mdx}
 
-## Commands
+## 命令
 
-The following list itemizes all the available subcommands for the `sui client` command.
+下面是 `sui client` 命令所有可用子命令的列表。
 
 ```
 Usage: sui client [OPTIONS] [COMMAND]
@@ -56,18 +55,17 @@ Options:
   -h, --help                	Print help
 ```
 
-## JSON output
+## JSON 输出
 
-Append the `--json` flag to commands to format responses in JSON instead of the more human-friendly default Sui CLI output. This can be useful for extremely large datasets, for example, as those results can have a troublesome display on smaller screens. In these cases, the `--json` flag is useful.
+在命令中加入 `--json` 标志可以将输出格式从默认的、更易于人类阅读的 Sui CLI 格式转换为 JSON 格式。这对于处理大型数据集特别有帮助，因为在小屏幕上展示这些大量数据可能会遇到问题。在这种情况下，使用 `--json` 标志是一个不错的选择。
 
-## Examples
+## 示例
 
-The following examples demonstrate some of the most often used commands.
+下面的示例展示了一些常用的命令。
 
-### List available network environments
+### 列出所有可用的网络环境
 
-Use the `sui client envs` command to find the network environments set up in the CLI. The information for these environments is also stored in the client.yaml file in the Sui configuration directory (`~/.sui/sui_config`).
-
+通过使用 `sui client envs` 命令，您可以查看 CLI 中配置的网络环境。这些环境的相关信息还储存在 Sui 配置目录的 `client.yaml` 文件（路径为 `~/.sui/sui_config`）中。
 ```shell
 ╭────────┬────────────────────────────────────┬────────╮
 │ alias  │ url                                │ active │
@@ -76,9 +74,9 @@ Use the `sui client envs` command to find the network environments set up in the
 ╰────────┴────────────────────────────────────┴────────╯
 ```
 
-### Create network environment
+### 添加网络环境
 
-Use `client new-env` to add details for a new network environment. This example creates an environment pointer to Sui Mainnet. Setting the `alias` value makes referencing the environment less prone to typographical errors. After running this command, Sui updates your client.yaml file in `~/.sui/sui_config` with the new information.
+利用 `client new-env` 命令可以添加新的网络环境配置。例如，下面的示例展示了如何创建一个指向 Sui 主网的网络环境配置。设定 alias（别名）有助于减少在引用该环境时出现的打字错误。执行这个命令后，Sui 会自动在 `~/.sui/sui_config` 路径下的 `client.yaml` 文件中更新这些新的配置信息。
 
 ```
 $ sui client new-env --alias=mainnet --rpc https://fullnode.mainnet.sui.io:443
@@ -86,9 +84,9 @@ $ sui client new-env --alias=mainnet --rpc https://fullnode.mainnet.sui.io:443
 Added new Sui env [mainnet] to config.
 ```
 
-### Set current environment
+### 设置当前网络环境
 
-Use the `sui client switch` command to change the current network. This example switches the current network to `mainnet`.
+通过使用 `sui client switch` 命令，您可以更改当前正在使用的网络。例如，以下命令将当前网络切换至 `mainnet`。
 
 ```shell
 $ sui client switch --env mainnet
@@ -96,20 +94,20 @@ $ sui client switch --env mainnet
 Active environment switched to [mainnet]
 ```
 
-If you run `sui client envs` after this command, you see the asterisk in the `active` column on the `mainnet` row of the table.
+执行这个命令后，如果您运行 sui client envs，会在表格中 mainnet 对应行的 active 列看到一个星号（或active），表示它是当前活跃的网络。
 
-### Get current active environment
+### 获取当前环境
 
-Use the `sui client active-address` command to reveal the current address. The CLI uses the current active address to execute address-specific CLI commands (like `sui client objects`) when you don't provide them with a Sui address value.
 
+使用 `sui client active-address` 命令来查看当前地址。当您没有提供Sui地址值时，CLI将使用当前活动地址来执行特定于地址的CLI命令（例如 `sui client objects` ）。
 ```shell
 $ sui client active-address
 0x514692f08249c3e9951234ce29074695840422564bff85e424b56de462913e0d
 ```
 
-### Get objects owned by an address
+### 根据地址获取对象信息
 
-Use `sui client objects` to list summary information about the objects the current active address owns. You can provide a Sui address value to the command to list objects for a particular address. This example lists objects for the current active address.
+使用 `sui client objects` 命令来列出当前地址拥有对象的摘要信息。您可以向该命令提供一个Sui地址，以列出特定地址的对象。例如，本示例展示了如何列出当前地址拥有的对象信息。
 
 ```
 $ sui client objects 0x36df11369cf00ecf0be68d6ba965b0abe2e883bc5245911e3a29ebfa0aaf6b69
@@ -130,9 +128,9 @@ $ sui client objects 0x36df11369cf00ecf0be68d6ba965b0abe2e883bc5245911e3a29ebfa0
 ╰───────────────────────────────────────────────────────────────────────────────────────╯
 ```
 
-### Get complete object information
+### 获取对象的完整信息
 
-Use `sui client object <OBJECT-ID>` to list object information for the ID you provide. This example displays the information for a Coin object.
+使用 `sui client object <OBJECT-ID>` 命令来列出您提供的ID的对象信息。这个示例显示了一个Coin对象的信息：
 
 ```
 $ sui client object 0xfffbb30ccb631f15f6cd36700589fc9c31cb04af28a95f3ed26d62daf3acb57f
@@ -158,9 +156,9 @@ $ sui client object 0xfffbb30ccb631f15f6cd36700589fc9c31cb04af28a95f3ed26d62daf3
 ╰───────────────┴─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
 ```
 
-### Get dynamic fields of an object
+### 获取一个对象的动态（对象）字段
 
-Use the `sui client dynamic-field <DYNAMIC-FIELD-ID>` command to list the details of the dynamic field with the ID you provide.
+使用 `sui client dynamic-field <DYNAMIC-FIELD-ID>` 命令来列出您提供的ID的动态字段的详细信息。
 
 ```
 $ sui client dynamic-field 0x5
@@ -184,29 +182,29 @@ $ sui client dynamic-field 0x5
 ╰─────────────┴───────────────────────────────────────────────────────────────────────────────────────────╯
 ```
 
-## Publish a Move package
+## 发布 Move 包
 
-One of the main uses of the `sui client` command is to publish smart contracts on the Sui network. This example switches the current environment to the Devnet network, then builds, tests, and publishes one of the existing Move examples available in the Sui repository: `https://github.com/MystenLabs/sui/tree/main/examples/move`
+`sui client` 命令的主要用途之一是在Sui网络上发布智能合约。以下示例将当前环境切换到Devnet，然后构建、测试并发布[Sui 代码库](https://github.com/MystenLabs/sui/tree/main/examples/move)中提供的一个现有Move示例：
 
-This example also makes use of `sui move` commands. To learn more about those commands, see [Sui Move CLI](./move.mdx).
+此示例中还使用了sui move命令。要了解更多有关这些命令的信息，请参阅 [Sui Move CLI](./move.mdx)。
 
-1. Open a terminal or console to the root of your local Sui repository and navigate to the move_tutorial example.
+1. 打开终端或控制台，导航到您本地Sui存储库的根目录，然后转到move_tutorial示例。
     ```shell
     cd examples/move
     cd first_package
     ```
-1. Switch to the Devnet network. This command uses an alias, so the `devnet` value might be different for you, depending on the alias name set in your configuration.
+2. 切换到Devnet网络。此命令使用了一个别名，所以devnet的值可能会因您在配置中设置的别名而不同。根据您的配置设置，请使用正确的别名值执行以下命令。
     ```shell
     sui client switch --env devnet
     ```
-1. Use `sui move build` to build the package. You must run this command at the same level as the package manifest file ([Move.toml](/references/move/move-toml.mdx)). The console responds with the status of the build.
+3. 使用 `sui move build` 命令来构建软件包。您必须在与软件包清单文件（[Move.toml](/references/move/move-toml.mdx)）相同的级别运行此命令。控制台会返回构建的状态。
     ```shell
     sui move build
     INCLUDING DEPENDENCY Sui
     INCLUDING DEPENDENCY MoveStdlib
     BUILDING first_package
     ```
-1. Use `sui move test` to run the unit tests. The console responds with updates of its progress.
+4. 使用 `sui move test` 命令来运行单元测试。控制台会实时更新进度。
     ```shell
     sui move test
     INCLUDING DEPENDENCY Sui
@@ -217,7 +215,7 @@ This example also makes use of `sui move` commands. To learn more about those co
     [ PASS    ] 0x0::example::test_sword_transactions
     Test result: OK. Total tests: 2; passed: 2; failed: 0
      ```
-1. Use the `sui client verify-bytecode-meter` to check if the module passes the bytecode meter. The console responds with the maximum allowed values as well as the amount the package uses.
+5. 使用 `sui client verify-bytecode-meter` 命令来检查模块是否通过了字节码计量。控制台会返回允许的包最大值以及当前包使用的量。
     ```shell
     $ sui client verify-bytecode-meter
     Running bytecode verifier for 1 modules
@@ -229,12 +227,12 @@ This example also makes use of `sui move` commands. To learn more about those co
     │ Used   │ 4565       │ 4565       │
     ╰────────┴────────────┴────────────╯
     ```
-1. Use `sui client gas` to verify that the active address has a gas coin for paying gas. In the case of this example, the console responds with the information that the address is coinless.
+6. 使用 `sui client gas` 命令来验证当前地址是否具有用于支付Gas的代币。在这个示例中，控制台会返回当前地址没有代币。
     ```shell
     $ sui client gas
     No gas coins are owned by this address
     ```
-1. If you need coins, use a cURL command to get gas for the address (not available for Mainnet). For more information on gassing up addresses on development networks, see [Get Sui Tokens](/guides/developer/getting-started/get-coins.mdx).
+7. 如果您需要代币，请使用cURL命令为地址获取Gas（在Mainnet不可用）。有关在开发网络上为地址获取燃料的更多信息，请参阅[获取Sui代币](/guides/developer/getting-started/get-coins.mdx)。
     ```shell
     $ curl --location --request POST 'https://faucet.devnet.sui.io/v1/gas' \
     --header 'Content-Type: application/json' \
@@ -245,7 +243,7 @@ This example also makes use of `sui move` commands. To learn more about those co
     }'
     {"task":"10bba759-d4fe-4a7a-ab59-5264056b5665","error":null}
     ```
-1. Use `sui client gas` to verify the current active address received the coins.
+8. 使用 `sui client gas` 命令来验证当前活跃地址是否已收到代币。
     ```shell
     $ sui client gas
     ╭────────────────────────────────────────────────────────────────────┬─────────────╮
@@ -254,7 +252,7 @@ This example also makes use of `sui move` commands. To learn more about those co
     │ 0x2f3799d094573b0958eef703b95996fe459bb00afc2d09866335c30cf480e522 │ 10000000000 │
     ╰────────────────────────────────────────────────────────────────────┴─────────────╯
     ```
-1. Use `sui client publish` to publish the package, being sure to set an appropriate value for the `gas-budget` flag. The console responds with the details of the publish. You can use `sui client object <OBJECT-ID>` to check the details of any of the objects from the process.
+9. 使用`sui client publish`命令来发布包，与此同时要确保 `gas-budget` 设置为适当的值。控制台会返回发布的详细信息。您可以使用 `sui client object <OBJECT-ID>` 来检查该过程中的任何对象的详细信息。
     ```shell
     $ sui client publish --gas-budget 5000000
 
@@ -348,9 +346,9 @@ This example also makes use of `sui move` commands. To learn more about those co
     ]
     ```
 
-## Help
+## 帮助
 
-Each command has its own help section. For example, `sui client call --help` displays the following prompt:
+Sui CLI 中每一个命令都提供了相关帮助提示. 例如`sui client call --help`:
 
 ```
 Call Move function

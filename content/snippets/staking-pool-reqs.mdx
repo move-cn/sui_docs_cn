@@ -1,9 +1,8 @@
-### Validator staking pool requirements 
+### 验证者质押池要求
+验证者需满足一定的最低质押要求才能加入并维持在活跃的验证者名单中。
 
-There are minimum staking requirements a validator must satisfy to become active and to stay in the active validator set.
+具体要求如下：
 
-More precisely:
-
-- A validator candidate must accrue at least 30M SUI of stake before they can request to join the validator set.
-- If an active validator’s stake falls below 20M SUI, they have seven epochs of grace period to gain back the stake before being removed from the validator set.
-- If an active validator’s stake falls below 15M SUI, they are removed from the validator set at the end of the current epoch boundary. Sui uses 24-hour epochs.
+- 验证者候选人必须积累至少 3000 万 SUI 的质押才能申请加入验证者名单。
+- 活跃验证者的质押若降到 2000 万 SUI 以下，将有七个周期（Sui 的周期为 24 小时）的宽限期来增加质押，否则会被移出验证者名单。
+- 如果活跃验证者的质押降至 1500 万 SUI 以下，他们将在当前周期结束时被移除出验证者名单。

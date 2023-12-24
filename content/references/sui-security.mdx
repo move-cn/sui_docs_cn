@@ -1,71 +1,71 @@
 ---
-title: Understand Sui Security
-sidebar_label: Security
+title: Sui 安全考量
+sidebar_label: security
 slug: /sui-security
 ---
 
-This page provides an overview of the major guarantees Sui provides in terms of Security.
+本章节旨在概述 Sui 在安全性方面提供的主要保证与考量。
 
-Sui asset owners and smart contract designers can start learning here about the mechanisms available to secure their assets, and the assurances Sui provides for them. Smart contract designers can also learn about the overall Sui security architecture to ensure the asset types they design leverage Sui to provide a secure experience to the asset holders.
+Sui 资产所有者和智能合约设计者可以在这里开始了解保护他们资产的可用机制，以及 Sui 为他们提供的保证。智能合约设计师还可以了解整体的 Sui 安全架构，以确保他们设计的资产类型能够利用 Sui 的特性为资产持有者提供安全的体验。
 
-## Security features {#security-features}
+## 安全特性 {#security-features}
 
-Sui is designed to provide very high security guarantees to asset owners. Assets on Sui can be used only by their owners, according to the logic pre-defined by smart contracts that can be audited, and that the network will be available to process them correctly despite some of the validators operating Sui not following the protocol correctly (fault tolerance).
+Sui 设计之初就旨在为资产所有者提供极高的安全保障。Sui 上的资产只能由其所有者根据智能合约预设的逻辑来使用，即使部分运行 Sui 的验证者未能正确遵循协议，网络也能确保正确处理这些资产（即具备容错能力）。
 
-The security features of the Sui system ensure a number of properties:
+Sui 系统的安全特性包括：
 
-- Only the owner of an owned asset can authorize a transaction that operates on this asset. Authorization is performed through the use of a private signature key that is known only to the asset owner.
-- Everyone can operate on shared assets or immutable assets, but additional access control logic can be implemented by the smart contract.
-- Transactions operate on assets according to predefined rules set by the smart contract creator that defined the asset type. These are expressed using the Move language.
-- Once a transaction is finalized, its effects - namely changes to the assets it operates on or new assets created - will be persisted, and the resulting assets will be available for further processing.
-- The Sui system operates through a protocol between a set of independent validators. Yet all its security properties are preserved when a small subset of the validators do not follow the protocol.
-- All operations in Sui can be audited to ensure any assets have been correctly processed. This implies all operations on Sui are visible to all, and users may wish to use multiple different addresses to protect their privacy.
-- Validators are determined periodically through users of Sui locking and delegating SUI tokens to one or more validators.
+- 只有资产的拥有者才能授权处理这些资产的交易。授权操作是通过资产所有者独有的私钥签名来完成的。
+- 每个人都可以操作共享资产或不可变资产，但智能合约可以设置额外的访问控制逻辑。
+- 交易根据智能合约创建者为资产类型设置的预定义规则来操作资产。这些规则采用 Move 语言来表达。
+- 一旦交易完成，其产生的效果 -无论是对操作资产的更改还是创建新的资产- 都将被永久保存，并且这些资产可以用于后续的处理。
+- Sui 系统通过一组独立验证者之间的协议运行。即使有部分验证者未遵循协议，系统的所有安全属性仍然保持不变。
+- Sui 中的所有操作都是可审计的，以确保所有资产均得到正确处理。这意味着 Sui 上的所有操作都是公开的，用户可能会希望使用多个不同的地址来保护他们的隐私。
+- 验证者是通过Sui用户锁定并委托他们的 SUI 代币的数量定期确定的。
 
-## Security architecture {#security-architecture}
+## 安全架构 {#security-architecture}
 
-The Sui system is operated by a set of validators that process transactions. They implement the Sui protocol that allows them to reach agreement on valid transactions submitted and processed in the system.
+Sui 系统由一组验证者运行的，这些验证者负责处理交易。他们遵循 Sui 协议，以便就系统中提交和处理的有效交易达成共识。
 
-The agreement protocols Sui uses tolerate a fraction of validators not following the Sui protocol correctly, through the use of Byzantine fault tolerant broadcast and consensus. Specifically, each validator has some voting power, assigned to it through the process of users staking / voting for them using their SUI tokens. Sui maintains all its security properties if over 2/3 of the stake is assigned to validators that follow the protocol. However, a number of auditing properties are maintained even if more validators are faulty.
+Sui 使用的共识协议能够通过使用拜占庭容错的广播和共识机制容忍部分验证者未能正确遵循 Sui 协议。具体来讲，每个验证者都有一定的投票权，这是通过用户使用他们的 SUI 代币来为验证者投票或质押而分配的。如果超过三分之二的股权被分配给遵循协议的验证者，Sui 就能保持其所有的安全属性。然而，即使有更多验证者出现故障，某些审计特性仍然能够保持。
 
-### Addresses and ownership {#addresses-and-ownership}
+### 地址和所有权 {#addresses-and-ownership}
 
-A Sui transaction is valid and can proceed only if the owner of all owned assets it operates on digitally signs it with their private signature key. This signature key can be kept private by the user and not be shared with anyone else. As a result, it is not feasible for any other party to operate on an owned asset of a user undetected, even if all validators do not follow the protocol.
+Sui 上的交易只有在参与资产的所有者用他们的私密签名密钥进行数字签名后，才被视为有效并可以继续进行。用户可以保持其签名密钥的私密性，不与任何人共享。因此，即使所有验证者都未遵循协议，也无法未经用户允许操作用户所拥有的资产。
 
-A private signature key also corresponds to a public address on the Sui network that can be used to send a user assets or allow smart contracts to define custom access control logic. A user may have one or more addresses corresponding to multiple signature keys for convenience or privacy reasons. An address does not need any pre-registration, and sending an asset to an address automatically creates this address on the network. However, this means that users should be careful to check the recipient address of transfers, or parties involved in any other operations, as sending assets to an incorrect address may have irrevocable effects.
+私密签名密钥还对应于 Sui 网络上的一个公共地址，可以用于接收资产或允许智能合约定义特定的访问控制逻辑。用户可能会出于便利性或隐私考虑拥有多个对应于不同签名密钥的地址。地址无需预先注册，向地址发送资产会自动在网络上创建该地址。但这也意味着用户在转移资产时需要仔细核对接收地址，以避免将资产错误地发送到不正确的地址，导致不可逆的后果。
 
-### Smart contracts define asset types and their logic {#smart-contracts}
+### 智能合约定义资产类型及其逻辑 {#smart-contracts}
 
-All assets have a type that is defined within a Sui Smart Contract. Sui provides a few system contracts, such as these used to manage the SUI native token, yet also allows anyone to write and submit custom smart contracts. A transaction on an asset type can call operations defined in only the smart contract that defined the asset type, and is constrained by the logic in the contract.
+在 Sui 上，所有资产都有一个特定的类型，这是通过 Sui 智能合约来定义的。Sui 不仅提供了一些基础的系统合约，比如用于管理 SUI 本地代币的合约，还允许任何人编写并提交他们自己的智能合约。对于特定资产类型的交易，只能在定义该资产类型的智能合约中的操作，并受该合约内逻辑的限制。
 
-For this reason, users are encouraged to operate on their assets using smart contracts they trust, that they or others they trust have audited, and understand the logic they define for operations on their assets. Sui smart contracts are defined as immutable assets to allow third parties to audit them and also prevent their modification to increase assurance.
+因此，我们鼓励用户使用他们信任的、经过审计的智能合约来操作他们的资产，并且在使用前理解这些合约定义的操作逻辑。Sui 智能合约作为不可变资产，可供第三方审计，并且防止修改以提高安全保障。
 
-The Move smart contract language is designed with ease of audit and verification in mind. You may be interested in our introduction to Smart Contracts in Move.
+Move 智能合约语言以易于审计和验证为出发点。您可能会对我们关于 Move 中智能合约的介绍感兴趣。
 
-Shared assets allow multiple users to operate on them through transactions; that may include some of their owned assets as well as one or more shared assets. These shared assets represent data and logic used to implement protocols that mediate between different users in a safe way, according to the smart contract that defined the type of the shared asset. Sui allows all users to create transactions involving shared assets. But the smart contract type may define additional restrictions on which address and how the shared assets may be used.
+共享资产允许多个用户通过交易进行操作；这可能涉及他们各自拥有的资产和一个或多个共享资产。这些共享资产包含了实现安全协议的数据和逻辑，这些协议用于安全地在不同用户间进行调解，其逻辑由定义共享资产类型的智能合约决定。Sui 允许所有用户创建涉及共享资产的交易，但智能合约可能会对使用共享资产的地址和方式设置额外的限制。
 
-### Transaction finality {#transaction-finality}
+### 交易的确定性 {#transaction-finality}
 
-A valid transaction submitted to all validators has to be certified and its certificate also has to be submitted to all validators to be finalized. Even if a subset of validators do not follow the protocol, the transaction can be finalized through the remaining validators that correctly follow the Sui protocol. This is achieved through the use of cryptographic Byzantine fault tolerant agreement protocols for broadcast and consensus defined by the Sui protocol. These protocols ensure both safety, meaning that the incorrect validators cannot convince correct clients of incorrect state, and liveness, meaning that incorrect validators cannot prevent transaction processing.
+一个有效的交易必须经过所有验证者的认证，并且其证明也必须提交给所有验证者以完成最终确认。即使有部分验证者不遵循协议，剩余遵循 Sui 协议的验证者也可以完成交易的最终确认。这是通过使用 Sui 协议定义的拜占庭容错加密协议来实现的，这些协议确保了安全性（错误的验证者无法使正确的客户端接受错误的状态）和活性（错误的验证者无法阻止交易处理）。
 
-All transactions in Sui have to be associated with a gas asset to cover the cost of processing by Sui. A valid transaction may result in successful execution or an aborted execution. An execution may abort due to a condition within the smart contract defining the asset, or because it has ran out of sufficient gas to pay for the cost of execution. In cases of success, the effects of the operation will be finalized; otherwise, the state of assets in the transaction is not changed. However, the gas asset is always charged some amount of gas, to alleviate denial-of-service attacks on the system as a whole.
+Sui 中的所有交易都必须关联一个 “gas”，用以支付 Sui 处理的成本。有效的交易可能会被成功执行，也可能被中止。交易的执行可能因为智能合约中的某些条件或因缺乏足够的“gas”而中止。如果执行成功，操作的效果将被确认；否则，交易中的资产状态保持不变。但是，为防止对整个系统的服务拒绝攻击（DoS），总会收取一定“gas”费用。
 
-A user client can perform the process of submitting the transaction and certificate itself or rely on third party services to submit the transaction and interact with validators. Such third parties need not have user private signature keys and cannot forge transactions on the users' behalf. They can reassure a user client a transaction has been finalized through a set of signatures from validators attesting to the transactions finality and its effects. After that point, the users can be assured that changes the transaction resulted in will persist on the state of Sui.
+用户可以自己提交交易和证明，或者依赖第三方服务来提交交易并与验证者互动。这些第三方无需拥有用户的私钥，也无法伪造用户的交易。他们可以通过一组验证者的签名来向用户确认一个交易已经被最终确认及其效果。在这之后，用户可以确信交易所带来的变化将在 Sui 的中得到最终确认。
 
-### Auditing and privacy {#auditing-and-privacy}
+### 审计和隐私 {#auditing-and-privacy}
 
-Sui validators provide facilities for users to read all assets they store, as well as the historical record of transactions they have processed that led to these assets. Validators also provide cryptographic evidence of the full chain of transactions that contributed to an asset state. User clients can request and validate this chain of evidence to ensure all operations were correct and the result of the collective agreement between validators. Services that operate full replicas, mirroring the state of one or more validators, perform such audits routinely.
+Sui 的验证者为用户提供了查询他们所存储的所有资产及其交易历史记录的功能。验证者还能提供一条完整的交易链的加密证据，展示了这些交易是如何构成当前资产状态的。用户可以请求查验这些证据链，以确保所有操作都是正确无误的，并基于验证者之间共同的协议。运营全节点副本的服务，即反映了一个或多个验证者状态的服务，会定期进行这种审计。
 
-The public auditability of Sui also implies that all transactions and assets within Sui are publicly visible. Users that are mindful of their privacy may use multiple addresses to benefit from some degree of pseudonymity, or third-party custodial or non-custodial services. Specific smart contracts with additional cryptographic privacy protections can also be provided by third parties.
+Sui 的交易和资产信息都是公开可查询的，这意味着 Sui 系统内的所有交易和资产对外是透明的。对隐私有所顾虑的用户可以选择使用多个地址来保持一定程度的匿名性，或者利用第三方的托管或非托管服务。同时，也有特定的智能合约提供额外的加密隐私保护，这些合约通常由第三方提供。
 
-### Censorship-resistance and openness {#censorship-resistance-openness}
+### 反审查与开放性 {#censorship-resistance-openness}
 
-Sui uses the established Delegated Proof-of Stake model to periodically determine its set of validators. Users can lock and delegate their SUI tokens in each epoch to determine the committee of validators that operate the Sui network in the next epoch. Anyone with over a minimum amount of delegated stake can operate a Sui validator.
+Sui 采用了被广泛认可的代理权证明 (Delegated Proof-of-Stake, DPoS) 模型，定期选定其网络的验证者。用户可以在每个周期锁定并委托他们的 SUI 代币，从而选出下一周期运行 Sui 网络的验证者。任何拥有超出最低要求份额的节点都有资格成为 Sui 的验证者。
 
-Validators operate the network and provide rewards to users that stake their Sui to support them as validators, through gas fee income. Validators with poor reliability, and in turn the users that delegated their stake to them, may receive a lower reward. But user stake cannot be confiscated away either by malicious validators or anyone in the network.
+验证者不仅运营网络，还通过 gas 费用向支持他们的用户提供奖励。如果验证者的可靠性不足，他们和委托股份给他们的用户可能会得到较低的奖励。但是，用户的资产是安全的，不会被恶意验证者或网络中的任何其他成员吞没。
 
-This mechanism ensures that validators are accountable to Sui users and can be rotated out at the first sign of unreliability or misbehavior, including noticed attempts to censor valid transactions. Through choices of validators, and the protocol they are willing to operate, Sui users also have a meaningful say on the future evolution of the Sui system.
+这种机制确保了验证者对 Sui 用户负责，并能在出现不可靠或不当行为的第一时间被替换，包括尝试篡改合法交易的行为。通过选择不同的验证者及其运行的协议，Sui 用户能够对 Sui 系统的未来方向产生实质性影响。
 
-## Further reading {#further-reading}
+## 更多内容 {#further-reading}
 
-If you are looking for an in-depth technical explanation of the computer science behind Sui security, you may have a look at our white paper on the [Sui Smart Contracts Platform](/doc/sui.pdf).
+如果您想深入了解 Sui 安全性背后的计算机科学原理，欢迎查阅我们的 [Sui Smart Contracts Platform](/doc/sui.pdf) 白皮书。 
