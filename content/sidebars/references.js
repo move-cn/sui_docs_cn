@@ -4,17 +4,17 @@
 const references = [
 	{
 		type: 'doc',
-		label: 'References',
+		label: '参考',
 		id: 'references',
 	},
 	{
 		type: 'link',
-		label: 'Sui Framework (GitHub)',
+		label: 'Sui 的框架 (GitHub)',
 		href: 'https://github.com/MystenLabs/sui/tree/main/crates/sui-framework/docs',
 	},
 	{
 		type: 'category',
-		label: 'Sui API',
+		label: 'Sui 的 API',
 		link: {
 			type: 'doc',
 			id: 'references/sui-api',
@@ -23,7 +23,7 @@ const references = [
 			'references/sui-api/beta-graph-ql',
 			{
 				type: 'link',
-				label: 'API Reference',
+				label: 'API 参考',
 				href: '/sui-api-ref',
 			},
 			'references/sui-api/rpc-best-practices',
@@ -31,7 +31,7 @@ const references = [
 	},
 	{
 		type: 'category',
-		label: 'Sui CLI',
+		label: 'Sui 命令行工具(CLI)',
 		link: {
 			type: 'doc',
 			id: 'references/cli',
@@ -46,7 +46,7 @@ const references = [
 	},
 	{
 		type: 'category',
-		label: 'Sui SDKs',
+		label: 'Sui 开发包(SDK)',
 		link: {
 			type: 'doc',
 			id: 'references/sui-sdks',
@@ -62,7 +62,7 @@ const references = [
 	},
 	{
 		type: 'link',
-		label: 'dApp Kit Site',
+		label: 'dApp 套件网站',
 		href: 'https://sdk.mystenlabs.com/dapp-kit',
 	},
 	{
@@ -77,7 +77,7 @@ const references = [
 			'references/move/move-lock',
 			{
 				type: 'link',
-				label: 'Move Language (GitHub)',
+				label: 'Move 语言 (GitHub)',
 				href: 'https://github.com/move-language/move/blob/main/language/documentation/book/src/introduction.md',
 			},
 		],
@@ -86,7 +86,7 @@ const references = [
 	'references/sui-glossary',
 	{
 		type: 'category',
-		label: 'Contribute',
+		label: '贡献',
 		link: {
 			type: 'doc',
 			id: 'references/contribute/contribution-process',
@@ -96,7 +96,7 @@ const references = [
 			'references/contribute/contribute-to-sui-repos',
 			{
 				type: 'link',
-				label: 'Submit a SIP',
+				label: '提交 SIP',
 				href: 'https://sips.sui.io',
 			},
 			'references/contribute/localize-sui-docs',

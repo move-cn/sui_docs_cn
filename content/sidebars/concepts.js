@@ -6,7 +6,7 @@ const concepts = [
 	'concepts/components',
 	{
 		type: 'category',
-		label: 'App Developers',
+		label: 'App 开发者',
 		link: {
 			type: 'doc',
 			id: 'concepts/app-devs',
@@ -14,7 +14,7 @@ const concepts = [
 		items: [
 			{
 				type: 'category',
-				label: 'Object Model',
+				label: '对象模型',
 				link: {
 					type: 'doc',
 					id: 'concepts/object-model',
@@ -22,7 +22,7 @@ const concepts = [
 				items: [
 					{
 						type: 'category',
-						label: 'Object Ownership',
+						label: '对象所有权',
 						link: {
 							type: 'doc',
 							id: 'concepts/object-ownership',
@@ -36,7 +36,7 @@ const concepts = [
 					},
 					{
 						type: 'category',
-						label: 'Dynamic Fields',
+						label: '动态字段',
 						link: {
 							type: 'doc',
 							id: 'concepts/dynamic-fields',
@@ -48,7 +48,7 @@ const concepts = [
 					},
 					{
 						type: 'category',
-						label: 'Transfers',
+						label: '交易',
 						link: {
 							type: 'doc',
 							id: 'concepts/dynamic-fields/transfers',
@@ -64,7 +64,7 @@ const concepts = [
 			},
 			{
 				type: 'category',
-				label: 'Move Overview',
+				label: 'Move 概述',
 				link: {
 					type: 'doc',
 					id: 'concepts/sui-move-concepts',
@@ -77,7 +77,7 @@ const concepts = [
 					'concepts/sui-move-concepts/one-time-witness',
 					{
 						type: 'category',
-						label: 'Packages',
+						label: '包',
 						link: {
 							type: 'doc',
 							id: 'concepts/sui-move-concepts/packages',
@@ -89,7 +89,7 @@ const concepts = [
 					},
 					{
 						type: 'category',
-						label: 'Patterns',
+						label: '模式',
 						link: {
 							type: 'doc',
 							id: 'concepts/sui-move-concepts/patterns',
@@ -107,7 +107,7 @@ const concepts = [
 			},
 			{
 				type: 'category',
-				label: 'Transactions',
+				label: '交易',
 				link: {
 					type: 'doc',
 					id: 'concepts/transactions',
@@ -122,7 +122,7 @@ const concepts = [
 	},
 	{
 		type: 'category',
-		label: 'Cryptography',
+		label: '密码学',
 		link: {
 			type: 'doc',
 			id: 'concepts/cryptography',
@@ -130,7 +130,7 @@ const concepts = [
 		items: [
 			{
 				type: 'category',
-				label: 'Transaction Authentication',
+				label: '交易认证',
 				link: {
 					type: 'doc',
 					id: 'concepts/cryptography/transaction-auth',
@@ -154,7 +154,7 @@ const concepts = [
 			},
 			{
 				type: 'category',
-				label: 'System',
+				label: '系统',
 				link: {
 					type: 'doc',
 					id: 'concepts/cryptography/system',
@@ -169,7 +169,7 @@ const concepts = [
 	},
 	{
 		type: 'category',
-		label: 'Sui Architecture',
+		label: 'Sui 建筑学',
 		link: {
 			type: 'doc',
 			id: 'concepts/sui-architecture',
@@ -187,7 +187,7 @@ const concepts = [
 	},
 	{
 		type: 'category',
-		label: 'Tokenomics',
+		label: '代币经济学',
 		link: {
 			type: 'doc',
 			id: 'concepts/tokenomics',
