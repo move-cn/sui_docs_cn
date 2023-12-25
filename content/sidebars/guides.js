@@ -4,12 +4,12 @@
 const guides = [
 	{
 		type: 'doc',
-		label: 'Guides',
+		label: '指南',
 		id: 'guides',
 	},
 	{
 		type: 'category',
-		label: 'Developer Guides',
+		label: '开发者指南',
 		link: {
 			type: 'doc',
 			id: 'guides/developer',
@@ -17,7 +17,7 @@ const guides = [
 		items: [
 			{
 				type: 'category',
-				label: 'Getting Started',
+				label: '入门',
 				link: {
 					type: 'doc',
 					id: 'guides/developer/getting-started',
@@ -33,7 +33,7 @@ const guides = [
 			},
 			{
 				type: 'category',
-				label: 'Your First Sui dApp',
+				label: '你的第一个 Sui dApp',
 				link: {
 					type: 'doc',
 					id: 'guides/developer/first-app',
@@ -63,7 +63,7 @@ const guides = [
 					'guides/developer/sui-101/sponsor-txn',
 					{
 						type: 'category',
-						label: 'Working with PTBs',
+						label: '使用可编程交易块',
 						items: [
 							'guides/developer/sui-101/simulating-refs',
 							'guides/developer/sui-101/coin-mgt',
@@ -74,7 +74,7 @@ const guides = [
 			},
 			{
 				type: 'category',
-				label: 'Cryptography',
+				label: '密码学',
 				link: {
 					type: 'doc',
 					id: 'guides/developer/cryptography',
@@ -88,7 +88,7 @@ const guides = [
 			},
 			{
 				type: 'category',
-				label: 'Advanced Topics',
+				label: '高级课题',
 				link: {
 					type: 'doc',
 					id: 'guides/developer/advanced',
@@ -96,7 +96,7 @@ const guides = [
 				items: [
 					{
 						type: 'category',
-						label: 'Efficient Smart Contracts',
+						label: '高效的智能合约',
 						link: {
 							type: 'doc',
 							id: 'guides/developer/advanced/efficient-smart-contracts',
@@ -111,7 +111,7 @@ const guides = [
 			},
 			{
 				type: 'category',
-				label: 'App Examples',
+				label: 'App 例子',
 				link: {
 					type: 'doc',
 					id: 'guides/developer/app-examples',
@@ -126,7 +126,7 @@ const guides = [
 					'guides/developer/app-examples/turnip-town',
 					{
 						type: 'category',
-						label: 'Oracles',
+						label: '预言机',
 						link: {
 							type: 'doc',
 							id: 'guides/developer/app-examples/oracle',
@@ -147,7 +147,7 @@ const guides = [
 	},
 	{
 		type: 'category',
-		label: 'Operator Guides',
+		label: '运营者指南',
 		link: {
 			type: 'doc',
 			id: 'guides/operator',
