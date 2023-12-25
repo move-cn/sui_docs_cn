@@ -191,28 +191,28 @@ Sui Explorer显示有关所选网络的信息。
 docker-compose down --volumes
 ```
 
-### Update from source 
+### 从源代码更新
 
-If you followed the instructions for Building from Source, use the following steps to update your Full node:
+如果您按照从源代码构建的说明进行操作，请使用以下步骤更新您的完整节点：
 
-1. Shut down your running Full node.
-1. `cd` into your local Sui repository:
+1. 关闭正在运行的完整节点。
+2. 进入您的本地Sui存储库所在的目录：
     ```shell
     cd sui
     ```
-1. Remove the database and 'genesis.blob' file:
+1. 删除数据库和“genesis.blob”文件：
     ```shell
     rm -r suidb genesis.blob
     ```
-1. Fetch the source from the latest release:
+1. 从最新版本获取源代码：
     ```shell
     git fetch upstream
     ```
-1. Reset your branch:
+1. 重置您的分支：
     ```shell
     git checkout -B <BRANCH-NAME> --track upstream/<BRANCH-NAME>
     ```
-1. Download the latest genesis blob:
+1. 下载最新的创世 blob：
     - [Devnet genesis blob](https://github.com/MystenLabs/sui-genesis/raw/main/devnet/genesis.blob):
         ```shell
         curl -fLJO https://github.com/MystenLabs/sui-genesis/raw/main/devnet/genesis.blob
@@ -221,22 +221,20 @@ If you followed the instructions for Building from Source, use the following ste
         ```shell
         curl -fLJO https://github.com/MystenLabs/sui-genesis/raw/main/testnet/genesis.blob
         ```
-1. Update your fullnode.yaml configuration file, if needed.
-1. Restart your Sui Full node:
+1. 如果需要，请更新 fullnode.yaml 配置文件。
+1. 重新启动 Sui 全节点：
     ```shell
     cargo run --release --bin sui-node -- --config-path fullnode.yaml
     ```
     
-Your Full node starts on: http://127.0.0.1:9000.
+您的全节点开始于： http://127.0.0.1:9000.
 
-## Object pruning {#object-pruning}
+## 对象修剪 {#object-pruning}
 
-Sui adds new object versions to the database as part of transaction execution. This makes previous versions ready for 
-garbage collection. However, without pruning, this can result in database performance degradation and requires large 
-amounts of storage space. Sui identifies the objects that are eligible for pruning in each checkpoint, and then performs
-the pruning in the background.
+Sui在事务执行的过程中向数据库添加新的对象版本。这使得以前的版本可以进行垃圾收集。然而，如果不进行修剪，这可能导致数据库性能下降并且需要大量的存储空间。Sui在每个检查点中识别出适合进行修剪的对象，然后在后台执行修剪。
 
-You can enable pruning for a Sui node by adding the `authority-store-pruning-config` config to `fullnode.yaml` file:
+您可以通过在 `fullnode.yaml` 文件中添加 `authority-store-pruning-config` 配置来启用Sui节点的修剪：
+
 ```yaml
 authority-store-pruning-config:
   # Number of epoch dbs to keep 
@@ -267,15 +265,13 @@ authority-store-pruning-config:
   # settings are appropriate for most use cases.
   max-transactions-in-batch: 1000
 ```
-## Transaction pruning {#transaction-pruning}
+## 事务修剪 {#transaction-pruning}
 
-Transaction pruning removes previous transactions and effects from the database.
-Sui periodically creates checkpoints. Each checkpoint contains the transactions that occurred during the checkpoint and their associated effects.
+事务修剪会从数据库中删除先前的事务和影响。Sui周期性地创建检查点。每个检查点包含在检查点期间发生的事务及其相关的影响。
 
-Sui performs transaction pruning in the background after checkpoints complete.
+Sui在检查点完成后后台执行事务修剪。
 
-You can enable transaction pruning for your Full node or Validator node by adding  `num-epochs-to-retain-for-checkpoints`
-to the `authority-store-pruning-config` config for the node:
+您可以通过将 `num-epochs-to-retain-for-checkpoints` 添加到节点的 `authority-store-pruning-config` 配置来启用 Full 节点或 Validator 节点的事务修剪：
 
 ```yaml
 authority-store-pruning-config:
@@ -297,6 +293,6 @@ authority-store-pruning-config:
 
 :::info
 
-If you prune transactions, Archival nodes can help ensure lagging peer nodes don't lose any information. For more information, see [Sui Archives](./archives.mdx).
+如果您修剪事务，归档节点可以帮助确保滞后的对等节点不会丢失任何信息。有关更多信息，请参阅 [Sui Archives](./archives.mdx)。
 
 :::

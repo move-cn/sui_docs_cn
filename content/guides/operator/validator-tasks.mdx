@@ -1,25 +1,25 @@
 ---
-title: Validator Tasks
-description: As a validator on Sui, there are some processes you need to perform to ensure your nodes are always optimized.
+title: 验证器任务
+description: 作为 Sui 网络上的验证器，有一些流程需要执行，以确保您的节点始终得到优化。
 ---
 
-This guide focuses on running the Sui node software as a validator.
+本指南重点介绍作为验证器运行 Sui 节点软件的相关步骤。
 
-## Requirements
+## 要求
 
-To run a Sui Validator a machine with the following is required:
-- CPU: 24 physical cores (or 48 virtual cores)
-- Memory: 128 GB
-- Storage: 4 TB NVME
-- Network: 1 Gbps
+为了运行 Sui 验证器，需要具备以下配置的机器：
+- CPU：24 个物理核心（或 48 个虚拟核心）
+- 内存：128 GB
+- 存储：4 TB NVME
+- 网络：1 Gbps
 
-## Deployment
+## 部署
 
-You can deploy Sui node in a number of ways.
+您可以以多种方式部署 Sui 节点。
 
-There are pre-built container images available in [Docker Hub](https://hub.docker.com/r/mysten/sui-node/tags).
+[Docker Hub](https://hub.docker.com/r/mysten/sui-node/tags) 上提供了预构建的容器镜像。
 
-And pre built `linux/amd64` binaries available in S3 that you can can fetch using one of the following methods:
+并且在 S3 上有预构建的 `linux/amd64` 二进制文件，您可以使用以下其中一种方法进行获取：
 
 ```shell
 wget https://releases.sui.io/$SUI_SHA/sui-node
@@ -29,7 +29,7 @@ wget https://releases.sui.io/$SUI_SHA/sui-node
 curl https://releases.sui.io/$SUI_SHA/sui-node -o sui-node
 ```
 
-To build directly from source:
+直接从源代码构建：
 
 ```shell
 git clone https://github.com/MystenLabs/sui.git && cd sui
@@ -37,23 +37,23 @@ git checkout [SHA|BRANCH|TAG]
 cargo build --release --bin sui-node
 ```
 
-Configuration and guides are available for the following deployment options:
+配置和指南可用于以下部署选项：
 
 - [Systemd](https://github.com/MystenLabs/sui/blob/main/nre/systemd/README.md)
 - [Ansible](https://github.com/MystenLabs/sui/blob/main/nre/ansible/README.md)
 - [Docker Compose](https://github.com/MystenLabs/sui/blob/main/nre/docker/README.md)
 
-## Configuration
+## 配置
 
-Sui node runs with a single configuration file provided as an argument, example:
+Sui 节点通过提供的单一配置文件作为参数来运行，例如:
 
 `./sui-node --config-path /opt/sui/config/validator.yaml`.
 
-See [Validator](https://github.com/MystenLabs/sui/blob/main/nre/config/validator.yaml) for configuration templates.
+查看 [Validator](https://github.com/MystenLabs/sui/blob/main/nre/config/validator.yaml) 获取配置模板。
 
-## Connectivity
+## 连接
 
-Sui node uses the following ports by default:
+Sui 节点默认使用以下端口：
 
 | protocol/port | reachability     | purpose                           |
 | ------------- | ---------------- | --------------------------------- |
@@ -65,11 +65,11 @@ Sui node uses the following ports by default:
 | TCP/8443      | outbound         | metrics pushing                   |
 | TCP/9184      | localhost        | metrics scraping                  |
 
-To run a validator successfully, it is critical that ports 8080-8084 are open as outlined, including the specific protocol (TCP/UDP).
+要成功运行验证器，关键的是确保端口 8080-8084 如文档中所述是开放的，包括指定的协议（TCP/UDP）。
 
-## Storage
+## 存储
 
-All Sui node related data is stored by default under `/opt/sui/db/`. This is controlled in the Sui node configuration file.
+所有与 Sui 节点相关的数据默认存储在 `/opt/sui/db/` 下。这在 Sui 节点配置文件中进行控制。
 
 ```shell
 $ cat /opt/sui/config/validator.yaml | grep db-path
@@ -77,9 +77,9 @@ $ cat /opt/sui/config/validator.yaml | grep db-path
   db-path: /opt/sui/db/consensus_db
 ```
 
-Ensure that you have an appropriately sized disk mounted for the database to write to.
+确保您已经挂载了适当大小的磁盘供数据库写入。
 
-- To check the size of the local Sui node databases:
+- 若要检查本地 Sui 节点数据库的大小：
 
 ```shell
 du -sh /opt/sui/db/
@@ -87,16 +87,16 @@ du -sh /opt/sui/db/authorities_db
 du -sh /opt/sui/db/consensus_db
 ```
 
-- To delete the local Sui node databases:
+- 删除本地 Sui 节点数据库:
 
 ```shell
 sudo systemctl stop sui-node
 sudo rm -rf /opt/sui/db/authorities_db /opt/sui/db/consensus_db
 ```
 
-## Key management
+## 密钥管理
 
-The following keys are used by Sui node:
+Sui 节点使用以下键：
 
 | key          | scheme   | purpose                         |
 | ------------ | -------- | ------------------------------- |
@@ -105,15 +105,15 @@ The following keys are used by Sui node:
 | network.key  | ed25519  | narwhal primary, sui state sync |
 | worker.key   | ed25519  | validate narwhal workers        |
 
-These are configured in the [Sui node configuration file](#configuration).
+这些配置在[Sui节点配置文件](#configuration)中进行了设置。
 
-## Monitoring
+## 监控
 
-### Metrics
+### 指标
 
-Sui node exposes metrics via a local HTTP interface. These can be scraped for use in a central monitoring system as well as viewed directly from the node.
+Sui 节点通过本地 HTTP 接口公开指标。这些指标可以被抓取以在中央监控系统中使用，也可以直接从节点中查看。
 
-- View all metrics:
+- 查看所有指标：
 
 ```shell
 curl -s http://localhost:9184/metrics
@@ -125,70 +125,70 @@ curl -s http://localhost:9184/metrics
 curl http://localhost:9184/metrics | grep <METRIC>
 ```
 
-Sui node also pushes metrics to a central Sui metrics proxy.
+Sui 节点还将指标推送到中央的 Sui 指标代理。
 
-### Logs
+### 日志
 
-Logs are controlled using the `RUST_LOG` environment variable.
+使用 `RUST_LOG` 环境变量控制日志。
 
-The `RUST_LOG_JSON=1` environment variable can optionally be set to enable logging in JSON structured format.
+`RUST_LOG_JSON=1` 环境变量可以选择设置为启用以 JSON 结构化格式记录日志。
 
-Depending on your deployment method, these are configured in the following places:
+根据部署方法的不同，这些配置在以下位置进行设置：
 
 - [Ansible](https://github.com/MystenLabs/sui/blob/main/nre/ansible/roles/sui-node/files/sui-node.service)
-- [Native systemd](https://github.com/MystenLabs/sui/blob/main/nre/systemd/sui-node.service)
+- [本机 systemd](https://github.com/MystenLabs/sui/blob/main/nre/systemd/sui-node.service)
 - [Docker Compose](https://github.com/MystenLabs/sui/blob/main/nre/docker/docker-compose.yaml)
 
-To view and follow the Sui node logs:
+要查看并跟踪 Sui 节点日志：
 
 ```shell
 journalctl -u sui-node -f
 ```
 
-To search for a particular match
+搜索特定匹配项
 
 ```shell
 journalctl -u sui-node -g <SEARCH_TERM>
 ```
 
-- If using Docker Compose, look at the examples in the [README](https://github.com/MystenLabs/sui/blob/main/nre/docker/README.md#logs).
+- 如果使用 Docker Compose，请查看 [README](https://github.com/MystenLabs/sui/blob/main/nre/docker/README.md#logs) 中的示例。
 
-It is possible to change the logging configuration while a node is running using the admin interface.
+在节点运行时，可以使用管理界面更改日志配置。
 
-To view the currently configured logging values:
+要查看当前配置的日志数值：
 
 ```shell
 curl localhost:1337/logging
 ```
 
-To change the currently configured logging values:
+要更改当前配置的日志记录值：
 
 ```shell
 curl localhost:1337/logging -d "info"
 ```
 
-### Dashboards
+### 仪表板
 
-Public dashboard for network wide visibility:
+用于全网可见性的公共仪表板：
 
-- [Sui Testnet Validators](https://metrics.sui.io/public-dashboards/9b841d63c9bf43fe8acec4f0fa991f5e)
+- [Sui 测试网验证器](https://metrics.sui.io/public-dashboards/9b841d63c9bf43fe8acec4f0fa991f5e)
 
-## Software updates
+## 软件更新
 
-When an update is required to the Sui node software the following process can be used. Follow the relevant Systemd or Docker Compose runbook depending on your deployment type. It is highly unlikely that you will want to restart with a clean database.
+当需要更新 Sui 节点软件时，可以使用以下流程。根据部署类型，按照相关的 Systemd 或 Docker Compose 操作手册进行操作。在大多数情况下，您可能不希望重新启动并清除数据库。
 
 - [Systemd](https://github.com/MystenLabs/sui/blob/main/nre/systemd/README.md#updates)
 - [Docker Compose](https://github.com/MystenLabs/sui/blob/main/nre/docker/README.md#updates)
 
-## State sync
+## 状态同步
 
-Checkpoints in Sui contain the permanent history of the network. They are comparable to blocks in other blockchains with one big difference being that they are lagging instead of leading. All transactions are final and executed prior to being included in a checkpoint.
+Sui 中的检查点包含网络的永久历史。它们类似于其他区块链中的区块，但有一个重要的区别，即它们滞后而不是领先。所有交易都是最终的，并在包含在检查点之前执行。
 
-These checkpoints are synchronized between validators and fullnodes via a dedicated peer to peer state sync interface.
+这些检查点通过专用的点对点状态同步接口在验证器和全节点之间同步。
 
-Inter-validator state sync is always permitted however there are controls available to limit what fullnodes are allowed to sync from a specific validator.
+验证器之间的状态同步始终是允许的，但有可用的控制来限制全节点从特定验证器同步的内容。
 
-The default and recommended `max-concurrent-connections: 0` configuration does not affect inter-validator state sync, but will restrict all fullnodes from syncing. The Sui node [configuration](#configuration) can be modified to allow a known fullnode to sync from a validator:
+默认和推荐的 `max-concurrent-connections: 0` 配置不会影响验证器之间的状态同步，但会限制所有全节点的同步。可以修改 Sui 节点的 [配置](#configuration) 以允许已知的全节点从验证器同步：
 
 ```shell
 p2p-config:
@@ -201,9 +201,9 @@ p2p-config:
       peer-id: ...
 ```
 
-## Chain operations
+## 链操作
 
-The following chain operations are executed using the `sui` CLI. This binary is built and provided as a release similar to `sui-node`, examples:
+以下链操作使用 `sui` 命令行工具执行。该二进制文件与 `sui-node` 一样构建并作为一个发布版本提供，示例：
 
 ```shell
 wget https://releases.sui.io/$SUI_SHA/sui
@@ -215,108 +215,109 @@ curl https://releases.sui.io/$SUI_SHA/sui -o sui
 chmod +x sui
 ```
 
-It is recommended and often required that the `sui` binary release/version matches that of the deployed network.
+强烈建议并经常要求 `sui` 二进制版本与已部署网络的版本匹配。
 
-### Updating on-chain metadata
+### 更新链上元数据
 
-You can leverage [Validator Tool](https://github.com/MystenLabs/sui/blob/main/nre/validator_tool.md) to perform majority of the following tasks.
+您可以利用 [Validator 工具](https://github.com/MystenLabs/sui/blob/main/nre/validator_tool.md) 来执行以下大部分任务。
 
-An active/pending validator can update its on-chain metadata by submitting a transaction. Some metadata changes take effect immediately, including:
+活跃/待定的验证器可以通过提交交易来更新其链上元数据。一些元数据的更改会立即生效，包括：
 
-- name
-- description
-- image url
-- project url
+- 名称
+- 描述
+- 图像 URL
+- 项目 URL
 
-Other metadata (keys, addresses, and so on) only come into effect at the next epoch.
+其他元数据（密钥、地址等）只有在下一个纪元生效。
 
-To update metadata, a validator makes a MoveCall transaction that interacts with the System Object. For example:
+要更新元数据，验证器会进行一次 MoveCall 交易，与 System 对象进行交互。例如：
 
-1. to update name to `new_validator_name`, use the Sui Client CLI to call `sui_system::update_validator_name`:
+1. 要将名称更新为 `new_validator_name`，可以使用 Sui 客户端 CLI 调用 `sui_system::update_validator_name`：
 
 ```bash
 sui client call --package 0x3 --module sui_system --function update_validator_name --args 0x5 \"new_validator_name\" --gas-budget 10000
 ```
 
-2. to update p2p address starting from next epoch to `/ip4/192.168.1.1`, use the Sui Client CLI to call `sui_system::update_validator_next_epoch_p2p_address`:
+2. 要从下一个纪元开始将 p2p 地址更新为 `/ip4/192.168.1.1`，可以使用 Sui 客户端 CLI 调用 `sui_system::update_validator_next_epoch_p2p_address`：
 
 ```bash
 sui client call --package 0x3 --module sui_system --function update_validator_next_epoch_p2p_address --args 0x5 "[4, 192, 168, 1, 1]" --gas-budget 10000
 ```
 
-See the [full list of metadata update functions here](https://github.com/MystenLabs/sui/blob/main/crates/sui-framework/packages/sui-system/sources/sui_system.move#L267-L444).
+查看 [full list of metadata update functions here](https://github.com/MystenLabs/sui/blob/main/crates/sui-framework/packages/sui-system/sources/sui_system.move#L267-L444).
 
-### Operation cap
+### 操作能力
 
-To avoid touching account keys too often and allowing them to be stored off-line, validators can delegate the operation ability to another address. This address can then update the reference gas price and tallying rule on behalf of the validator.
+为了避免频繁更改帐户密钥并允许其离线存储，验证器可以将操作能力委派给另一个地址。然后，该地址可以代表验证器更新参考气价和计分规则。
 
-Upon creating a `Validator`, an `UnverifiedValidatorOperationCap` is created as well and transferred to the validator address. The holder of this `Cap` object (short for "Capability") therefore could perform operational actions for this validator. To authorize another address to conduct these operations, a validator transfers the object to another address that they control. The transfer can be done by using Sui Client CLI: `sui client transfer`.
+在创建 `Validator` 时，同时创建了一个 `UnverifiedValidatorOperationCap` 并转移到验证器地址。因此，拥有此 `Cap` 对象（简称“Capability”）的用户可以代表此验证器执行操作。为了授权另一个地址执行这些操作，验证器将该对象转移到其控制的另一个地址。此转移可以使用 Sui 客户端 CLI 完成：`sui client transfer`。
 
-To rotate the delegatee address or revoke the authorization, the current holder of `Cap` transfers it to another address. In the event of compromised or lost keys, the validator could create a new `Cap` object to invalidate the incumbent one. This is done by calling `sui_system::rotate_operation_cap`:
+为了轮换被委派的地址或撤销授权，拥有当前 `Cap` 的用户将其转移到另一个地址。在密钥被破坏或丢失的情况下，验证器可以创建一个新的 `Cap` 对象来使现有的无效。这通过调用 `sui_system::rotate_operation_cap` 完成：
 
 ```bash
 sui client call --package 0x3 --module sui_system --function rotate_operation_cap --args 0x5 --gas-budget 10000
 ```
 
-By default the new `Cap` object is transferred to the validator address, which then could be transferred to the new delegatee address. At this point, the old `Cap` becomes invalidated and no longer represents eligibility.
+默认情况下，新的 `Cap` 对象被转移到验证器地址，然后可以转移到新的被委派地址。此时，旧的 `Cap` 就会失效，不再表示资格。
 
-To get the current valid `Cap` object's ID of a validator, use the Sui Client CLI `sui client objects` command after setting the holder as the active address. Or go to the [explorer](https://explorer.sui.io/object/0x0000000000000000000000000000000000000005) and look for `operation_cap_id` of that validator in the `validators` module.
+要获取验证器的当前有效 `Cap` 对象的 ID，请在将持有者设置为活动地址后使用 Sui 客户端 CLI 的 `sui client objects` 命令。或者前往 [explorer](https://explorer.sui.io/object/0x0000000000000000000000000000000000000005) 并查找该验证器在 `validators` 模块中的 `operation_cap_id`。
 
-### Updating the gas price survey quote
+### 更新气价调查引用
 
-To update the gas price survey quote of a validator, which is used to calculate the reference gas price at the end of the epoch, the sender needs to hold a valid [`UnverifiedValidatorOperationCap`](#operation-cap). The sender could be the validator itself, or a trusted delegatee. To do so, call `sui_system::request_set_gas_price`:
+要更新验证器的气价调查引用，该引用用于在纪元结束时计算参考气价，发送者需要持有有效的 [`UnverifiedValidatorOperationCap`](#operation-cap)。发送者可以是验证器本身或受信任的受托人。为此，请调用 `sui_system::request_set_gas_price`：
 
 ```bash
 sui client call --package 0x3 --module sui_system --function request_set_gas_price --args 0x5 {cap_object_id} {new_gas_price} --gas-budget 10000
 ```
 
-### Reporting/un-reporting validators
+### 上报/取消上报验证器
 
-To report a validator or undo an existing reporting, the sender needs to hold a valid [`UnverifiedValidatorOperationCap`](#operation-cap). The sender could be the validator itself, or a trusted delegatee. To do so, call `sui_system::report_validator/undo_report_validator`:
+要上报验证器或撤销现有的上报，发送者需要持有有效的 [`UnverifiedValidatorOperationCap`](#operation-cap)。发送者可以是验证器本身或受信任的受托人。为此，请调用 `sui_system::report_validator/undo_report_validator`：
 
 ```bash
 sui client call --package 0x3 --module sui_system --function report_validator/undo_report_validator --args 0x5 {cap_object_id} {reportee_address} --gas-budget 10000
 ```
 
-After a validator is reported by `2f + 1` other validators by voting power, their staking rewards will be slashed.
+当一个验证器被`2f + 1`其他验证器以投票权力进行投票上报后，其质押奖励将被削减。
 
-### Joining the validator set
+### 加入验证器集
 
-In order for a Sui address to join the validator set, they need to first sign up as a validator candidate by calling `sui_system::request_add_validator_candidate` with their metadata and initial configs:
+为了使一个 Sui 地址加入验证器集，他们首先需要作为验证器候选人注册，通过调用 `sui_system::request_add_validator_candidate` 提供他们的元数据和初始配置：
 
 ```bash
 sui client call --package 0x3 --module sui_system --function request_add_validator_candidate --args 0x5 {protocol_pubkey_bytes} {network_pubkey_bytes} {worker_pubkey_bytes} {proof_of_possession} {name} {description} {image_url} {project_url} {net_address} {p2p_address} {primary_address} {worker_address} {gas_price} {commission_rate} --gas-budget 10000
 ```
 
-After an address becomes a validator candidate, any address (including the candidate address itself) can start staking with the candidate's staking pool. Refer to our dedicated staking FAQ on how staking works. Once a candidate's staking pool has accumulated at least `sui_system::MIN_VALIDATOR_JOINING_STAKE` amount of stake, the candidate can call `sui_system::request_add_validator` to officially add themselves to next epoch's active validator set:
+当一个地址成为验证器候选人后，任何地址（包括候选地址本身）都可以开始使用候选的质押池进行质押。有关质押工作原理，请参阅我们专门的质押 FAQ。一旦候选的质押池积累了至少 `sui_system::MIN_VALIDATOR_JOINING_STAKE` 数量的质押，候选者可以调用 `sui_system::request_add_validator` 正式将自己添加到下一个纪元的活跃验证器集中：
 
 ```bash
 sui client call --package 0x3 --module sui_system --function request_add_validator --args 0x5 --gas-budget 10000000
 ```
 
-### Leaving the validator set
+### 离开验证器集
 
-To leave the validator set starting next epoch, the sender needs to be an active validator in the current epoch and should call `sui_system::request_remove_validator`:
+要在下一个纪元开始离开验证器集，发送者需要是当前纪元的活跃验证器，并应调用 `sui_system::request_remove_validator`：
 
 ```bash
 sui client call --package 0x3 --module sui_system --function request_remove_validator --args 0x5 --gas-budget 10000
 ```
 
-After the validator is removed at the next epoch change, the staking pool will become inactive and stakes can only be withdrawn from an inactive pool.
+在下一个纪元更改时移除验证器后，质押池将变为不活跃状态，只能从不活跃的池中提取质押。
 
-## Private security fixes
+## 私有安全修复
 
-There might be instances where urgent security fixes need to be rolled out before publicly announcing it's presence (issues affecting liveliness, invariants such as SUI supply, governance, and so on). To not be actively exploited, Mysten Labs will release signed security binaries incorporating such fixes with a delay in publishing the source code until a large percentage of our validators have patched the vulnerability.
+可能存在需要在公开宣布存在之前立即推出紧急安全修复的情况（影响活跃性、SUI 供应的不变性、治理等问题）。为了不被积极利用，Mysten Labs 将发布包含这些修复的签名安全二进制文件，延迟发布源代码，直到我们的大多数验证器已经修补了漏洞。
 
-This release process is different and we expect us to announce the directory for such binaries out of band.
-Our public key to verify these binaries would be stored [here](https://sui-private.s3.us-west-2.amazonaws.com/sui_security_release.pem)
+此发布流程与通常不同，我们预计会在其他方式宣布此类二进制文件的目录。
+我们用于验证这些二进制文件的公钥将存储在[这里](https://sui-private.s3.us-west-2.amazonaws.com/sui_security_release.pem)。
 
-There is also a script available that downloads all the necessary signed binaries and docker artifacts incorporating the security fixes.
+还提供了一个脚本，该脚本可下载所有必要的签名二进制文件和包含安全修复的 Docker 构件。
 
-Usage
+用法
 `./download_private.sh <directory-name>`
 
-You can also download and verify specific binaries that may not be included by the above script using the `download_and_verify_private_binary.sh` script.
+您还可以使用 `download_and_verify_private_binary.sh` 脚本下载和验证上述脚本未包含的特定二进制文件。
 
-Usage:
+用法：
 `./download_and_verify_private_binary.sh <directory-name> <binary-name>`
+·
