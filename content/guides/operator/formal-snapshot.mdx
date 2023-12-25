@@ -1,23 +1,23 @@
 ---
-title: Formal Snapshots
-description: Formal snapshots provide a mechanism for a node to restore to a canonical state (the state of a full pruned and compacted node at the end of an epoch) at some prior point in time without having to execute all the transactions that have occurred since genesis.
+title: 正式快照
+description: 正式快照提供了一种机制，使节点能够在某个先前时间点恢复到规范状态（在纪元结束时，即完全修剪和压缩的节点状态），而无需执行自创世以来发生的所有交易。
 ---
 
-Formal snapshots provide a mechanism for a node to restore to a canonical state (the state of a full pruned and compacted node at the end of an epoch) at some prior point in time without having to execute all the transactions that have occurred since genesis. Unlike existing database snapshots, these formal snapshots have the following properties:
+正式快照提供了一种机制，使节点能够在某个先前时间点恢复到规范状态（在纪元结束时，即完全修剪和压缩的节点状态），而无需执行自创世以来发生的所有交易。与现有的数据库快照不同，这些正式快照具有以下特性：
 
-1. **Minimalism:** Formal snapshots currently contain only the end of epoch live object set (the set of all object versions eligible for use as input objects for future transactions). Sui syncs all other critical chain information from the chain or derives it. Thus, formal snapshots contain only the necessary data required for a node to startup at epoch boundary and participate in the network. 
-1. **Agnosticism:** Formal snapshots are by nature agnostic to the underlying database choice or implementation of the protocol. As the live object set is protocol defined, so is the formal snapshot.
-1. **Verifiability:** Formal snapshots have first-class support in the core Sui protocol. As such, they must be trustless/verifiable by the node operator upon download. To support this, the protocol signs a commitment to the live object state at end of epoch, which formal snapshots are checked against at restore time. If this verification fails, the node state is moved back to the state before the snapshot restore attempt.
+1. **极简主义：** 正式快照目前仅包含纪元结束时的活动对象集（即所有符合条件的对象版本，可用作未来交易的输入对象）。Sui 从链上同步所有其他关键链信息，或者从链上导出。因此，正式快照仅包含节点在纪元边界启动并参与网络所需的必要数据。
+1. **不可知性：** 正式快照在本质上与底层数据库选择或协议实现无关。正如活动对象集是协议定义的，正式快照也是如此。
+1. **可验证性：** 正式快照在核心 Sui 协议中得到了一流的支持。因此，它们必须由节点操作员在下载时进行无信任/可验证验证。为支持这一点，协议对在纪元结束时的活动对象状态进行了承诺的签名，正式快照在恢复时会根据此进行检查。如果此验证失败，则节点状态将被移回快照恢复尝试之前的状态。
 
-Because these snapshots do not contain indexes, they are most immediately useful for validators and state sync Full nodes (SSFNs). You can upload snapshots to remote object stores like S3, Google Cloud Storage, Azure Blob Storage, and similar services. These services typically run the export process in the background so there is no degradation in performance for your Full node. With snapshots stored in the cloud, you can recover from catastrophic failures in your system or hardware more efficiently.
+由于这些快照不包含索引，它们对于验证器和状态同步全节点（SSFNs）最为有用。您可以将快照上传到像 S3、Google Cloud Storage、Azure Blob Storage 等远程对象存储中。这些服务通常在后台运行导出过程，因此您的完整节点性能不会受到影响。在云中存储快照，您可以更有效地从系统或硬件的灾难性故障中恢复。
 
-## Enabling formal snapshots
+## 启用正式快照
 
-Full nodes do not take formal snapshots by default. To enable this feature:
+默认情况下，完整节点不会自动进行正式快照。要启用此功能：
 
-1. Stop your node, if it's running.
-2. Open your fullnode.yaml config file.
-3. Add an entry to the config file for `state-snapshot-write-config`. Using Google's GCS service as an example:
+1. 如果节点正在运行，请停止节点。
+2. 打开 fullnode.yaml 配置文件。
+3. 在配置文件中添加 `state-snapshot-write-config` 的条目。以 Google 的 GCS 服务为例：
    ```yaml
    state-snapshot-write-config:
      object-store-config:
@@ -27,38 +27,39 @@ Full nodes do not take formal snapshots by default. To enable this feature:
        object-store-connection-limit: 20
     concurrency: 5
    ```
-   - `object-store`: The remote object store to upload snapshots. Set as Google's `GCS` service in the example.
-   - `bucket`: The GCS bucket name to store the snapshots.
-   - `google-service-account`: Path to a GCS service account json file containing signing credentials.
-   - `aws-region`: Region where buck exists.
-   - `object-store-connection-limit`: Number of simultaneous connections to the object store.
-4. Save the sui-node.yaml file and restart the node.
+   - `object-store`: 上传快照的远程对象存储。在示例中设置为 Google 的 `GCS` 服务。
+   - `bucket`: 存储快照的 GCS 存储桶名称。
+   - `google-service-account`: 包含签名凭据的 GCS 服务帐户 JSON 文件的路径。
+   - `aws-region`: 存储桶所在的地区。
+   - `object-store-connection-limit`: 与对象存储的同时连接数。
+4. 保存 sui-node.yaml 文件并重新启动节点。
 
-## Restoring from formal snapshots
+## 从正式快照恢复
 
-The full process of downloading, verifying, and restoring from a formal snapshot is handled by a single command in `sui-tool`. After running the snapshot restore tooling, the local node state reflects the canonical state at the end of the epoch to which you restored, at which point you can start the node normally. To restore from a snapshot:
+从正式快照下载、验证和恢复的整个过程由 `sui-tool` 中的单个命令处理。运行快照恢复工具后，本地节点状态将反映出您恢复到的纪元结束时的规范状态，然后您可以正常启动节点。要从快照中恢复：
 
-1. Download the `latest` version of `sui` for your operating system.
-1. Run `sui-tool download-db-snapshot --formal`, passing in the bucket name and authentication credentials as environment variables, and providing the bucket name, bucket type, epoch to restore to, and genesis blob.
+1. 下载适用于您操作系统的 `sui` 的 `latest` 版本。
+1. 运行 `sui-tool download-db-snapshot --formal`，将桶名称和身份验证凭据作为环境变量传递，并提供桶名称、桶类型、要恢复到的纪元和创世块。
 
    ```
       GCS_SNAPSHOT_SERVICE_ACCOUNT_FILE_PATH=<PATH-TO-SERVICE-ACCOUNT-JSON> AWS_ARCHIVE_ACCESS_KEY_ID=<YOUR-AWS-ACCESS-KEY> AWS_ARCHIVE_SECRET_ACCESS_KEY=<YOUR-AWS-SECRET-ACCESS-KEY> AWS_ARCHIVE_REGION=us-west-2 \
       sui-tool download-db-snapshot --formal --epoch 200 --genesis <PATH-TO-GENESIS-BLOB> --snapshot-bucket mysten-mainnet-formal --snapshot-bucket-type gcs --path <DB-PATH> --num-parallel-downloads 50
    ```
 
-1. Make sure you update the ownership of the downloaded directory to the sui user (whichever linux user you run `sui-node` as)
-   `sudo chown -R sui:sui  /opt/sui/db/authorities_db/full_node_db/live`.
-1. Start the Sui node.
+1. 确保更新已下载目录的所有权给 sui 用户（即您运行 `sui-node` 的 Linux 用户）
+   `sudo chown -R sui:sui  /opt/sui/db/authorities_db/full_node_db/live`。
+1. 启动 Sui 节点。
 
 :::info
 
-When you restore a Full node from a snapshot, write it to the path `/opt/sui/db/authorities_db/full_node_db`. To restore a Validator node, use the path `/opt/sui/db/authorities_db`
+当从快照还原完整节点时，请将其写入路径 `/opt/sui/db/authorities_db/full_node_db`。要还原验证器节点，请使用路径 `/opt/sui/db/authorities_db`。
 
 :::
 
-## GCS buckets used per environment
+## 每个环境使用的 GCS 存储桶
 
-Mysten operated buckets. To access the Mysten operated buckets, you still need to provide valid credentials for signed access to GCS (snapshot bucket hosting) and AWS (archival hosting).
+Mysten 经营的存储桶。要访问 Mysten 经营的存储桶，您仍然需要提供有效的凭据，以进行对 GCS（快照桶托管）和 AWS（归档托管）的签名访问。
 
 - Testnet: `s3://mysten-testnet-formal/`
 - Mainnet: `s3://mysten-mainnet-formal/`
+

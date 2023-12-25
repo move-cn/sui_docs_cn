@@ -1,199 +1,198 @@
 ---
-title: Node Tools
+title: 节点工具
 ---
 
-This guide focuses on using the Sui CLI `validator` commands. 
+本指南重点介绍 Sui CLI 的 `validator` 命令。
 
 :::info
 
-This tool only supports pending validators and active validators at the moment.
+此工具目前仅支持待处理的验证器和活跃的验证器。
 
 :::
 
-## Preparation
+## 准备工作
 
-1. Make sure you have completed all the [prerequisites](../developer/getting-started/sui-install.mdx#prerequisites).
+1. 确保您已完成所有[先决条件](../developer/getting-started/sui-install.mdx#prerequisites)。
 
-2. Build the `sui` binary, which you need for the genesis ceremony. This step can be done on any machine you like. It does not have to be done on the machine on which you will run the validator.
+2. 构建 `sui` 二进制文件，您需要用于创世典礼。此步骤可以在任何您喜欢的机器上完成。它不必在运行验证器的机器上执行。
 
-    1. Clone the git repo:
+    1. 克隆 git 存储库：
 
            `git clone git@github.com:MystenLabs/sui.git && cd sui`
 
-    2. Check out the commit to use for the testnet:
+    2. 检出要用于测试网的提交：
 
            `git checkout testnet`
 
-    3. Build sui binary
+    3. 构建 sui 二进制文件：
 
            `cargo build --bin sui`
 
-    4. Remember the path to your binary:
+    4. 记住您的二进制文件的路径：
 
            `export SUI_BINARY="$(pwd)/target/debug/sui"`
 
-3. Run the following command to set up your Sui account and CLI environment. 
+3. 运行以下命令设置您的 Sui 帐户和 CLI 环境。
 
-    1. If this is the first time running this program, it will ask you to provide a Sui Fullnode Server URL and a meaningful environment alias. It will also generate a random key pair in `sui.keystore` and a config `client.yaml`. Swap in your validator account key if you already have one.
+    1. 如果这是第一次运行此程序，它将要求您提供 Sui Fullnode Server URL 和有意义的环境别名。它还将在 `sui.keystore` 中生成一个随机的密钥对和一个配置文件 `client.yaml`。如果您已经拥有验证器帐户密钥，请将其替换。
 
-    2. If you already set it up, simply make sure 
-      a. `rpc` is correct in `client.yaml`. 
-      b. `active_address` is correct in `client.yaml`.
-      b. `sui.keystore` contains your account key pair.
+    2. 如果您已经设置好了，请确保
+      a. `client.yaml` 中的 `rpc` 是正确的。
+      b. `client.yaml` 中的 `active_address` 是正确的。
+      b. `sui.keystore` 包含您的帐户密钥对。
 
-        If at this point you can't find where `client.yaml` or `sui.keystore` is or have other questions, read [Sui Client CLI tutorial](/references/cli/client.mdx).
+        如果此时找不到 `client.yaml` 或 `sui.keystore` 的位置，或者有其他问题，请阅读[Sui 客户端 CLI 教程](/references/cli/client.mdx)。
 
         ``` bash
         $ sui client
         ```
 
-4. To test you are connected to the network and configured your config correctly, run the following command to display your validator info.
+```mdx
+4. 为了测试您已连接到网络并正确配置了配置，请运行以下命令显示您的验证器信息。
 
 ``` bash
 $ sui validator display-metadata
 ```
 
-## Using Sui CLI 
+## 使用 Sui CLI 
 
-#### Print help info
+#### 打印帮助信息
 
 ``` bash
 $ sui validator --help
 ```
 
-#### Display validator metadata
+#### 显示验证器元数据
 ``` bash
 $ sui validator display-metadata
 ```
 
-or 
+或
 
 ``` bash
 $ sui validator display-metadata <validator-address>
 ```
-to print another validator's information.
+以打印其他验证器的信息。
 
-#### Update validator metadata
+#### 更新验证器元数据
 
-Run the following to see how to update validator metadata. Read description carefully about when the change will take effect.
-
-``` bash
-$ sui validator update-metadata --help
-```
-
-You can update the following on-chain metadata:
-1. name
-1. description
-1. image URL
-1. project URL
-1. network address
-1. p2p address
-1. primary address
-1. worker address
-1. protocol public key
-1. network public key
-1. worker public key
-
-Notably, only the first 4 metadata listed above take effect immediately.
-
-If you change any metadata from points 5 to 11, they will be changed only after the next epoch - for these, you'll want to restart the validator program immediately after the next epoch, with the new key files and/or updated `validator.yaml` config. Particularly, make sure the new address is not behind a firewall.
-
-Run the following to see how to update each metadata.
+运行以下命令以查看如何更新验证器元数据。仔细阅读关于更改何时生效的描述。
 
 ``` bash
 $ sui validator update-metadata --help
 ```
 
-#### Operation cap
+您可以更新以下链上元数据：
+1. 名称
+1. 描述
+1. 图像 URL
+1. 项目 URL
+1. 网络地址
+1. P2P 地址
+1. 主地址
+1. 工作地址
+1. 协议公钥
+1. 网络公钥
+1. 工作公钥
 
-Operation Cap allows a validator to authorizer another account to perform certain actions on behalf of this validator. Read about [Operation Cap here](./validator-tasks.mdx#operation-cap).
+值得注意的是，仅上述前4个元数据立即生效。
 
-The Operation Cap holder (either the valdiator itself or the delegatee) updates its Gas Price and reports validator peers with the Operation Cap.
+如果从第 5 到第 11 点更改任何元数据，它们将仅在下一个时期之后更改 - 对于这些元数据，您将希望在下一个时期后立即重新启动验证器程序，使用新的密钥文件和/或更新的 `validator.yaml` 配置。特别确保新地址没有被防火墙阻挡。
 
-#### Update gas price
+运行以下命令以查看如何更新每个元数据。
 
-To update Gas Price, run
+``` bash
+$ sui validator update-metadata --help
+```
+
+#### 操作容量
+
+操作容量允许验证器授权另一个帐户代表该验证器执行某些操作。详细了解[此处的操作容量](./validator-tasks.mdx#operation-cap)。
+
+操作容量持有者（验证器本身或委托方）更新其 Gas 价格，并报告具有操作容量的验证器对等方。
+
+#### 更新 Gas 价格
+
+要更新 Gas 价格，请运行
 
 ```bash
 $ sui validator update-gas-price <gas-price>
 ```
 
-if the account itself is a validator and holds the Operation Cap. Or 
+如果帐户本身是验证器并持有操作容量。或
 
 ```bash
 $ sui validator update-gas-price --operation-cap-id <operation-cap-id> <gas-price>
 ```
 
-if the account is a delegatee.
+如果帐户是委托方。
 
-#### Report validators
+#### 报告验证器
 
-To report validators peers, run
+要报告验证器对等方，请运行
 
 ```bash
 $ sui validator report-validator <reportee-address>
 ```
 
-Add `--undo-report false` if it intents to undo an existing report.
+如果打算撤消现有的报告，请添加 `--undo-report false`。
 
-Similarly, if the account is a delegatee, add `--operation-cap-id <operation-cap-id>` option to the command.
+类似地，如果帐户是委托方，请在命令中添加 `--operation-cap-id <operation-cap-id>` 选项。
 
-if the account itself is a validator and holds the Operation Cap. Or 
+如果帐户本身是验证器并持有操作容量。或
 
 ```bash
 $ sui validator update-gas-price --operation-cap-id <operation-cap-id> <gas-price>
 ```
 
-if the account is a delegatee.
+如果帐户是委托方。
 
+#### 成为验证器 / 加入委员会
 
-#### Become a validator / join committee
-
-To become a validator candidate, first run
+要成为验证器候选人，首先运行
 
 ```bash
 $ sui validator make-validator-info <name> <description> <image-url> <project-url> <host-name> <gas_price>
 ```
 
-This will generate a `validator.info` file and key pair files. The output of this command includes:
-  1. Four key pair files (Read [more here](./validator-tasks.mdx#key-management)). ==Set their permissions with the minimal visibility (chmod 600, for example) and store them securely==. They are needed when running the validator node as covered below.
-    a. If you follow this guide thoroughly, this key pair is actually copied from your `sui.keystore` file.
-  2. `validator.info` file that contains your validator info. **Double check all information is correct**.
+这将生成一个 `validator.info` 文件和密钥对文件。此命令的输出包括：
+  1. 四个密钥对文件（[更多信息](./validator-tasks.mdx#key-management)）。 ==使用最小可见性设置它们的权限（例如 chmod 600）并安全地存储它们==。在运行以下验证器节点时，它们是必需的，如下面所述。
+    a. 如果您仔细遵循本指南，此密钥对实际上是从您的 `sui.keystore` 文件复制的。
+  2. 包含验证器信息的 `validator.info` 文件。**仔细检查所有信息是否正确**。
 
-Then run 
+然后运行
 
 ``` bash
 $ sui validator become-candidate {path-to}validator.info
 ```
 
-to submit an on-chain transaction to become a validator candidate. The parameter is the file path to the validator.info generated in the previous step. **Make sure the transaction succeeded (printed in the output).**
+以提交一个链上交易成为验证器候选人。参数是先前步骤中生成的 validator.info 文件的文件路径。**确保交易成功（在输出中打印）。**
 
-At this point you are validator candidate and can start to accept self staking and delegated staking. 
+在此时，您是验证器候选人，可以开始接受自我质押和委托质押。
 
-**If you haven't, start a fullnode now to catch up with the network. When you officially join the committee but is not fully up-to-date, you cannot make meaningful contribution to the network and may be subject to peer reporting hence face the risk of reduced staking rewards for you and your delegators.**
+**如果您还没有，请现在启动一个全节点以赶上网络。当您正式加入委员会但未完全更新时，您无法对网络进行有意义的贡献，并且可能会受到对等体报告的影响，因此面临您和您的委托人质押奖励降低的风险。**
 
-Once you collect enough staking amount, run
+一旦您收集到足够的质押金额，请运行
 
 ``` bash
 $ sui validator join-committee
 ```
 
-to become a pending validator. A pending validator will become active and join the committee starting from next epoch.
+以成为待处理的验证器。待处理的验证器将从下一个时期开始变为活跃并加入委员会。
 
+#### 离开委员会
 
-#### Leave committee
-
-To leave committee, run
+要离开委员会，请运行
 
 ``` bash
 $ sui validator leave-committee
 ```
 
-Then you will be removed from committee starting from next epoch.
+然后您将从下一个时期开始从委员会中删除。
 
-### Generate the payload to create PoP
+### 生成用于创建 PoP 的有效载荷
 
-Serialize the payload that is used to generate Proof of Possession. This is allows the signer to take the payload offline for an Authority protocol BLS keypair to sign.
+序列化用于生成拥有权证明的有效载荷。这允许签名者将有效载荷脱机传递给一个具有权威协议 BLS 密钥对的签名者。
 
 ``` bash
 $ sui validator serialize-payload-pop --account-address $ACCOUNT_ADDRESS --protocol-public-key $BLS_PUBKEY

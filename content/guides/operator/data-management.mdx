@@ -1,107 +1,106 @@
 ---
-title: Data Management
-description: A high-level description of data management on the Sui network that you can use to optimize your Sui Full node configuration. 
+title: 数据管理
+description: Sui 网络上数据管理的高级描述，可用于优化您的 Sui 全节点配置。
 ---
 
 Managing the data on your Sui Full node is critical to ensuring a healthy Sui network. This topic provides a high-level description of data management on Sui Full nodes that you can use to optimize your Full node configuration. For more information about Sui Full nodes, such as pruning policies and archival settings, see [Run a Sui Full Node](./sui-full-node.mdx).
 
-## Basic Sui Full node functionality
+## 基本 Sui 全节点功能
 
-The minimal version of a Sui Full node executes all of the transactions Sui validators commit. Sui Full nodes also orchestrate the submitting of new transactions to the system:
+Sui 全节点的最小版本执行所有 Sui 验证人提交的交易。Sui 全节点还协调将新交易提交到系统：
 
-![Basic Sui Full node functionality](./images/fn-basic-functionality.png "A diagram that shows the operations of a basic Sui Full node.")
+![Basic Sui Full node functionality](./images/fn-basic-functionality.png "显示基本 Sui 全节点操作的图表。")
 
-The preceding image shows how data flows through a Full node:
+上图显示了数据如何通过全节点流动：
 
-1. **`State sync` protocol:** A Sui Full node performs the following to achieve state synchronization:
-   - Retrieves the information about the committed checkpoints via the p2p gossip-like protocol
-   - Executes the transactions locally to verify that effects match the effects certified by the quorum of the validators
-   - Updates the local state with the latest object values accordingly.
-2. **RPCs:** A Sui Full node exposes Sui RPC endpoints for querying the latest state of the system, including both the latest state metadata (such as, `sui_getProtocolConfig`), and the latest state object data (`sui_getObject)`.
-3. **Transaction submission:** Each Sui Full node orchestrates transaction submission to the quorum of the Sui Validators, and, optionally if configured, locally executes the finalized transactions (called fast path execution), which circumvents the wait for checkpoint synchronization.
+1. **`State sync` 协议：** Sui 全节点执行以下操作以实现状态同步：
+   - 通过点对点类似的 p2p 协议检索有关已提交检查点的信息
+   - 本地执行交易以验证效果是否与验证人的法定数量认证的效果相匹配
+   - 根据最新的对象值更新本地状态。
+2. **RPC：** Sui 全节点暴露 Sui RPC 端点，用于查询系统的最新状态，包括最新的状态元数据（如 `sui_getProtocolConfig`）和最新的状态对象数据（`sui_getObject`）。
+3. **交易提交：** 每个 Sui 全节点协调将交易提交到 Sui 验证人的法定数量，并且如果配置的话，本地执行已完成的交易（称为快速路径执行），从而绕过等待检查点同步的过程。
 
-## Sui Full node Data and RPC types
+## Sui 全节点数据和 RPC 类型
 
-A Sui Full Node stores multiple categories of data in its permanent store.
-
-:::info
-
-The per-epoch Sui store is beyond the scope of this topic. Sui uses the per-epoch store (resets at the start of each epoch) internally for authority and consensus operations.
-
-:::
-
-Sui Full nodes store the following types of data:
-
-1. **Transactions with associated effects and events:** Sui uses a unique transaction digest to retrieve information about a transaction, including its effects and emitted events. Sui Full nodes don't require the historic transaction information for basic Full node operations. To conserve drive space, you can enable pruning to remove this historical data.
-2. **Checkpoints:** Sui groups committed transactions in checkpoints, and then uses those checkpoints to achieve state synchronization. Checkpoints keep transaction digests that contain additional integrity metadata.
-Sui Full nodes don't require data from checkpoints to  execute and submit transactions, so you can configure pruning for this data as well.
-3. **Objects:** Transactions that mutate objects create new object versions. Each object has a unique pair of `(objectId, version)` used to identify the object. Sui Full nodes don't require historic object versions to  execute and submit transactions, so you can configure your Full node to also prune this data. 
-4. **Indexing information:** A Full node default configuration is to post-process the committed transactions: it indexes the committed information to enable efficient aggregation and filtering queries. For example, the indexing can be useful for retrieving all the historic transactions of a given sender, or finding all the objects owned by an address. 
-
-Sui Full nodes support more than 40 RPC types that includes the following categories:
-
-* **General metadata**, such as `sui_getProtocolConfig` and `sui_getChainIdentier`. These requests don't depend on additional indexing and don't require historic data to process.
-* **Direct lookups**, such as `sui_getObject`, `sui_getEvents`. These requests don't depend on additional indexing, but require historic data in some cases, such as `sui_tryGetPastObject` and `sui_getTransactionBlock`.
-* **Accumulation and filtering queries**,such as `suix_getOwnedObjects` and `suix_getCoins`. These requests depend on additional indexing, and require historic data in some cases, such as `suix_queryTransactionBlocks`.
+Sui 全节点在其永久存储中存储多个类别的数据。
 
 :::info
 
-Sui plans to migrate the RPC endpoints that require additional indexing away from Sui Full nodes in the near future. This plan decouples the storage that is backing transaction execution from the storage that is better suited for data indexing.
+每个纪元的 Sui 存储超出了本主题的范围。Sui 在内部使用每个纪元存储（在每个纪元开始时重置）用于授权和共识操作。
 
 :::
 
-## Sui Archival data
+Sui 全节点存储以下类型的数据：
 
-A Sui archive instance stores the full Sui transaction history since genesis in a database agnostic format. This includes information about transactions (with client authentication), effects, events, and checkpoints. As such, archival storage can be used for data auditing and for replaying historic transactions.
+1. **具有关联效果和事件的交易：** Sui 使用唯一的交易摘要检索有关交易的信息，包括其效果和发出的事件。Sui 全节点不需要基本全节点操作的历史交易信息。为了节省驱动器空间，您可以启用修剪以删除此历史数据。
+2. **检查点：** Sui 将已提交的交易分组到检查点中，然后使用这些检查点实现状态同步。检查点保留包含附加完整性元数据的交易摘要。
+Sui 全节点不需要来自检查点的数据来执行和提交交易，因此您也可以为此数据配置修剪。
+3. **对象：** 变异对象的交易创建新的对象版本。每个对象都有一个唯一的 `(objectId, version)` 对，用于标识该对象。Sui 全节点不需要历史对象版本来执行和提交交易，因此您也可以配置全节点来修剪此数据。
+4. **索引信息：** 默认情况下，全节点会对已提交的交易进行后处理：它索引已提交的信息以实现高效的聚合和过滤查询。例如，索引对于检索给定发送方的所有历史交易或查找由地址拥有的所有对象可能是有用的。
+
+Sui 全节点支持超过 40 种 RPC 类型，其中包括以下类别：
+
+* **一般元数据**，如 `sui_getProtocolConfig` 和 `sui_getChainIdentifier`。这些请求不依赖于额外的索引，也不需要历史数据来处理。
+* **直接查找**，如 `sui_getObject`、`sui_getEvents`。这些请求不依赖于额外的索引，但在某些情况下需要历史数据，如 `sui_tryGetPastObject` 和 `sui_getTransactionBlock`。
+* **累积和过滤查询**，如 `suix_getOwnedObjects` 和 `suix_getCoins`。这些请求依赖于额外的索引，并在某些情况下需要历史数据，如 `suix_queryTransactionBlocks`。
 
 :::info
 
-The current archival storage format doesn't include historic object versions. 
+Sui 计划在不久的将来将需要额外索引的 RPC 端点从 Sui 全节点中迁移出去。这个计划将事务执行的后台存储与更适合数据索引的存储分离。
 
 :::
 
-As a Full node operator, you can [enable archival fallback for your Full node](./sui-full-node.mdx#set-up-archival-fallback) by specifying the URL to upload archival data. Currently, Mysten Labs manages a Sui archive and stores it in AWS S3. To ensure a healthy network, we encourage the Sui community to set  up additional archives to ensure archival data availability across the network. In a typical configuration, an archive trails behind the latest checkpoint by approximately 10 minutes.
+## Sui 档案数据
 
-A Full Node that starts from scratch can replay (and thus re-verify) transactions that occurred since Sui genesis from the given archive via [configuring Archival Fallback](./sui-full-node.mdx#archival-fallback) in the `fullnode.yaml` configuration file to point to the S3 bucket that stores the archive.
+Sui 档案实例以与数据库无关的格式存储自创世以来的完整 Sui 交易历史。这包括有关交易（带有客户端身份验证）、效果、事件和检查点的信息。因此，档案存储可用于数据审计和重播历史交易。
 
-A Sui Full node that fails to retrieve checkpoints from its peers via state sync protocol falls back to downloading the missing checkpoints from its pre-configured archive. This fallback enables a Full node to catch up with the rest of the system regardless of the pruning policies of its peers.
+:::info
 
-## Sui Full node pruning policies
+当前的档案存储格式不包括历史对象版本。
 
-As described previously, sustainable disk usage requires Sui Full nodes to prune the information about historic object versions as well as historic transactions with the corresponding effects and events, including old checkpoint data.
+:::
 
-Both transaction and object pruners run in the background. The logical deletion of entries from RocksDB ultimately triggers the physical compaction of data on disk, which is governed by RocksDB background jobs: the pruning effect on disk usage is not immediate and might take multiple days.
+作为全节点操作员，您可以通过指定上传档案数据的 URL 来[为您的全节点启用档案回退](./sui-full-node.mdx#set-up-archival-fallback)。目前，Mysten Labs 管理一个 Sui 档案并将其存储在 AWS S3 中。为了确保网络的健康，我们鼓励 Sui 社区设置额外的档案以确保在整个网络中的档案数据可用性。在典型的配置中，一个档案大约滞后最新检查点约 10 分钟。
 
-To learn more about object pruning policies, see  [Object pruning](./sui-full-node.mdx#object-pruning). You can configure the pruner in two modes:
-* **aggressive pruning** (`num-epochs-to-retain: 0`): Preferred option. Sui prunes old object versions as soon as possible.
-* **epoch-based pruning** (`num-epochs-to-retain: X`): Sui prunes old object versions after X epochs.
+从头开始的全节点可以通过 [配置档案回退](./sui-full-node.mdx#archival-fallback) 在 `fullnode.yaml` 配置文件中指向存储档案的 S3 存储桶来重播（从而重新验证）自 Sui 创世以来发生的交易。
+
+如果 Sui 全节点无法从其对等节点通过状态同步协议中检索检查点，则会回退到从其预配置的档案中下载缺失的检查点。这种回退使得全节点能够赶上系统的其余部分，而不受其对等体的修剪策略的影响。
+
+## Sui 全节点修剪策略
+
+如前所述，持续的磁盘使用要求 Sui 全节点修剪有关历史对象版本以及具有相应效果和事件的历史交易的信息，包括旧的检查点数据。
+
+事务和对象修剪器都在后台运行。从 RocksDB 中逻辑删除条目最终触发磁盘上的数据物理压实，这由 RocksDB 后台作业管理：对磁盘使用的修剪效果不是立即的，可能需要多天。
+
+要了解有关对象修剪策略的更多信息，请参阅 [对象修剪](./sui-full-node.mdx#object-pruning)。您可以在两种模式下配置修剪器：
+* **激进修剪**（`num-epochs-to-retain: 0`）：首选选项。Sui 尽快修剪旧的对象版本。
+* **基于纪元的修剪**（`num-epochs-to-retain: X`）：Sui 在 X 个纪元后修剪旧的对象版本。
 
 :::tip 
 
-Testing indicates that aggressive pruning results in more efficient Full Node operation.
+测试表明，激进修剪可以实现更有效的全节点操作。
 
 :::
 
-To learn more about transaction pruning policies, see  [Transaction pruning](./sui-full-node.mdx#transaction-pruning). To configure transaction pruning, specify the `num-epochs-to-retain-for-checkpoints: X` config option. The checkpoints, including their transactions, effects and events are pruned up to X epochs ago. We suggest setting transaction pruning to 2 epochs.
+要了解有关事务修剪策略的更多信息，请参阅 [事务修剪](./sui-full-node.mdx#transaction-pruning)。要配置事务修剪，请指定 `num-epochs-to-retain-for-checkpoints: X` 配置选项。检查点，包括其交易、效果和事件，将被修剪到 X 个纪元之前。我们建议将事务修剪设置为 2 个纪元。
 
-### Set an archiving watermark
+### 设置存档水印
 
-In case your Full node is configured to upload committed information to an archive, you should ensure that pruning doesn't occur until after the corresponding data is uploaded. To do so, set the `use-for-pruning-watermark: true` in the Fullnode.yaml file as described in [Archival fallback](./sui-full-node.mdx#archival-fallback).
+如果您的全节点配置为将已提交的信息上传到存档，则应确保修剪在相应数据上传之后发生。为此，在 Fullnode.yaml 文件中设置 `use-for-pruning-watermark: true`，如 [档案回退](./sui-full-node.mdx#archival-fallback) 中所述。
 
-## Sui Full node key-value store backup
+## Sui 全节点键值存储备份
 
-To enable historic data queries for the Sui Full nodes that prune old transactional data, Full node RPC implementation is configured to fallback for querying missing transactional data from a remote store.
+为了为修剪旧事务数据的 Sui 全节点启用历史数据查询，全节点 RPC 实现配置为从远程存储中查询丢失的事务数据。
 
-If the information about the transaction digest, effects, events, or checkpoints is not available locally, a Full node automatically retrieves the historical data from a cloud-based key-value store (currently managed by MystenLabs). Note that the current key-value store implementation keeps historic transactional data only: we plan to provide support for a similar setup for retrieving the historic object versions in a future release.
+如果本地没有交易摘要、效果、事件或检查点的信息，则全节点会自动从云端键值存储（目前由 MystenLabs 管理）中检索历史数据。请注意，当前的键值存储实现仅保留历史事务数据：我们计划在未来的发布中为检索历史对象版本提供类似的设置。
 
+## 修剪策略示例
 
-## Pruning policy examples
+使用本节的示例配置您的 Sui 全节点。您可以复制示例，然后根据您的环境适当修改值。
 
-Use the examples in this section to configure your Sui Full node. You can copy the examples, and then, optionally, modify the values as appropriate for your environment. 
+### 最小全节点
 
-### Minimal Full node
-
-This configuration keeps disk usage to a minimum. A Full node with this configuration cannot answer queries that require indexing or historic data.
+此配置将磁盘使用保持在最低水平。具有此配置的全节点无法回答需要索引或历史数据的查询。
 
 ```yaml
 # Do not generate or maintain indexing of Sui data on the node
@@ -122,14 +121,14 @@ authority-store-pruning-config:
   periodic-compaction-threshold-days: 1
 ```
 
-### Full Node with indexing but no history
+### 具有索引但无历史记录的全节点
 
-This setup manages secondary indexing in addition to the latest state, but aggressively prunes historic data. A Full node with this configuration:
+此设置在维护最新状态的同时管理辅助索引，但激进修剪历史数据。具有此配置的全节点：
 
-- Answers RPC queries that require indexing, like `suix_getBalance()`.
-- Answers RPC queries that require historic transactions via a fallback to retrieve the data from a remote key-value store: `sui_getTransactionBlock()`.
-- Cannot answer RPC queries that require historic object versions: `sui_tryGetPastObject()`.
-  - The `showBalanceChanges` filter of `sui_getTransactionBlock()` query relies on historic object versions, so it can't work with this configuration.
+- 可以回答需要索引的 RPC 查询，如 `suix_getBalance()`。
+- 可以回答需要通过回退从远程键值存储检索数据的历史交易的 RPC 查询：`sui_getTransactionBlock()`。
+- 无法回答需要历史对象版本的 RPC 查询：`sui_tryGetPastObject()`。
+  - `sui_getTransactionBlock()` 查询的 `showBalanceChanges` 过滤器依赖于历史对象版本，因此它无法与此配置一起使用。
 
 ```yaml
 authority-store-pruning-config:
@@ -147,13 +146,13 @@ authority-store-pruning-config:
   periodic-compaction-threshold-days: 1
 ```
 
-### Full Node with full object history but pruned transaction history
+### 具有完整对象历史但修剪的交易历史的全节点
 
-This configuration manages the full object history while still pruning historic transactions. A Full node with this configuration can answer all historic and indexing queries (using the transaction query fallback for transactional data), including the ones that require historic objects such as the `showBalanceChanges` filter of `sui_getTransactionBlock()`.
+此配置在仍然修剪历史交易的同时管理完整的对象历史。具有此配置的全节点可以回答所有历史和索引查询（使用事务查询回退进行事务数据），包括需要历史对象的查询，如 `sui_getTransactionBlock()` 的 `showBalanceChanges` 过滤器。
 
-The main caveat is that the current setup enables **transaction pruner** to go ahead of **object pruner**. The object pruner might not be able to properly clean up the objects modified by the transactions that have been already pruned. You should closely monitor the disk space growth on a Full node with this configuration.
+主要的注意事项是当前的设置使得**事务修剪器**领先于**对象修剪器**。对象修剪器可能无法正确清理已被修剪的事务修改的对象。您应该密切监视具有此配置的全节点的磁盘空间增长。
 
-In addition to the regular (pruned) snapshots, Mysten Labs also maintains special RocksDB snapshots with full history of object versions available for the operators using this configuration.
+除了常规（修剪的）快照之外，Mysten Labs 还维护具有完整对象版本历史的特殊 RocksDB 快照，供使用此配置的操作员使用。
 
 ```yaml
 authority-store-pruning-config:

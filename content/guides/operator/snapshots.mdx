@@ -1,143 +1,148 @@
+```mdx
 ---
-title: Snapshots
-description: Database snapshots of the Sui network enable Full node operators a way to bootstrap a Full node without having to execute all the transactions that occurred after genesis.
+title: 快照
+description: Sui 网络的数据库快照使全节点运营者能够在不执行创世后发生的所有交易的情况下引导全节点。
 ---
 
-Database snapshots provide a point-in-time view of a database's store. In Sui, the database snapshot captures a running database's view of the Sui network from a particular node at the end of an epoch. While validators can enable snapshots, they are typically most valuable for Full node operators.
+数据库快照提供了数据库存储的特定时间点的视图。在 Sui 中，数据库快照捕获了运行数据库的节点在一个时期结束时对 Sui 网络的视图。虽然验证器可以启用快照，但它们通常对全节点运营者最有价值。
 
-Snapshots of the Sui network enable Full node operators a way to bootstrap a Full node without having to execute all the transactions that occurred after genesis. You can upload snapshots to remote object stores like S3, Google Cloud Storage, Azure Blob Storage, and similar services. These services typically run the export process in the background so there is no degradation in performance for your Full node. With snapshots stored in the cloud, you're more easily able to recover quickly from catastrophic failures in your system or hardware.
+Sui 网络的快照使全节点运营者能够在不执行创世后发生的所有交易的情况下引导全节点。您可以将快照上传到远程对象存储，如 S3、Google Cloud Storage、Azure Blob Storage 和类似的服务。这些服务通常在后台运行导出过程，因此您的全节点的性能不会降低。使用存储在云中的快照，您更容易从系统或硬件的灾难性故障中迅速恢复。
 
-To maintain a healthy Sui network, Sui encourages the Sui community to bring up additional snapshots to ensure stronger data availability across the network.
+为了维持健康的 Sui 网络，Sui 鼓励 Sui 社区启动更多的快照，以确保在整个网络上有更强的数据可用性。
 
-## Supported snapshot types
+## 支持的快照类型
 
-Sui supports two types of snapshots:
+Sui 支持两种类型的快照：
 
-- **RocksDB snapshots** are a point-in-time view of a database store. This means that the snapshot keeps the state of the system at the moment it generates the snapshot, including non-pruned data, additional indices, and other data.
-- **Formal snapshots** are database agnostic with a minimalistic format, in other words they contain only the data necessary to restore a node to a valid state at the specified epoch, thus they have a much smaller storage footprint and are generally faster to restore from when compared to database snapshots. Formal snapshots are also supported natively by the Sui protocol. In this context, this means that we can cryptographically verify the contents of the formal snapshot against a commitment from the committee at the epoch we are restoring to. This verification happens automatically and by default during a Formal snapshot restore (unless explicitly bypassed). 
+- **RocksDB 快照** 是数据库存储的特定时间点的视图。这意味着快照保留系统在生成快照时的状态，包括未修剪的数据、附加索引和其他数据。
+- **正式快照** 是与数据库无关的最小格式，换句话说，它们只包含在指定时期将节点还原到有效状态所需的数据，因此它们的存储占用空间要小得多，并且通常比数据库快照还原快。正式快照也是 Sui 协议原生支持的。在这个上下文中，这意味着我们可以在还原到的时期使用委员会的承诺对正式快照的内容进行加密验证。这种验证在正式快照还原期间（除非显式绕过）会自动发生并默认启用。
 
 :::info
 
-Formal snapshots are not suitable for use if you are running an RPC node that does any historical data lookups. For more information on node data management, see [Data Management](./data-management.mdx).
+正式快照不适用于运行执行任何历史数据查找的 RPC 节点。有关节点数据管理的更多信息，请参见 [数据管理](./data-management.mdx)。
 
 :::
 
-You can configure a Full node snapshot to generate a state snapshot at the end of each epoch.
-A single Full node can generate RocksDB snapshots, Formal snapshots, or both.
+您可以配置全节点快照以在每个时期结束时生成一个状态快照。单个全节点可以生成 RocksDB 快照、正式快照或两者兼而有之。
 
-## Enabling snapshots
+## 启用快照
 
-Full nodes do not take snapshots by default. To enable this feature you must apply specific configs to your Full node.
+默认情况下，全节点不会生成快照。要启用此功能，您必须为全节点应用特定的配置。
 
-Follow these steps to change the configs for a Full node:
+按照以下步骤更改全节点的配置：
 
-1. Stop your node, if it's running.
-2. Open your fullnode.yaml config file and apply config updates as the following sections show.
-3. Save the fullnode.yaml file and restart the node.
+1. 如果正在运行节点，请停止它。
+2. 打开 fullnode.yaml 配置文件，并根据以下各节的显示应用配置更新。
+3. 保存 fullnode.yaml 文件并重新启动节点。
 
-### Enabling RocksDB snapshots
+### 启用 RocksDB 快照
 
-Add an entry to the config file for `db-checkpoint-config`. Using Amazon's S3 service as an example:
-   ```yaml
-   db-checkpoint-config:
-     perform-db-checkpoints-at-epoch-end: true
-     perform-index-db-checkpoints-at-epoch-end: true
-     object-store-config:
-       object-store: "S3"
-       bucket: "<BUCKET-NAME>"
-       aws-access-key-id: “<ACCESS-KEY>”
-       aws-secret-access-key: “<SHARED-KEY>”
-       aws-region: "<BUCKET-REGION>"
-       object-store-connection-limit: 20
-   ```
-   - `object-store`: The remote object store to upload snapshots. Set as Amazon's `S3` service in the example.
-   - `bucket`: The S3 bucket name to store the snapshots.
-   - `aws-access-key-id` and `aws-secret-access-key`: AWS authentication information with write access to the bucket.
-   - `aws-region`: Region where bucket exists.
-   - `object-store-connection-limit`: Number of simultaneous connections to the object store.
+在配置文件中添加 `db-checkpoint-config` 的条目。以亚马逊的 S3 服务为例：
 
-### Enabling Formal snapshots
+```yaml
+db-checkpoint-config:
+  perform-db-checkpoints-at-epoch-end: true
+  perform-index-db-checkpoints-at-epoch-end: true
+  object-store-config:
+    object-store: "S3"
+    bucket: "<BUCKET-NAME>"
+    aws-access-key-id: "<ACCESS-KEY>"
+    aws-secret-access-key: "<SHARED-KEY>"
+    aws-region: "<BUCKET-REGION>"
+    object-store-connection-limit: 20
+```
 
-Add an entry to the config file for `db-checkpoint-config`. Using Amazon's S3 service as an example:
-   ```yaml
-   state-snapshot-write-config:
-      object-store-config:
-         object-store: "S3"
-         bucket: "<BUCKET-NAME>"
-         aws-access-key-id: “<ACCESS-KEY>”
-         aws-secret-access-key: “<SHARED-KEY>”
-         aws-region: "<BUCKET-REGION>"
-         object-store-connection-limit: 200
-   ```
-   The configuration settings shown in the example are specific to AWS S3, but GCS, Azure Storage, and Cloudflare R2 are all supported.
+- `object-store`：上传快照的远程对象存储。在示例中将其设置为 Amazon 的 `S3` 服务。
+- `bucket`：存储快照的 S3 存储桶名称。
+- `aws-access-key-id` 和 `aws-secret-access-key`：具有对存储桶的写访问权限的 AWS 认证信息。
+- `aws-region`：存储桶所在的区域。
+- `object-store-connection-limit`：与对象存储的同时连接数。
 
-## Restoring a Full node using snapshots
+### 启用正式快照
 
-### Restoring using RocksDB snapshots
+在配置文件中添加 `db-checkpoint-config` 的条目。以亚马逊的 S3 服务为例：
 
-To restore from a RocksDB snapshot, follow these steps:
+```yaml
+state-snapshot-write-config:
+   object-store-config:
+      object-store: "S3"
+      bucket: "<BUCKET-NAME>"
+      aws-access-key-id: "<ACCESS-KEY>"
+      aws
 
-1. Download the snapshot for the epoch you want to restore to your local disk. There is one snapshot per epoch in s3 bucket.
-1. Place the snapshot into the directory that the `db-config` value points to in your fullnode.yaml file. For example, if the `db-config` value points to `/opt/sui/db/authorities_db/full_node_db` and you want to restore from epoch 10, then copy the snapshot to the directory with this command:
+-secret-access-key: "<SHARED-KEY>"
+      aws-region: "<BUCKET-REGION>"
+      object-store-connection-limit: 200
+```
 
-   `aws s3 cp s3://<BUCKET_NAME>/epoch_10 /opt/sui/db/authorities_db/full_node_db/live --recursive`.
+示例中显示的配置设置是特定于 AWS S3 的，但支持 GCS、Azure 存储和 Cloudflare R2。
+
+## 使用快照还原全节点
+
+### 使用 RocksDB 快照还原
+
+要从 RocksDB 快照还原，请执行以下步骤：
+
+1. 将要还原的时期的快照下载到本地磁盘。每个时期在 s3 存储桶中有一个快照。
+2. 将快照放入 fullnode.yaml 文件中的 `db-config` 值指向的目录中。例如，如果 `db-config` 值指向 `/opt/sui/db/authorities_db/full_node_db`，并且您想从时期 10 还原，则使用以下命令将快照复制到具有此命令的目录：
+
+   `aws s3 cp s3://<BUCKET_NAME>/epoch_10 /opt/sui/db/authorities_db/full_node_db/live --recursive`。
    
-   Use `--no-sign-request` to bypass setting AWS credentials for the CLI.
+   使用 `--no-sign-request` 以绕过为 CLI 设置 AWS 凭据。
 
-1. Make sure you update the ownership of the downloaded directory to the sui user (whichever linux user you run `sui-node` as)
-   `sudo chown -R sui:sui  /opt/sui/db/authorities_db/full_node_db/live`.
-1. Start the Sui node.
+3. 确保更新下载目录的所有权以适应 sui 用户（运行 `sui-node` 的任何 Linux 用户）：
+   `sudo chown -R sui:sui /opt/sui/db/authorities_db/full_node_db/live`。
+4. 启动 Sui 节点。
 
 :::info
 
-When you restore a Full node from a snapshot, write it to the path `/opt/sui/db/authorities_db/full_node_db/live`. To restore a Validator node, use the path `/opt/sui/db/authorities_db/live`.
+当您从快照还原全节点时，请将其写入路径 `/opt/sui/db/authorities_db/full_node_db/live`。要还原验证器节点，请使用路径 `/opt/sui/db/authorities_db/live`。
 
 :::
 
-### Restoring using Formal snapshots
+### 使用正式快照还原
 
-To restore using a Formal snapshot, use the `sui-tool` binary. `sui-tool` can be downloaded along with other sui binaries.
-See [Install Sui](../developer/getting-started/sui-install.mdx) for more details.
+要使用正式快照还原，请使用 `sui-tool` 二进制文件。`sui-tool` 可以与其他 sui 二进制文件一起下载。
+有关更多详细信息，请参见 [安装 Sui](../developer/getting-started/sui-install.mdx)。
 
-The following steps can be used to restore a node from a Formal snapshot:
+可以使用以下步骤从正式快照还原节点：
 
-1. If it's running, stop the node.
-2. Run the command:
+1. 如果正在运行，请停止节点。
+2. 运行以下命令：
    ```
    sui-tool download-db-snapshot --epoch "<EPOCH-NUMBER>" --genesis "<PATH-TO-GENESIS-BLOB>" \
         --formal --network <NETWORK> --snapshot-bucket <BUCKET-NAME> --snapshot-bucket-type <TYPE> --path <PATH-TO-NODE-DB> --num-parallel-downloads 50 --no-sign-request --snapshot-bucket-type=s3
    ```
-   - `--epoch`: The epoch that you want to download, for example `200`. Mysten Labs hosted buckets will only keep the last 90 epochs. 
-   - `--genesis`: The path to the location of the network's `genesis.blob`.
-   - `--formal`: If set, restore from formal (slim, DB agnostic) snapshot.
-   - `--network`: Network to download snapshot for. Defaults to "mainnet".
-   - `--snapshot-bucket`: Source snapshot bucket name, eg `mysten-mainnet-snapshots`.
-   - `--snapshot-bucket-type`: Snapshot bucket type. GCS and S3 currently supported.
-   - `--path`: Path to snapshot directory on local filesystem.
-   - `--no-sign-request`: If true, no authentication is needed for snapshot restores.
+   - `--epoch`：要下载的时期，例如 `200`。Mysten Labs 托管的桶将仅保留最后 90 个时期。
+   - `--genesis`：网络 `genesis.blob` 的位置的路径。
+   - `--formal`：如果设置，从正式（轻巧的、与 DB 无关的）快照还原。
+   - `--network`：要下载快照的网络。默认为 "mainnet"。
+   - `--snapshot-bucket`：源快照桶名称，例如 `mysten-mainnet-snapshots`。
+   - `--snapshot-bucket-type`：快照桶类型。当前支持 GCS 和 S3。
+   - `--path`：本地文件系统上快照目录的路径。
+   - `--no-sign-request`：如果为 true，则还原快照无需身份验证。
 
+## Mysten Labs 管理的快照
 
-## Mysten Labs managed snapshots
+Mysten Labs 托管了两个快照存储访问级别。**高吞吐量、开启付费的桶** 和 **免费、无需权限的桶**。
 
-Mysten Labs hosts two tiers of snapshot storage access. **High throughput, Requester Pays enabled buckets**, and **free, permissionless buckets**.
+**高吞吐量、开启付费的桶：**
+* GCS 和 S3 都设置为开启付费。这意味着在从这些桶下载时，您需要提供一组有效的 AWS/GCP 凭据。
+[开启付费](https://cloud.google.com/storage/docs/requester-pays) 意味着您需要支付拉取快照数据的出站费用。
+* 如果您正在寻找最佳的下载速度，我们建议使用启用了 [传输加速](https://aws.amazon.com/s3/transfer-acceleration/)
+* 如果您寻找最佳的下载速度，我们建议使用启用了 [transfer acceleration](https://aws.amazon.com/s3/transfer-acceleration/) 的 S3 存储桶。
 
-**High throughput, Requester Pays enabled buckets:**
-* GCS and S3 are both setup with requester pays. This means that you'll need to provide a set of valid AWS/GCP credentials when downloading from these buckets.
-[Requester Pays](https://cloud.google.com/storage/docs/requester-pays) means you are charged for the egress costs of pulling the snapshot data.
-* If you are looking for the best download speeds, we recommend using the S3 buckets with [transfer acceleration](https://aws.amazon.com/s3/transfer-acceleration/) enabled.
+**免费、无权限的存储桶:**
+* 这些目前托管在 Cloudflare R2，目前仅在北美，但我们计划很快添加更多的区域。
+* 由于存储桶对互联网开放，无需提供任何云凭据。
 
-**Free, permissionless buckets:**
-* These are currently hosted on Cloudflare R2, currently only in North America, but we plan on adding more regions soon.
-* Since the bucket is open to the internet, there's no need to provide any cloud credentials.
-
-### Bucket Names
+### 存储桶名称
 **S3**
-Testnet: `s3://mysten-testnet-snapshots/`, `s3://mysten-testnet-formal/`
-Mainnet: `s3://mysten-mainnet-snapshots/`,  `s3://mysten-mainnet-formal/`
+测试网: `s3://mysten-testnet-snapshots/`, `s3://mysten-testnet-formal/`
+主网: `s3://mysten-mainnet-snapshots/`,  `s3://mysten-mainnet-formal/`
 
 **GCS**
-Testnet: `gs://mysten-testnet-snapshots/`, `gs://mysten-testnet-formal/`
-Mainnet: `gs://mysten-mainnet-snapshots/`,  `gs://mysten-mainnet-formal/`
+测试网: `gs://mysten-testnet-snapshots/`, `gs://mysten-testnet-formal/`
+主网: `gs://mysten-mainnet-snapshots/`,  `gs://mysten-mainnet-formal/`
 
-![Mysten Managed Snapshots](./images/mysten-cloud-snapshots.png "A diagram that shows the current architecture of mysten snapshot availability")
-
+![Mysten 托管的快照](./images/mysten-cloud-snapshots.png "显示 Mysten 快照可用性的当前架构的图表")

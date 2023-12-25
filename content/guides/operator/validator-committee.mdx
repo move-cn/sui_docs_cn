@@ -1,52 +1,52 @@
 ---
-title: Validator Committee
-description: Sui has a committee of validators to verify on-chain transactions. Epochs, quorums, transactions, certificates, and consensus are touch points for this committee.
+title: 验证者委员会
+description: Sui拥有一个验证者委员会来验证链上交易。时期、法定人数、交易、证书和共识是该委员会的关键点。
 ---
 
-A set of independent validators participate on the Sui network, each running its own instance of the Sui software on a separate machine (or a sharded cluster of machines the same entity operates). Each validator handles read and write requests sent by clients, verifying transactions and updating on-chain information.
+一组独立的验证者参与Sui网络，每个都在单独的机器上（或同一实体操作的分片集群上）运行其自己的Sui软件实例。每个验证者处理客户端发送的读写请求，验证交易并更新链上信息。
 
-To learn how to set up and run a Sui Validator node, including how staking and rewards work, see [Sui Validator Node Configuration](./validator-config.mdx).
+要了解如何设置和运行Sui验证者节点，包括质押和奖励的工作原理，请参阅[Sui验证者节点配置](./validator-config.mdx)。
 
-Sui uses Delegated Proof-of-Stake (DPoS) to determine which validators operate the network and their voting power. Validators are incentivized to participate in good faith via a share of transaction fees, staking rewards, and slashing stake and staking rewards in case of misbehavior.
+Sui使用委托权益证明（DPoS）来确定哪些验证者操作网络以及它们的投票权。通过交易费用的一部分、质押奖励以及在不当行为的情况下削减质押和质押奖励，激励验证者以善意参与。
 
-## Epochs 
+## 时期
 
-Operation of the Sui network is temporally partitioned into non-overlapping, approximate fixed-duration (~24-hour) epochs. During a particular epoch, the set of validators participating in the network and their voting power is fixed. At an epoch boundary, reconfiguration might occur and can change the set of validators participating in the network and their voting power. Conceptually, reconfiguration starts a new instance of the Sui protocol with the previous epoch's final state as [genesis](./genesis.mdx) and the new set of validators as the operators. Besides validator set changes, tokenomics operations such as staking/un-staking, and distribution of staking rewards are also processed at epoch boundaries.
+Sui网络的运行被时间分割为不重叠的、近似固定时长（~24小时）的时期。在特定的时期内，参与网络的验证者集合及其投票权是固定的。在时期边界，可能发生重新配置，并且可以更改参与网络的验证者集合及其投票权。从概念上讲，重新配置启动Sui协议的一个新实例，将前一个时期的最终状态作为[起源](./genesis.mdx)和新的验证者集合作为操作者。除了验证者集合的更改外，时期边界还处理诸如质押/解质押以及在时期边界进行的质押奖励分配等令牌经济学操作。
 
-## Quorums 
+## 法定人数
 
-A quorum is a set of validators whose combined voting power is greater than two-thirds (>2/3) of the total during a particular epoch. For example, in a Sui instance operated by four validators that all have the same voting power, any group containing three validators is a quorum.
+法定人数是在特定时期内其组合投票权超过总数的验证者集。例如，在由四个具有相同投票权的验证者操作的Sui实例中，任何包含三个验证者的组合都是法定人数。
 
-The quorum size of >2/3 ensures Byzantine fault tolerance (BFT). A validator commits a transaction (durably store the transaction and update its internal state with the effects of the transaction) only if it is accompanied by cryptographic signatures from a quorum. Sui calls the combination of the transaction and the quorum signatures on its bytes a *certificate*. The policy of committing only certificates ensures Byzantine fault tolerance: if >2/3 of the validators faithfully follow the protocol, they are guaranteed to eventually agree on both the set of committed certificates and their effects.
+> 法定人数的大小超过2/3，确保了拜占庭容错（BFT）。验证者仅在交易伴随着法定人数的密码签名时（伴随交易的密码签名用于耐用地存储交易并更新其内部状态），才会提交交易。Sui将交易和法定人数对其字节的签名的组合称为*证书*。只有提交证书才能确保拜占庭容错：如果超过2/3的验证者忠实地遵循协议，它们将最终同意提交的证书集合及其效果。
 
-## Write requests 
+## 写入请求
 
-A validator can handle two types of write requests: transactions and certificates. At a high level, a client:
+验证者可以处理两种类型的写入请求：交易和证书。在高层次上，客户端：
 
-- Communicates a transaction to a quorum of validators to collect the signatures required to form a certificate.
-- Submits a certificate to a validator to commit state changes on that validator.
+- 与验证者法定人数通信，收集形成证书所需的签名。
+- 将证书提交给验证者，以在该验证者上提交状态更改。
 
-### Transactions 
+### 交易
 
-When a validator receives a transaction from a client, it first performs transaction validity checks (validity of the sender's signature). If the checks pass, the validator locks all owned-objects and signs the transaction bytes, then returns the signature to the client. The client repeats this process with multiple validators until it has collected signatures on its transaction from a quorum, thereby forming a certificate.
+当验证者从客户端接收到交易时，它首先执行交易的有效性检查（检查发送方签名的有效性）。如果检查通过，验证者锁定所有拥有的对象并对交易字节进行签名，然后将签名返回给客户端。客户端重复此过程与多个验证者一起，直到它从法定人数那里收集到其交易的签名，从而形成证书。
 
-The process of collecting validator signatures on a transaction into a certificate and the process of submitting certificates can be performed in parallel. The client can simultaneously multicast transactions/certificates to an arbitrary number of validators. Alternatively, a client can outsource either or both of these tasks to a third-party service provider. This provider must be trusted for liveness (it can refuse to form a certificate), but not for safety (it cannot change the effects of the transaction, and does not need the user's secret key).
+将验证者签名在交易上形成证书和提交证书的过程可以并行执行。客户端可以同时将交易/证书广播到任意数量的验证者。或者，客户端可以将这些任务中的一个或两个委托给第三方服务提供商。该提供商必须值得信任以确保活力（它可以拒绝形成证书），但不需要安全性（它不能更改交易的效果，并且不需要用户的秘密密钥）。
 
-### Certificates
+### 证书
 
-After the client forms a certificate, it submits it to the validators, which perform certificate validity checks. These checks ensure the signers are validators in the current epoch, and the signatures are cryptographically valid. If the checks pass, the validators execute the transaction inside the certificate. Execution of a transaction either succeeds and commits all of its effects or aborts and has no effect other than debiting the transaction's gas input. Some reasons a transaction might abort include an explicit abort instruction, a runtime error such as division by zero, or exceeding the maximum gas budget. Whether it succeeds or aborts, the validator durably stores the certificate indexed by the hash of its inner transaction.
+客户端形成证书后，将其提交给验证者，后者执行证书的有效性检查。这些检查确保签署者是当前时期的验证者，并且签名在密码学上有效。如果检查通过，验证者在证书内执行交易。交易的执行要么成功且提交了其所有效果，要么中止且除了记账交易的输入之外没有其他效果。交易中止的一些原因包括显式的中止指令、运行时错误（例如，除零）或超过最大燃气预算。无论交易成功还是中止，验证者都会耐用地存储以其内部交易的哈希为索引的证书。
 
-If a client collects a quorum of signatures on the effects of the transaction, then the client has a promise of finality. This means that transaction effects persist on the shared database and are actually committed and visible to everyone by the end of the epoch. This does not mean that the latency is a full epoch, because you can use the effects certificate to convince anyone of the transactions finality, as well as to access the effects and issue new transactions. As with transactions, you can parallelize the process of sharing a certificate with validators and (if desired) outsource to a third-party service provider.
+如果客户端在交易效果上收集到法定人数的签名，则客户端具有最终性的承诺。这意味着交易效果在共享数据库上持久存在，实际上在时期结束时对所有人都是提交的并可见的。这并不意味着延迟是整个时期，因为您可以使用效果证书来说服任何人交易的最终性，以及访问效果并发出新的交易。与交易一样，您可以并行地与验证者共享证书的过程，并且（如果需要）可以外包给第三方服务提供商。
 
-## The role of Narwhal and Bullshark
+## 独角鲸和牛鲨的作用
 
-Sui takes advantage of Narwhal and Bullshark as its mempool and consensus engines. Narwhal/Bullshark (N/B) is also implemented in Sui so that when Byzantine agreement is required it uses a high-throughput DAG-based consensus to manage shared locks while execution on different shared objects is parallelized.
+Sui利用独角鲸和牛鲨作为其内存池和共识引擎。独角鲸/牛鲨（N/B）也在Sui中实现，因此在需要拜占庭协议时，它使用基于DAG的高吞吐量共识来管理在不同共享对象上并行执行时的共享锁。
 
-Narwhal enables the parallel ordering of transactions into batches that are collected into concurrently proposed blocks, and Bullshark defines an algorithm for executing the DAG that these blocks form. N/B combined builds a DAG of blocks, concurrently proposed, and creates an order between those blocks as a byproduct of the building of the DAG. But that order is overlaid on top of the causal order of Sui transactions (the "payload" of Narwhal/Bullshark here), and does not substitute for it:
+独角鲸使交易能够并行排序成批次，这些批次被并发地提议为块，并且牛鲨定义了执行这些块形成的DAG的算法。N/B组合构建了块的DAG，同时提议，并在DAG的构建过程中产生了这些块之间的顺序。但是，该顺序叠加在Sui事务的因果顺序之上（这里的Narwhal/Bullshark的“有效载荷”），并不代替它：
 
-- N/B operates in OX, rather than XO mode (O = order, X = execute); the execution occurs after the Narwhal/Bullshark ordering.
-- The output of N/B is therefore a sequence of transactions, with interdependencies stored in the transaction data itself.
+- N/B以OX模式运行，而不是XO模式（O = order，X = execute）；执行发生在Narwhal/Bullshark排序之后。
+- 因此，N/B的输出是一系列交易，其中交易数据本身存储了交易的内部依赖关系。
 
-Consensus sequences certificates of transactions. These represent transactions that have already been presented to 2/3 of validators that checked that all their owned objects are available to be operated on and signed the transaction. Upon a certificate being sequenced, Sui sets the lock of the shared objects at the next available version to map to the execution of that certificate. So for example if you have a shared object X at version 2, and you sequence certificate T, Sui stores T -> [(X, 2)]. That is all you do when Sui reaches consensus, and as a result Sui can ingest a lot of sequenced transactions.
+共识顺序证书交易。这些代表已经呈现给2/3的验证者的交易，这些验证者检查它们所有拥有的对象都可以被操作，并签署了交易。一旦证书被排序，Sui将共享对象的锁设置为下一个可用版本，以映射到该证书的执行。例如，如果您有一个共享对象X，版本为2，并且您排序了证书T，那么Sui将T -> [(X，2)]存储。这就是当Sui达成共识时所做的全部工作，因此Sui可以吸收大量经过排序的交易。
 
-Now, after this is done Sui can execute all certificates that have their locks set, on one or multiple cores. Obviously, transactions for earlier versions of objects need to be processed first (causally), and that reduces the degree of concurrency. The read and write set of the transaction can be statically determined from its versioned object inputs--execution can only read/write an object that was an input to the transaction, or that was created by the transaction.
+现在，在完成此操作后，Sui可以在一个或多个核心上执行所有已设置锁的证书。显然，需要首先处理对象早期版本的交易（因果关系），这会降低并发度。事务的读写集可以从其版本化的对象输入中静态确定--执行只能读取/写入作为事务输入的对象，或者由事务创建的对象。
