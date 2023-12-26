@@ -5,17 +5,17 @@ description: 编写一个在 Move 中从 OpenWeather API 获取天气数据并�
 
 本指南演示了如何在Move中编写一个模块（智能合约），在Devnet上部署它，并添加一个后端，每10分钟从OpenWeather API获取天气数据并更新每个城市的天气状况。本指南创建的dApp称为Sui天气Oracle，它为全球1000多个地点提供实时天气数据。
 
-您可以访问并使用OpenWeather API的天气数据用于各种应用，例如随机性、投注、游戏、保险、旅行、教育或研究。您还可以基于城市的天气数据使用SUI天气Oracle智能合约的`mint`函数铸造天气NFT。
+你可以访问并使用OpenWeather API的天气数据用于各种应用，例如随机性、投注、游戏、保险、旅行、教育或研究。你还可以基于城市的天气数据使用SUI天气Oracle智能合约的`mint`函数铸造天气NFT。
 
-本指南假定您已经[安装了Sui](../getting-started/sui-install.mdx)并了解Sui的基本知识。
+本指南假定你已经[安装了Sui](../getting-started/sui-install.mdx)并了解Sui的基本知识。
 
 ## Move智能合约
 
-与所有Sui dApps一样，Move链上的一个Move包支持Sui天气Oracle的逻辑。以下说明将指导您创建和发布该模块。
+与所有Sui dApps一样，Move链上的一个Move包支持Sui天气Oracle的逻辑。以下说明将指导你创建和发布该模块。
 
 ### 天气Oracle模块
 
-在开始之前，您必须初始化一个Move包。在要存储示例的目录中打开终端或控制台，并运行以下命令以创建一个名为 `weather_oracle` 的空包：
+在开始之前，你必须初始化一个Move包。在要存储示例的目录中打开终端或控制台，并运行以下命令以创建一个名为 `weather_oracle` 的空包：
 
 ```bash
 sui move new weather_oracle
@@ -177,7 +177,7 @@ public fun remove_city(
 }
 ```
 
-现在您已经实现了 `add_city` 和 `remove_city` 函数，可以继续下一步，即了解如何更新每个城市的天气数据。后端服务每隔 10 分钟从 OpenWeather API 获取天气数据，然后将数据传递给 Sui 天气 Oracle 智能合约的 `update` 函数。`update` 函数以城市的 geoname ID 和城市的新天气数据作为参数，并使用新数据更新城市天气 Oracle 对象。通过这种方式，区块链上的天气数据始终保持最新和准确。
+现在你已经实现了 `add_city` 和 `remove_city` 函数，可以继续下一步，即了解如何更新每个城市的天气数据。后端服务每隔 10 分钟从 OpenWeather API 获取天气数据，然后将数据传递给 Sui 天气 Oracle 智能合约的 `update` 函数。`update` 函数以城市的 geoname ID 和城市的新天气数据作为参数，并使用新数据更新城市天气 Oracle 对象。通过这种方式，区块链上的天气数据始终保持最新和准确。
 
 ```rust title='weather.move'
 public fun update(
@@ -209,7 +209,7 @@ public fun update(
 }
 ```
 
-您已经定义了 Sui 天气 Oracle 智能合约的数据结构，但是您需要一些函数来访问和操作数据。现在，添加一些辅助函数，以读取并返回 `WeatherOracle` 对象的天气数据。这些函数允许您获取 Oracle 中特定城市的天气数据。这些函数还允许您以用户友好的方式格式化和显示天气数据。
+你已经定义了 Sui 天气 Oracle 智能合约的数据结构，但是你需要一些函数来访问和操作数据。现在，添加一些辅助函数，以读取并返回 `WeatherOracle` 对象的天气数据。这些函数允许你获取 Oracle 中特定城市的天气数据。这些函数还允许你以用户友好的方式格式化和显示天气数据。
 
 ```rust title='weather.move'
 // --------------- Read-only References ---------------
@@ -344,7 +344,7 @@ public fun city_weather_oracle_dt(
 }
 ```
 
-最后，添加一个额外的功能，允许任何人通过传递 geoname ID 铸造一个带有城市当前条件的 `WeatherNFT`。`mint` 函数是一个公共函数，允许任何人根据城市的天气数据铸造一个天气 NFT。该函数以 `WeatherOracle` 共享对象和城市的 geoname ID 作为参数，并返回该城市的新 `WeatherNFT` 对象。`WeatherNFT` 对象是一个独特且不可替代的代币，代表了铸造时城市的天气情况。`WeatherNFT` 对象具有与 `CityWeatherOracle` 对象相同的数据，如 `geonameID`、`name`、`country`、`latitude`、`longitude`、`positive latitude` 和 `longitude`、`weather ID`、`temperature`、`pressure`、`humidity`、`visibility`、`wind speed`、`wind degree`、`wind gust`、`clouds` 和 `timestamp`。该函数通过使用 geoname ID 作为键借用引用 `CityWeatherOracle` 对象，并为 `WeatherNFT` 对象分配唯一的 ID（`UID`）来创建 `WeatherNFT` 对象。然后，该函数将 `WeatherNFT` 对象的所有权转移给交易发起者。通过这种方式，该函数允许任何人铸造天气 NFT 并拥有城市天气的数字表示。您可以使用此功能创建自己的天气 NFT 收藏，或在需要可验证和不可变天气数据的其他应用中使用它们。
+最后，添加一个额外的功能，允许任何人通过传递 geoname ID 铸造一个带有城市当前条件的 `WeatherNFT`。`mint` 函数是一个公共函数，允许任何人根据城市的天气数据铸造一个天气 NFT。该函数以 `WeatherOracle` 共享对象和城市的 geoname ID 作为参数，并返回该城市的新 `WeatherNFT` 对象。`WeatherNFT` 对象是一个独特且不可替代的代币，代表了铸造时城市的天气情况。`WeatherNFT` 对象具有与 `CityWeatherOracle` 对象相同的数据，如 `geonameID`、`name`、`country`、`latitude`、`longitude`、`positive latitude` 和 `longitude`、`weather ID`、`temperature`、`pressure`、`humidity`、`visibility`、`wind speed`、`wind degree`、`wind gust`、`clouds` 和 `timestamp`。该函数通过使用 geoname ID 作为键借用引用 `CityWeatherOracle` 对象，并为 `WeatherNFT` 对象分配唯一的 ID（`UID`）来创建 `WeatherNFT` 对象。然后，该函数将 `WeatherNFT` 对象的所有权转移给交易发起者。通过这种方式，该函数允许任何人铸造天气 NFT 并拥有城市天气的数字表示。你可以使用此功能创建自己的天气 NFT 收藏，或在需要可验证和不可变天气数据的其他应用中使用它们。
 
 ```rust title='weather.move'
 struct WeatherNFT has key, store {
@@ -397,7 +397,7 @@ public fun mint(
 }
 ```
 
-至此，您的 `weather.move` 代码已经完成。
+至此，你的 `weather.move` 代码已经完成。
 
 ## 部署
 
@@ -407,17 +407,17 @@ public fun mint(
 
 ## 后端
 
-您已成功在区块链上部署了 Sui 天气 Oracle 智能合约。现在，是时候创建一个可以与其进行交互的 Express 后端了。Express 后端执行以下任务：
+你已成功在区块链上部署了 Sui 天气 Oracle 智能合约。现在，是时候创建一个可以与其进行交互的 Express 后端了。Express 后端执行以下任务：
 
 - 使用智能合约的 `add_city` 函数，通过将每个城市的 geoname ID、名称、国家、纬度、经度以及正纬度和经度作为参数，对智能合约进行初始化，添加 1,000 个城市。
-- 每隔 10 分钟从 OpenWeather API 获取每个城市的天气数据，使用您从该网站获取的 API 密钥。后端解析 JSON 响应，并提取每个城市的天气数据，如天气 ID、温度、气压、湿度、能见度、风速、风向、阵风、云量和时间戳。
+- 每隔 10 分钟从 OpenWeather API 获取每个城市的天气数据，使用你从该网站获取的 API 密钥。后端解析 JSON 响应，并提取每个城市的天气数据，如天气 ID、温度、气压、湿度、能见度、风速、风向、阵风、云量和时间戳。
 - 使用智能合约的 `update` 函数，在区块链上更新每个城市的天气数据。后端将每个城市的 geoname ID 和新的天气数据作为参数传递给该函数。
 
-Express 后端使用 [Sui Typescript SDK](https://sdk.mystenlabs.com/typescript)，这是一个 TypeScript 库，使您能够与 Sui 区块链和智能合约进行交互。使用 Sui Typescript SDK，您可以连接到 Sui 网络，签名并提交交易，并查询智能合约的状态。您还将使用 OpenWeather API 每隔 10 分钟获取每个城市的天气数据并更新智能合约。此外，如果您希望探索智能合约的该功能，还可以铸造天气 NFT。
+Express 后端使用 [Sui Typescript SDK](https://sdk.mystenlabs.com/typescript)，这是一个 TypeScript 库，使你能够与 Sui 区块链和智能合约进行交互。使用 Sui Typescript SDK，你可以连接到 Sui 网络，签名并提交交易，并查询智能合约的状态。你还将使用 OpenWeather API 每隔 10 分钟获取每个城市的天气数据并更新智能合约。此外，如果你希望探索智能合约的该功能，还可以铸造天气 NFT。
 
 ### 初始化项目
 
-首先，初始化您的后端项目。要执行此操作，您需要按照以下步骤操作：
+首先，初始化你的后端项目。要执行此操作，你需要按照以下步骤操作：
 
 - 创建一个名为 `weather-oracle-backend` 的新文件夹，并在终端中导航到该文件夹。
 - 运行 `npm init -y` 以使用默认值创建一个带有 package.json 文件的项目。
@@ -551,7 +551,7 @@ addCityWeather();
     - 增加计数器，并检查是否达到 `NUMBER_OF_CITIES`。如果是，则使用事务块调用另一个异步函数 `signAndExecuteTransactionBlock`，将事务块作为参数，该函数会在区块链上签署和执行事务块，并记录结果。然后代码重置计数器和事务块。
     - 循环结束后，再次使用剩余事务块调用 `signAndExecuteTransactionBlock` 函数。
 
-现在您已初始化了 `WeatherOracle` 共享对象。下一步是学习如何每隔 10 分钟使用来自 OpenWeatherMap API 的最新天气数据更新它们。
+现在你已初始化了 `WeatherOracle` 共享对象。下一步是学习如何每隔 10 分钟使用来自 OpenWeatherMap API 的最新天气数据更新它们。
 
 ```typescript title='index.ts'
 import {

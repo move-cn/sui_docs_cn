@@ -2,19 +2,19 @@
 title: 连接到本地网络
 ---
 
-使用 Sui 本地网络测试您的 dApps 是否与 Sui 的最新更改兼容，并为下一个 Sui 发布准备 Devnet 或 Testnet 网络。为了设置本地网络，Sui 提供了 `sui-test-validator` 二进制文件。`sui-test-validator` 启动一个本地网络，包括一个 Sui 全节点、一个 Sui 验证节点和一个 Sui 水龙头。您可以使用附带的水龙头获取测试 SUI 以在本地网络上使用。
+使用 Sui 本地网络测试你的 dApps 是否与 Sui 的最新更改兼容，并为下一个 Sui 发布准备 Devnet 或 Testnet 网络。为了设置本地网络，Sui 提供了 `sui-test-validator` 二进制文件。`sui-test-validator` 启动一个本地网络，包括一个 Sui 全节点、一个 Sui 验证节点和一个 Sui 水龙头。你可以使用附带的水龙头获取测试 SUI 以在本地网络上使用。
 
 如果尚未安装 Sui，请参阅 [安装 Sui](./sui-install.mdx)。
 
 ## 启动本地网络
 
-要启动本地网络，请从您的 `sui` 根文件夹运行以下命令。
+要启动本地网络，请从你的 `sui` 根文件夹运行以下命令。
 
 ```bash
 RUST_LOG="off,sui_node=info" cargo run --bin sui-test-validator
 ```
 
-该命令启动 `sui-test-validator`。`RUST_LOG`=`off,sui_node=info` 关闭了除 sui-node 之外所有组件的日志记录。如果您想查看更详细的日志，可以从命令中删除 `RUST_LOG`。
+该命令启动 `sui-test-validator`。`RUST_LOG`=`off,sui_node=info` 关闭了除 sui-node 之外所有组件的日志记录。如果你想查看更详细的日志，可以从命令中删除 `RUST_LOG`。
 
 **重要提示：** 每次启动 `sui-test-validator` 时，网络都会作为一个全新的网络启动，没有之前的数据。本地网络不是持久化的。
 
@@ -36,7 +36,7 @@ OPTIONS:
 
 ### 访问本地的全节点
 
-使用以下命令从您的本地网络检索总交易计数：
+使用以下命令从你的本地网络检索总交易计数：
 
 ```bash
 curl --location --request POST 'http://127.0.0.1:9000' \
@@ -59,15 +59,15 @@ curl --location --request POST 'http://127.0.0.1:9000' \
 }
 ```
 
-## 将 Sui 客户端 CLI 连接到您的本地网络
+## 将 Sui 客户端 CLI 连接到你的本地网络
 
-您可以使用 Sui 客户端 CLI 连接到任何 Sui 网络。默认情况下，它连接到 Sui Devnet。要连接到您的本地网络，请创建一个名为 `local` 的新环境别名，将客户端使用的 RPC URL 设置为您的本地网络。
+你可以使用 Sui 客户端 CLI 连接到任何 Sui 网络。默认情况下，它连接到 Sui Devnet。要连接到你的本地网络，请创建一个名为 `local` 的新环境别名，将客户端使用的 RPC URL 设置为你的本地网络。
 
 ```shell
 sui client new-env --alias local --rpc http://127.0.0.1:9000
 ```
 
-接下来，请使用以下命令将活动环境设置为您创建的新的 `local` 环境。
+接下来，请使用以下命令将活动环境设置为你创建的新的 `local` 环境。
 
 ```
 sui client switch --env local
@@ -77,7 +77,7 @@ sui client switch --env local
 
 `已切换到活动环境 [local]`
 
-您可以使用以下命令检查当前的活动环境：
+你可以使用以下命令检查当前的活动环境：
 
 ```bash
 sui client active-env
@@ -89,7 +89,7 @@ sui client active-env
 
 ## 显示当前活动地址
 
-如果您没有指定地址，Sui 客户端 CLI 将使用活动地址执行命令。使用以下命令在您的本地网络上显示活动地址。
+如果你没有指定地址，Sui 客户端 CLI 将使用活动地址执行命令。使用以下命令在你的本地网络上显示活动地址。
 
 ```
 sui client active-address
@@ -99,13 +99,13 @@ sui client active-address
 
 `0xbc33e6e4818f9f2ef77d020b35c24be738213e64d9e58839ee7b4222029610de`
 
-使用活动地址获取在您的本地网络上使用的测试 SUI。使用 `sui client addresses` 命令查看您本地网络上的所有地址。
+使用活动地址获取在你的本地网络上使用的测试 SUI。使用 `sui client addresses` 命令查看你本地网络上的所有地址。
 
 **注意：** 在运行该命令时返回的地址是唯一的，与本示例中使用的地址不匹配。
 
 ## 使用本地水龙头 {#use-the-local-faucet}
 
-在您的本地网络上进行的交易需要 SUI 币支付燃气费，就像其他网络一样。要将币发送到连接到您的本地网络的 Sui 钱包，请参阅[设置本地 Sui 钱包](#set-up-a-local-sui-wallet)。您可以使用本地 Sui 钱包的地址与水龙头一起使用。
+在你的本地网络上进行的交易需要 SUI 币支付燃气费，就像其他网络一样。要将币发送到连接到你的本地网络的 Sui 钱包，请参阅[设置本地 Sui 钱包](#set-up-a-local-sui-wallet)。你可以使用本地 Sui 钱包的地址与水龙头一起使用。
 
 使用以下 cURL 命令从本地水龙头获取测试币。
 
@@ -177,9 +177,9 @@ sui client gas
 
 ## 在本地安装 Sui 钱包和 Sui Explorer
 
-要在本地安装和使用这些应用程序，您首先必须安装 [pnpm](https://pnpm.io/installation)。请根据您的操作系统使用相应的说明。
+要在本地安装和使用这些应用程序，你首先必须安装 [pnpm](https://pnpm.io/installation)。请根据你的操作系统使用相应的说明。
 
-安装了 `pnpm` 后，请使用以下命令在您的工作空间中安装所需的依赖项：
+安装了 `pnpm` 后，请使用以下命令在你的工作空间中安装所需的依赖项：
 
 ```shell
 pnpm install
@@ -191,11 +191,11 @@ pnpm install
 pnpm turbo build
 ```
 
-如果您遇到Turbo Build的错误，请确认没有`package-lock.json'。 如果文件存在，请将其删除，然后再次运行命令。
+如果你遇到Turbo Build的错误，请确认没有`package-lock.json'。 如果文件存在，请将其删除，然后再次运行命令。
 
-###在您的本地网络上设置SUI Explorer
+###在你的本地网络上设置SUI Explorer
 
-要将实时SUI Explorer连接到您的本地网络，请打开URL：[https：//suiexplorer.com/?network=local]（https://suiexplorer.com/?network=local）。 SUI Explorer的实时版本可能不包括SUI Repo的“ Main”分支中添加的最新更新。 要使用SUI Explorer，其中包括最新更新，请从SUI Repo的本地克隆中安装和运行SUI Explorer。
+要将实时SUI Explorer连接到你的本地网络，请打开URL：[https：//suiexplorer.com/?network=local]（https://suiexplorer.com/?network=local）。 SUI Explorer的实时版本可能不包括SUI Repo的“ Main”分支中添加的最新更新。 要使用SUI Explorer，其中包括最新更新，请从SUI Repo的本地克隆中安装和运行SUI Explorer。
 
 从“ sui”根文件夹中运行以下命令：
 
@@ -205,17 +205,17 @@ pnpm turbo build
 pnpm explorer dev
 ```
 
-命令完成后，通过以下URL打开您的本地SUI Explorer：[http：// localhost：3000/]（http：// localhost：3000/）。
+命令完成后，通过以下URL打开你的本地SUI Explorer：[http：// localhost：3000/]（http：// localhost：3000/）。
 
 有关SUI Explorer的更多详细信息，请参见[Explorer Readme]（https://github.com/mystenlabs/sui/sui/blob/main/main/main/apps/explorer/readme.md#set-up）。
 
 ##设置当地的SUI钱包
 
-您还可以使用本地SUI钱包来测试本地网络。 然后，您可以在本地SUI Explorer上看到从本地SUI钱包执行的交易。
+你还可以使用本地SUI钱包来测试本地网络。 然后，你可以在本地SUI Explorer上看到从本地SUI钱包执行的交易。
 
-**注意：**要运行命令，您必须安装`pnpm`。 有关详细信息，请参见[在本地安装SUI Wallet和Sui Explorer]（＃安装sui-wallet and-sui-explorer）。
+**注意：**要运行命令，你必须安装`pnpm`。 有关详细信息，请参见[在本地安装SUI Wallet和Sui Explorer]（＃安装sui-wallet and-sui-explorer）。
 
-在启动SUI Wallet应用程序之前，请更新其默认环境，以指向您的本地网络。 为此，首先制作`sui/apps/wallet/configs/vosings/.env.defaults“并将其重命名为同一目录中的.env”的副本。 在您的`.env`文件中，编辑第一行读取`api_env = local`然后保存文件。
+在启动SUI Wallet应用程序之前，请更新其默认环境，以指向你的本地网络。 为此，首先制作`sui/apps/wallet/configs/vosings/.env.defaults“并将其重命名为同一目录中的.env”的副本。 在你的`.env`文件中，编辑第一行读取`api_env = local`然后保存文件。
 
 从“ SUI”根文件夹中运行以下命令，以在本地网络上启动SUI钱包：
 
@@ -225,19 +225,19 @@ pnpm wallet dev
 
 ### 将本地 Sui 钱包添加到 Chrome
 
-在构建本地版本的 Sui 钱包之后，您可以将扩展添加到 Chrome：
+在构建本地版本的 Sui 钱包之后，你可以将扩展添加到 Chrome：
 
 1. 打开 Chrome 浏览器并导航到 `chrome://extensions`。
 1. 点击 **开发者模式** 开关以启用（如果尚未启用）。
-1. 点击 **加载已解压的** 按钮，然后选择您的 `sui/apps/wallet/dist` 目录。
+1. 点击 **加载已解压的** 按钮，然后选择你的 `sui/apps/wallet/dist` 目录。
 
 有关在 Chrome 上使用本地构建的钱包的更多信息，请参阅 Sui 钱包 [Readme](https://github.com/MystenLabs/sui/blob/main/apps/wallet/README.md#install-the-extension-to-chrome)。
 
 ## 生成示例数据
 
-使用 TypeScript SDK 向您的网络添加示例数据。
+使用 TypeScript SDK 向你的网络添加示例数据。
 
-**注意：** 要运行该命令，您必须首先完成“在本地构建应用程序的先决条件”部分。
+**注意：** 要运行该命令，你必须首先完成“在本地构建应用程序的先决条件”部分。
 
 从 `sui` 根目录运行以下命令：
 
@@ -249,7 +249,7 @@ pnpm --filter @mysten/sui.js test:e2e
 
 ## 故障排除
 
-如果您没有使用 [Node.js 18](https://nodejs.org/de/blog/announcements/v18-release-announce)，您可能会看到以下消息：
+如果你没有使用 [Node.js 18](https://nodejs.org/de/blog/announcements/v18-release-announce)，你可能会看到以下消息：
 
 `Retrying requesting from faucet: Retry failed: fetch is not defined`
 
@@ -257,4 +257,4 @@ pnpm --filter @mysten/sui.js test:e2e
 
 ## 使用 Sui TypeScript SDK 进行测试
 
-Sui TypeScript SDK 的发布版本可能是您为本地网络安装的 Sui 版本之前的版本。为确保您使用的是 SDK 的最新版本，请在 Sui NPM 注册表的 [Current Tags](https://www.npmjs.com/package/@mysten/sui.js/v/0.0.0-experimental-20230127130009?activeTab=versions) 部分使用带有 `experimental` 标签的版本（例如 `0.0.0-experimental-20230317184920`）。
+Sui TypeScript SDK 的发布版本可能是你为本地网络安装的 Sui 版本之前的版本。为确保你使用的是 SDK 的最新版本，请在 Sui NPM 注册表的 [Current Tags](https://www.npmjs.com/package/@mysten/sui.js/v/0.0.0-experimental-20230127130009?activeTab=versions) 部分使用带有 `experimental` 标签的版本（例如 `0.0.0-experimental-20230317184920`）。

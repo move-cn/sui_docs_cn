@@ -2,7 +2,7 @@
 title: 使用 Sui TypeScript SDK 的客户端应用
 ---
 
-本练习将引导您在 React 应用中设置 dApp Kit，使您能够连接钱包并从 Sui RPC 节点查询数据以在您的应用中显示。如果您想快速启动一个完全功能的应用程序，请在终端或控制台中运行以下命令，以使用本练习中的所有步骤生成一个新的应用：
+本练习将引导你在 React 应用中设置 dApp Kit，使你能够连接钱包并从 Sui RPC 节点查询数据以在你的应用中显示。如果你想快速启动一个完全功能的应用程序，请在终端或控制台中运行以下命令，以使用本练习中的所有步骤生成一个新的应用：
 
 {@include: ../../../snippets/info-pnpm-required.mdx}
 
@@ -12,7 +12,7 @@ pnpm create @mysten/dapp --template react-client-dapp
 
 ## 什么是 Sui TypeScript SDK？
 
-Sui TypeScript SDK（@mysten/sui.js）提供了与 Sui 生态系统进行交互所需的所有低级功能。您可以在任何 TypeScript 或 JavaScript 项目中使用它，包括 Web 应用程序、Node.js 应用程序或使用支持 TypeScript 的工具（如 React Native）编写的移动应用程序。
+Sui TypeScript SDK（@mysten/sui.js）提供了与 Sui 生态系统进行交互所需的所有低级功能。你可以在任何 TypeScript 或 JavaScript 项目中使用它，包括 Web 应用程序、Node.js 应用程序或使用支持 TypeScript 的工具（如 React Native）编写的移动应用程序。
 
 有关 Sui TypeScript SDK 的更多信息，请参阅 [Sui TypeScript SDK 文档](https://sdk.mystenlabs.com/typescript)。
 
@@ -22,15 +22,15 @@ dApp Kit（@mysten/dapp-kit）是一组 React hooks、组件和实用工具，�
 
 ## 安装依赖项
 
-要开始使用，您需要一个 React 应用程序。以下步骤适用于任何 React，因此您可以按照相同的步骤向现有的 React 应用程序添加 dApp Kit。如果您正在启动一个新项目，您可以使用 Vite 来生成一个新的 React 应用程序。
+要开始使用，你需要一个 React 应用程序。以下步骤适用于任何 React，因此你可以按照相同的步骤向现有的 React 应用程序添加 dApp Kit。如果你正在启动一个新项目，你可以使用 Vite 来生成一个新的 React 应用程序。
 
-在您的终端或控制台中运行以下命令，并选择 React 作为框架，然后选择其中一个 TypeScript 模板：
+在你的终端或控制台中运行以下命令，并选择 React 作为框架，然后选择其中一个 TypeScript 模板：
 
 ```bash npm2yarn
 npm init vite
 ```
 
-现在您有了一个 React 应用程序，您可以安装必要的依赖项来使用 dApp Kit：
+现在你有了一个 React 应用程序，你可以安装必要的依赖项来使用 dApp Kit：
 
 ```bash npm2yarn
 npm install @mysten/sui.js @mysten/dapp-kit @tanstack/react-query
@@ -38,11 +38,11 @@ npm install @mysten/sui.js @mysten/dapp-kit @tanstack/react-query
 
 ## 设置提供者组件
 
-为了使用 dApp Kit 的所有功能，请使用一对 `Provider` 组件包装您的应用程序。
+为了使用 dApp Kit 的所有功能，请使用一对 `Provider` 组件包装你的应用程序。
 
-打开渲染您的应用程序的根组件（Vite 模板默认使用的位置是 `src/main.tsx`），并集成或替换当前的代码如下。
+打开渲染你的应用程序的根组件（Vite 模板默认使用的位置是 `src/main.tsx`），并集成或替换当前的代码如下。
 
-第一个要设置的 `Provider` 是来自 `@tanstack/react-query` 的 `QueryClientProvider`。这个 `Provider` 管理 dApp Kit 中各种 hooks 的请求状态。如果您已经在使用 `@tanstack/react-query`，dApp Kit 可以共享相同的 `QueryClient` 实例。
+第一个要设置的 `Provider` 是来自 `@tanstack/react-query` 的 `QueryClientProvider`。这个 `Provider` 管理 dApp Kit 中各种 hooks 的请求状态。如果你已经在使用 `@tanstack/react-query`，dApp Kit 可以共享相同的 `QueryClient` 实例。
 
 ```ts
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
@@ -112,7 +112,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
 
 ## 连接钱包
 
-使用所有设置好的 `Providers`，您可以使用 dApp Kit 提供的 hooks 和组件。为了允许用户将他们的钱包连接到您的 dApp，添加一个 `ConnectButton`。
+使用所有设置好的 `Providers`，你可以使用 dApp Kit 提供的 hooks 和组件。为了允许用户将他们的钱包连接到你的 dApp，添加一个 `ConnectButton`。
 
 ```ts
 import { ConnectButton } from '@mysten/dapp-kit';
@@ -132,7 +132,7 @@ function App() {
 
 ## 获取已连接钱包的地址
 
-现在您已经让用户连接他们的钱包，您可以开始使用 `useCurrentAccount` hook 获取有关已连接钱包账户的详细信息。
+现在你已经让用户连接他们的钱包，你可以开始使用 `useCurrentAccount` hook 获取有关已连接钱包账户的详细信息。
 
 ```ts
 import { ConnectButton, useCurrentAccount } from '@mysten/dapp-kit';
@@ -162,7 +162,7 @@ function ConnectedAccount() {
 
 ## 从 Sui RPC 节点查询数据
 
-现在您已经有了要连接的账户，您可以查询连接账户拥有的对象：
+现在你已经有了要连接的账户，你可以查询连接账户拥有的对象：
 
 ```ts
 import { useCurrentAccount, useSuiClientQuery } from '@mysten/dapp-kit';
@@ -204,7 +204,7 @@ function OwnedObjects({ address }: { address: string }) {
 }
 ```
 
-您现在已经有了一个连接到钱包并能够从 RPC 节点查询数据的 dApp。
+你现在已经有了一个连接到钱包并能够从 RPC 节点查询数据的 dApp。
 
 ## 相关链接
 

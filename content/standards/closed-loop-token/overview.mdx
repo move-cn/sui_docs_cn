@@ -1,41 +1,41 @@
 ---
-title: Overview
+title: 概览
 ---
 
-## Basics
+## 基础
 
-Token reuses the `TreasuryCap` defined in the `sui::coin` module and therefore has the same initialization process. The `coin::create_currency` method guarantees the uniqueness of the `TreasuryCap` and forces the creation of a `CoinMetadata` object.
+Token 重用了在 `sui::coin` 模块中定义的 `TreasuryCap`，因此具有相同的初始化过程。`coin::create_currency` 方法确保了 `TreasuryCap` 的唯一性并强制创建了一个 `CoinMetadata` 对象。
 
-Minting and burning are performed using the Coin-like methods. Both require the `TreasuryCap`:
+铸造和销毁通过类似 Coin 的方法完成。两者都需要 `TreasuryCap`：
 
-- `token::mint` - mint a Token
-- `token::burn` - burn a Token
+- `token::mint` - 铸造一个 Token
+- `token::burn` - 销毁一个 Token
 
-> *See [Create a Coin](/guides/developer/sui-101/create-coin.mdx) guide for more details on how to create a Coin.*
+> *请参阅 [创建 Coin](/guides/developer/sui-101/create-coin.mdx) 指南，了解有关如何创建 Coin 的更多详细信息。*
 
-## Public Actions
+## 公共操作
 
-Token has a set of public and protected actions which can be used to manage the token. Public actions are available to everyone and don't require any authorization. They have similar APIs to Coin's but operate on the `Token` type:
+Token 有一组公共和受保护的操作，用于管理代币。公共操作对所有人都可用，无需任何授权。它们具有类似于 Coin 的 API，但操作的是 `Token` 类型：
 
-- `token::keep` - send a Token to the transaction sender
-- `token::join` - join two Tokens
-- `token::split` - split a Token into two, specify the amount to split
-- `token::zero` - create an empty (zero balance) Token
-- `token::destroy_zero` - destroy a Token with zero balance
+- `token::keep` - 将 Token 发送给交易发送方
+- `token::join` - 合并两个 Token
+- `token::split` - 将 Token 拆分为两个，指定要拆分的数量
+- `token::zero` - 创建一个空的（零余额）Token
+- `token::destroy_zero` - 销毁零余额的 Token
 
-> *See [Coin Token Comparison](./coin-token-comparison.mdx) for Coin and Token methods comparison.*
+> *请参阅 [Coin 与 Token 方法对比](./coin-token-comparison.mdx) 以比较 Coin 和 Token 的方法。*
 
-## Protected Actions
+## 受保护的操作
 
-Protected actions are ones that issue an [ActionRequest](./action-request.mdx) - a hot-potato struct which must be resolved for the transaction to succeed. There're 3 main ways to resolve an ActionRequest, most common of which is via the [TokenPolicy](./token-policy.mdx).
+受保护的操作是会触发 [ActionRequest](./action-request.mdx) 的操作，必须解决 ActionRequest 才能使交易成功。解决 ActionRequest 的主要方式有 3 种，其中最常见的是通过 [TokenPolicy](./token-policy.mdx)。
 
-- `token::transfer` - transfer a Token to a specified address
-- `token::to_coin` - convert a Token to a Coin
-- `token::from_coin` - convert a Coin to a Token
-- `token::spend` - spend a Token on a specified address
+- `token::transfer` - 将 Token 转移到指定地址
+- `token::to_coin` - 将 Token 转换为 Coin
+- `token::from_coin` - 将 Coin 转换为 Token
+- `token::spend` - 在指定地址上消费 Token
 
-> *The methods above are included in the base implementation, however it is possible to create ActionRequest`s for custom actions.*
+> *上述方法包含在基本实现中，但也可以为自定义操作创建 ActionRequest。*
 
-## Token Policy & Rules
+## Token 策略与规则
 
-Protected actions are disabled by default and can be enabled in a [TokenPolicy](./token-policy.mdx). Additionally, the token owner can set custom restrictions called [Rules](./rules.mdx) which must be satisfied for a specific action to succeed.
+受保护的操作默认情况下是禁用的，可以在 [TokenPolicy](./token-policy.mdx) 中启用。此外，Token 拥有者可以设置称为 [Rules](./rules.mdx) 的自定义限制，这些限制必须满足特定操作才能成功。

@@ -1,16 +1,15 @@
 ---
-title: Wallet Standard
-description: The Wallet Standard defines how wallets can automatically be discovered and interacted with from dApps.
+title: 钱包标准
+description: 钱包标准定义了如何从 dApps 中自动发现和与钱包进行交互。
 ---
 
-Browser extension wallets built for Sui are defined using the [Wallet Standard](https://github.com/wallet-standard/wallet-standard/). This is a cross-chain standard that defines how wallets can automatically be discovered and interacted with from dApps.
+为 Sui 构建的浏览器扩展钱包使用 [Wallet Standard](https://github.com/wallet-standard/wallet-standard/) 进行定义。这是一个跨链标准，定义了如何从 dApps 中自动发现和与钱包进行交互。
 
-If you are building a wallet, we publish a helper library `@mysten/wallet-standard` which provides types and utilities that make it simple to get started.
+如果你正在构建一个钱包，我们发布了一个辅助库 `@mysten/wallet-standard`，该库提供了类型和实用程序，使入门变得简单。
 
-### Creating a wallet interface
+### 创建钱包接口
 
-You need to create a class that represents your wallet. You can use the `Wallet` interface from
-`@mysten/wallet-standard` to help ensure your class adheres to the standard.
+你需要创建一个代表你的钱包的类。你可以使用 `@mysten/wallet-standard` 中的 `Wallet` 接口来帮助确保你的类符合该标准。
 
 ```tsx
 import { SUI_DEVNET_CHAIN, Wallet } from '@mysten/wallet-standard';
@@ -33,23 +32,17 @@ class YourWallet implements Wallet {
 }
 ```
 
-### Implementing features
+### 实现功能
 
-Features are standard methods consumers can use to interact with a wallet. To be listed in the Sui
-wallet adapter, you must implement the following features in your wallet:
+功能是消费者可以使用的标准方法，用于与钱包进行交互。要在 Sui 钱包适配器中列出，你必须在你的钱包中实现以下功能：
 
-- `standard:connect` - Used to initiate a connection to the wallet.
-- `standard:events` - Used to listen for changes that happen within the wallet, such as accounts
-  being added or removed.
-- `sui:signPersonalMessage` - Used to prompt the user to sign a personal message, and return the
-  message signature back to the dApp. This can be used to verify the user’s public key.
-- `sui:signTransactionBlock` - Used to prompt the user to sign a transaction block, and return the
-  serialized transaction block and signature back to the dApp. This method does not submit the
-  transaction block for execution.
-- `sui:signAndExecuteTransactionBlock` - Used to prompt the user to sign a transaction, then submit
-  it for execution to the blockchain.
+- `standard:connect` - 用于启动与钱包的连接。
+- `standard:events` - 用于监听钱包内发生的更改，例如添加或删除账户。
+- `sui:signPersonalMessage` - 用于提示用户签署个人消息，并将消息签名返回给 dApp。这可用于验证用户的公钥。
+- `sui:signTransactionBlock` - 用于提示用户签署交易块，并将序列化的交易块和签名返回给 dApp。此方法不提交交易块进行执行。
+- `sui:signAndExecuteTransactionBlock` - 用于提示用户签署交易，然后将其提交到区块链进行执行。
 
-You can implement these features in your wallet class under the `features` property:
+你可以在钱包类的 `features` 属性下实现这些功能：
 
 ```tsx
 import {
@@ -113,14 +106,11 @@ class YourWallet implements Wallet {
 }
 ```
 
-### Exposing accounts
+### 暴露账户
 
-The last requirement of the wallet interface is to expose an `acccounts` interface. This should
-expose all of the accounts that a connected dApp has access to. It can be empty prior to initiating
-a connection through the `standard:connect` feature.
+钱包接口的最后一个要求是暴露一个 `accounts` 接口。这应该暴露已连接的 dApp 可访问的所有账户。在通过 `standard:connect` 功能启动连接之前，它可以为空。
 
-The accounts can use the `ReadonlyWalletAccount` class to easily construct an account matching the
-required interface.
+账户可以使用 `ReadonlyWalletAccount` 类轻松构建与所需接口匹配的账户。
 
 ```tsx
 import { ReadonlyWalletAccount } from '@mysten/wallet-standard';
@@ -149,10 +139,9 @@ class YourWallet implements Wallet {
 }
 ```
 
-### Registering in the window
+### 在窗口中注册
 
-Once you have a compatible interface for your wallet, you register it using the `registerWallet`
-function.
+一旦你拥有与你的钱包兼容的接口，你可以使用 `registerWallet` 函数进行注册。
 
 ```tsx
 import { registerWallet } from '@mysten/wallet-standard';

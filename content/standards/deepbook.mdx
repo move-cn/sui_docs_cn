@@ -1,22 +1,22 @@
 ---
 title: DeepBook
-description: A central limit order book that offers features and functionality for marketplaces on Sui. Token exchanges leveraging the layer can feature transparency, a full range of trading options, and customer privacy.
+description: DeepBook 是一个提供给 Sui 市场的中心限价订单簿，提供了市场的功能和功能。利用这一层的代币交易可以具备透明度、完整的交易选项和客户隐私。
 ---
 
-As Sui's first native liquidity layer, DeepBook provides token trading activity. Token exchanges leveraging the layer can feature transparency, a full range of trading options, and customer privacy. DeepBook operates as a decentralized and permissionless environment to support token trades.
+作为 Sui 的第一个本地流动性层，DeepBook 提供了代币交易活动。利用这一层的代币交易可以具备透明度、完整的交易选项和客户隐私。DeepBook 作为一个去中心化和无需许可的环境，支持代币交易。
 
-DeepBook is open for community development. You can use the [Sui Improvement Proposals](https://github.com/sui-foundation/sips?ref=blog.sui.io) (SIPs) process to suggest changes to make DeepBook better.
+DeepBook 对社区开放发展。你可以使用 [Sui 改进提案](https://github.com/sui-foundation/sips?ref=blog.sui.io)（SIPs）流程提出更改，以使 DeepBook 更好。
 
-DeepBook does not include an end-user interface for token trading. Rather, it offers built-in trading functionality that can support token trades from decentralized exchanges, wallets, or other apps. You can leverage its SDK to build functionality for token trades and price queries.
+DeepBook 不包含用于代币交易的最终用户界面。相反，它提供了内置的交易功能，可支持来自去中心化交易所、钱包或其他应用程序的代币交易。你可以利用其 SDK 构建用于代币交易和价格查询的功能。
 
-## Liquidity support
+## 流动性支持
 
-Similar to order books for other market places, DeepBook's central limit order book (CLOB) architecture enables you to enter market and limit orders. You can sell SUI tokens, referred to as an "ask," can set your price, referred to as a limit order, or sell at the market's going rate. If you are seeking to buy SUI, referred to as a "bid," you can pay the current market price or set a limit amount you're willing to pay. Limit orders only get fulfilled if the CLOB finds a match between a buyer and seller.
+与其他市场的订单簿类似，DeepBook 的中心限价订单簿（CLOB）架构使你可以输入市场订单和限价订单。你可以出售 SUI 代币，称为 "ask"，可以设置你的价格，称为限价订单，或按市场的现行价格出售。如果你想购买 SUI，称为 "bid"，你可以支付当前市场价格或设置你愿意支付的限价。只有在 CLOB 找到买方和卖方之间的匹配时，限价订单才会得到执行。
 
-If you put in a limit order for 1,000 SUI, and no single seller is currently offering that quantity of tokens, DeepBook automatically pools the current asks to meet the quantity of your bid.
+如果你为 1,000 SUI 提交了一个限价订单，目前没有单个卖方提供该数量的代币，DeepBook 会自动合并当前的卖方以满足你的出价数量。
 
-## Transparency and privacy
+## 透明度和隐私
 
-As a CLOB, DeepBook works like a digital ledger, logging bids and asks in chronological order and automatically finding matches between the two sides. It takes into account user parameters on trades such as prices.
+作为 CLOB，DeepBook 就像一个数字分类帐，按时间顺序记录买方和卖方的出价，并自动在两方之间找到匹配。它考虑了交易的用户参数，如价格。
 
-The digital ledger is open so people can view the trades and prices, giving clear proof of fairness. You can use this transparency to create metrics and dashboards to monitor trading activity.
+数字分类帐是公开的，因此人们可以查看交易和价格，提供公平的明确证据。你可以利用此透明度创建指标和仪表板来监控交易活动。

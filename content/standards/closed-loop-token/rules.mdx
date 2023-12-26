@@ -1,27 +1,27 @@
 ---
-title: Rules
+title: 规则
 ---
 
-Rules are programmable restrictions that can be applied to any action in the [TokenPolicy](./token-policy.mdx). They are the tool of compliance, regulation and enforcement of certain business logic in the Closed Loop system.
+规则是可编程的限制，可以应用于[TokenPolicy](./token-policy.mdx)中的任何操作。它们是在闭环系统中执行特定业务逻辑的合规、监管和执行工具。
 
-## Rule Structure
+## 规则结构
 
-A Rule is represented as a witness - a type with a `drop` ability. It can be either encoded in application logic, or, for more modular setup, can be part of a separate module.
+规则表示为证人 - 一种具有 `drop` 能力的类型。它可以被编码到应用逻辑中，或者为了更模块化的设置，可以作为一个单独的模块的一部分。
 
 ```move
 /// The Rule type
 struct Rule has drop {}
 ```
 
-Once added to an action in the [TokenPolicy](./token-policy#adding-rules), the action will require a "stamp" of the Rule to pass confirmation.
+一旦添加到[TokenPolicy](./token-policy#adding-rules)中的操作，该操作将需要规则的“印记”以通过确认。
 
-> *See [Approving Actions](./action-request#approving-actions) section for more details on how to approve an action.*
+> *有关如何批准操作的详细信息，请参见[批准操作](./action-request#approving-actions)部分。*
 
-## Modular Rules
+## 模块化规则
 
-Rules can be published as separate reusable modules. This allows to create a library of rules that can be used in different token policies maximizing code reuse and minimizing the risk of errors.
+规则可以作为独立的可重用模块发布。这允许创建一个规则库，可在不同的令牌策略中使用，最大程度地实现代码重用，并最小化错误风险。
 
-A Rule module is a regular module with a `verify`-like function that typically takes a `TokenPolicy`, [`ActionRequest`](./action-request.mdx) and a `TxContext` as arguments. The function is responsible for verifying the action and stamping the `ActionRequest` with the Rule type.
+规则模块是一个常规模块，具有类似于 `verify` 的函数，通常接受 `TokenPolicy`、[`ActionRequest`](./action-request.mdx) 和 `TxContext` 作为参数。该函数负责验证操作并在 `ActionRequest` 上打上规则类型的印记。
 
 ```move
 module example::pass_rule {
@@ -43,30 +43,30 @@ module example::pass_rule {
 }
 ```
 
-## Rule Configuration
+## 规则配置
 
-Some rules, such as "denylist" or "allowlist" require configuration. For example, a denylist rule may require a list of addresses that are not allowed to perform certain actions. A Rule module can define a configuration structure and provide functions to add, modify, retrieve and remove the configuration.
+一些规则，比如“拒绝列表”或“允许列表”需要配置。例如，拒绝列表规则可能需要一组不允许执行某些操作的地址。规则模块可以定义一个配置结构，并提供用于添加、修改、检索和删除配置的函数。
 
 :::info
-A single Rule has a single configuration, even when assigned to multiple actions. If there's a need to have configuration per action, a Rule module needs to define a storage structure that can hold and manage multiple configurations.
+单个规则具有单个配置，即使分配给多个操作。如果需要每个操作有自己的配置，则规则模块需要定义一个存储结构，可以保存和管理多个配置。
 :::
 
-Configuration system comes with a set of guarantees to protect token owners from malicious actions (or upgrades) from Rule module developers:
+配置系统具有一组保证，以保护令牌所有者免受来自规则模块开发者的恶意操作（或升级）：
 
-1. The type and the structure of the configuration are defined by the Rule module.
-2. Addition / modification and removal of the configuration are only available to the `TokenPolicy` owner.
-3. The configuration can be read only by a Rule.
-4. Rule cannot modify the configuration without the `TokenPolicy` owner's approval.
+1. 配置的类型和结构由规则模块定义。
+2. 仅允许 `TokenPolicy` 所有者进行配置的添加/修改和删除。
+3. 配置只能被规则读取。
+4. 规则不能在没有 `TokenPolicy` 所有者批准的情况下修改配置。
 
-> *The only attack vector available to the Rule creator is upgrading the module and creating a function to bypass the restriction. Make sure to use Rules provided by a trusted developer.*
+> *规则创建者唯一的攻击矢量是升级模块并创建绕过限制的函数。请确保使用由受信任的开发者提供的规则。*
 
-## Configuration API
+## 配置 API
 
-The configuration API is defined in the `sui::token` module and has the following set of functions.
+配置 API 在 `sui::token` 模块中定义，并具有以下一组函数。
 
-### Add new Config
+### 添加新配置项
 
-New configuration must be approved by a Rule (the Rule witness) and the `TokenPolicy` owner. The type of the configuration can be any as long as it has the `store` ability.
+新配置必须得到规则（规则证人）和 `TokenPolicy` 所有者的批准。配置的类型可以是任何类型，只要它具有 `store` 能力。
 
 ```move
 // module: sui::token
@@ -79,9 +79,9 @@ public fun add_rule_config<T, Rule: drop, Config: store>(
 );
 ```
 
-### Read the Config
+### 读取配置
 
-Rule can read configuration stored in the `TokenPolicy`.
+规则可以读取存储在 `TokenPolicy` 中的配置。
 
 ```move
 // module: sui::token
@@ -90,9 +90,9 @@ public fun rule_config<T, Rule: drop, Config: store>(
 ): &Config;
 ```
 
-### Modify the Config
+### 修改配置
 
-The configuration modification must be approved by a Rule (the Rule witness) and the `TokenPolicy` owner.
+配置的修改必须得到规则（规则证人）和 `TokenPolicy` 所有者的批准。
 
 ```move
 // module: sui::token
@@ -101,9 +101,9 @@ public fun rule_config_mut<T, Rule: drop, Config: store>(
 ): &mut Config;
 ```
 
-### Remove Configuration
+### 移除配置项
 
-A good practice for a Rule is to provide method to remove the configuration as Rule can use a custom type for it. However, token owner can always remove the configuration by calling the `remove_rule_config` function.
+规则的一个良好实践是提供删除配置的方法，因为规则可以使用自定义类型。然而，令牌所有者始终可以通过调用 `remove_rule_config` 函数来删除配置项。
 
 ```move
 // module: sui::token
@@ -114,9 +114,9 @@ public fun remove_rule_config<T, Rule, Config: store>(
 ): Config;
 ```
 
-Because the configuration has `store`, the token owner can wrap and transfer or store the configuration somewhere else. If the `Config` type has `drop`, the value can be ignored.
+由于配置具有 `store`，令牌所有者可以包装、转移或将配置存储到其他地方。如果 `Config` 类型具有 `drop`，则该值可以被忽略。
 
-## Cheatsheet: Rule Configuration API
+## 备忘录：规则配置 API
 
 | Method name                 | Description                              | Notes                                          |
 |-----------------------------|------------------------------------------|------------------------------------------------|

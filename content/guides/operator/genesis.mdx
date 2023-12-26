@@ -1,11 +1,11 @@
 ---
-title: Genesis
+title: 创世
 ---
 
-Genesis is the initial state of the Sui blockchain. To launch a network, the initial committee of validators collaborate by providing their validator information (public keys, network addresses, and so on) to a shared workspace. After all of the initial validators have contributed their information, Sui generates the initial, unsigned genesis checkpoint (checkpoint with sequence number 0) and each validator provides their signature. Sui aggregates these signatures to form a certificate on the genesis checkpoint. Sui bundles this checkpoint, as well as the initial objects, together into a single genesis.blob file that is used to initialize the state when running the `sui-node` binary for both validators and Full nodes.
+创世是 Sui 区块链的初始状态。要启动一个网络，初始的验证器委员会通过将其验证器信息（公钥、网络地址等）提供给共享工作空间来协作。当所有初始验证器都贡献了他们的信息后，Sui 生成初始的未签名创世检查点（序列号为 0 的检查点），然后每个验证器提供其签名。Sui 聚合这些签名以形成对创世检查点的证书。Sui 将此检查点以及初始对象捆绑到一个名为 `genesis.blob` 的文件中，该文件用于在运行 `sui-node` 二进制文件时初始化状态，既适用于验证器也适用于完整节点。
 
-## Genesis blob locations
+## 创世 blob 位置
 
-The genesis.blob files for each network are in the [sui-genesis](https://github.com/mystenlabs/sui-genesis) repository.
+每个网络的 `genesis.blob` 文件都在 [sui-genesis](https://github.com/mystenlabs/sui-genesis) 存储库中。
 
-See [Sui Full Node](./sui-full-node.mdx#set-up-from-source) for how to get the genesis.blob file for each network.
+请参阅 [Sui 完整节点](./sui-full-node.mdx#set-up-from-source) 以了解如何获取每个网络的 `genesis.blob` 文件。

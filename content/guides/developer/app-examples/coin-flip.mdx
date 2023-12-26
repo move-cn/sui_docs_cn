@@ -6,15 +6,15 @@ title: 抛硬币
 
 Satoshi Coin Flip是一个dApp，利用可验证随机函数 (VRF) 在 Sui 区块链上创建一个公平的硬币游戏。用户（人类）与庄家（模块）进行游戏，并在正反面之间下注。然后，根据游戏的结果，用户要么获得其下注金额的两倍，要么什么都没有。
 
-本指南假定您已经[安装了Sui](../getting-started/sui-install.mdx)并了解Sui的基础知识。
+本指南假定你已经[安装了Sui](../getting-started/sui-install.mdx)并了解Sui的基础知识。
 
 ## 后端
 
-与所有Sui dApp一样，Satoshi Coin Flip的逻辑由链上的Move包提供支持。以下说明将带您完成创建和发布该模块的步骤。
+与所有Sui dApp一样，Satoshi Coin Flip的逻辑由链上的Move包提供支持。以下说明将带你完成创建和发布该模块的步骤。
 
 ### House 模块
 
-这个示例使用了多个模块来创建Satoshi Coin Flip游戏的包。第一个模块是`house_data.move`。您需要在某个地方存储游戏数据，在这个模块中，您为所有房屋数据创建了一个[共享对象](concepts/object-ownership/shared.mdx)。
+这个示例使用了多个模块来创建Satoshi Coin Flip游戏的包。第一个模块是`house_data.move`。你需要在某个地方存储游戏数据，在这个模块中，你为所有房屋数据创建了一个[共享对象](concepts/object-ownership/shared.mdx)。
 
 :::info
 
@@ -22,7 +22,7 @@ Move模块的完整源代码，包括注释和其密码学概述，可以在[Sat
 
 :::
 
-在开始之前，您必须初始化一个Move包。在您想要存储示例的目录中打开终端或控制台，并运行以下命令创建一个名为`satoshi_flip`的空包：
+在开始之前，你必须初始化一个Move包。在你想要存储示例的目录中打开终端或控制台，并运行以下命令创建一个名为`satoshi_flip`的空包：
 
 ```shell
 sui move new satoshi_flip
@@ -115,7 +115,7 @@ module satoshi_flip::house_data {
     }
 ```
 
-房屋数据已初始化，您还需要添加一些函数，以使房屋能够执行一些重要的行政任务：
+房屋数据已初始化，你还需要添加一些函数，以使房屋能够执行一些重要的行政任务：
 
 ```move title='house_data.move'
     public fun top_up(house_data: &mut HouseData, coin: Coin<SUI>, _: &mut TxContext) {
@@ -154,7 +154,7 @@ module satoshi_flip::house_data {
 - `claim_fees`：提取房屋对象的累积费用。
 - `update_max_stake`、`update_min_stake`：分别更新游戏中允许的最大和最小投注额。
 
-您已经建立了该模块的数据结构，但没有适当的函数，这些数据是无法访问的。现在添加一些辅助函数，返回可变引用、只读引用和仅供测试的函数：
+你已经建立了该模块的数据结构，但没有适当的函数，这些数据是无法访问的。现在添加一些辅助函数，返回可变引用、只读引用和仅供测试的函数：
 
 ```move title='house_data.move'
 	// --------------- Mutable References ---------------
@@ -213,7 +213,7 @@ module satoshi_flip::house_data {
 }
 ```
 
-至此，您的 `house_data.move` 代码已经完成。
+至此，你的 `house_data.move` 代码已经完成。
 
 ### 计数器模块
 
@@ -249,11 +249,11 @@ module satoshi_flip::counter_nft {
     }
 ```
 
-这看起来可能与房屋模块相似。您设置了模块名称，从标准库导入函数，并初始化了 `Counter` 对象。`Counter` 对象具有 `key` 能力，但没有 `store` - 这可以防止对象被转移。
+这看起来可能与房屋模块相似。你设置了模块名称，从标准库导入函数，并初始化了 `Counter` 对象。`Counter` 对象具有 `key` 能力，但没有 `store` - 这可以防止对象被转移。
 
-此外，您创建了在设置游戏时使用的 `mint` 和 `transfer_to_sender` 函数，用于创建带有初始计数为 `0` 的 `Counter` 对象并将对象转移到交易发送者。最后，创建一个 `burn` 函数以允许删除 `Counter`。
+此外，你创建了在设置游戏时使用的 `mint` 和 `transfer_to_sender` 函数，用于创建带有初始计数为 `0` 的 `Counter` 对象并将对象转移到交易发送者。最后，创建一个 `burn` 函数以允许删除 `Counter`。
 
-现在，您有了一个 `Counter` 对象，以及初始化和销毁该对象的函数，但您需要一种递增计数器的方法。向模块添加以下代码：
+现在，你有了一个 `Counter` 对象，以及初始化和销毁该对象的函数，但你需要一种递增计数器的方法。向模块添加以下代码：
 
 ```move title='counter_nft.move'
     public fun get_vrf_input_and_increment(self: &mut Counter): vector<u8> {
@@ -285,7 +285,7 @@ module satoshi_flip::counter_nft {
 
 ### 游戏模块
 
-最后，您需要一个游戏模块和对象，可以创建新游戏，在游戏结束后分发资金，并可能取消游戏。由于这是一个单人游戏，因此创建一个[地址拥有对象（address-owned object）](concepts/object-ownership/address-owned.mdx)，而不是[共享对象](/concepts/object-ownership/shared.mdx)。
+最后，你需要一个游戏模块和对象，可以创建新游戏，在游戏结束后分发资金，并可能取消游戏。由于这是一个单人游戏，因此创建一个[地址拥有对象（address-owned object）](concepts/object-ownership/address-owned.mdx)，而不是[共享对象](/concepts/object-ownership/shared.mdx)。
 
 创建游戏模块。在 `sources` 目录中，创建一个名为 `single_player_satoshi.move` 的新文件，并填充以下内容：
 
@@ -339,9 +339,9 @@ module satoshi_flip::single_player_satoshi {
     }
 ```
 
-此代码遵循与其他代码相同的模式。首先，您包含了相应的导入，尽管这一次导入不仅来自标准库，还包括在本示例中先前创建的模块。您还创建了几个常量（大写形式），以及用于错误的常量（以 `E` 为前缀的 Pascal 形式）。
+此代码遵循与其他代码相同的模式。首先，你包含了相应的导入，尽管这一次导入不仅来自标准库，还包括在本示例中先前创建的模块。你还创建了几个常量（大写形式），以及用于错误的常量（以 `E` 为前缀的 Pascal 形式）。
 
-最后，在此部分中，您还创建了两个[事件（events）](concepts/events.mdx)用于发射。索引器消耗发射的事件，这使您能够通过 API 服务或您自己的索引器跟踪这些事件。在本例中，事件用于在游戏开始时（`NewGame`）和游戏结束时（`Outcome`）。
+最后，在此部分中，你还创建了两个[事件（events）](concepts/events.mdx)用于发射。索引器消耗发射的事件，这使你能够通过 API 服务或你自己的索引器跟踪这些事件。在本例中，事件用于在游戏开始时（`NewGame`）和游戏结束时（`Outcome`）。
 
 向模块添加一个结构体：
 
@@ -551,9 +551,9 @@ module satoshi_flip::single_player_satoshi {
 
 这是一个在 Move 中实现的简单硬币翻转后端的基本示例。游戏模块 `single_player_satoshi` 容易受到 MEV 攻击，但对于玩家来说，用户体验更为简化。还存在另一个示例游戏模块 `mev_attack_resistant_single_player_satoshi`，它对 MEV 具有抵抗力，但用户体验略有降级（每个游戏需要两个玩家交易）。
 
-您可以在 [Satoshi Coin Flip 存储库](https://github.com/MystenLabs/satoshi-coin-flip) 中详细了解这两个版本的游戏，并查看所有模块的完整源代码。
+你可以在 [Satoshi Coin Flip 存储库](https://github.com/MystenLabs/satoshi-coin-flip) 中详细了解这两个版本的游戏，并查看所有模块的完整源代码。
 
-现在您已经编写了我们的合同，是时候部署它们了。
+现在你已经编写了我们的合同，是时候部署它们了。
 
 ## 部署
 
@@ -571,7 +571,7 @@ module satoshi_flip::single_player_satoshi {
 
 :::
 
-为了向用户公开您创建的后端，您需要一个前端 (UI)。 在本部分中，您将使用 [Sui Typescript SDK](https://sdk.mystenlabs.com/typescript) 和 [Sui dApp Kit](https://sdk.mystenlabs.com/dapp-) 创建一个 React 前端项目 kit 与已部署的智能合约进行交互。
+为了向用户公开你创建的后端，你需要一个前端 (UI)。 在本部分中，你将使用 [Sui Typescript SDK](https://sdk.mystenlabs.com/typescript) 和 [Sui dApp Kit](https://sdk.mystenlabs.com/dapp-) 创建一个 React 前端项目 kit 与已部署的智能合约进行交互。
 
 ### 初始化项目
 
@@ -581,26 +581,26 @@ module satoshi_flip::single_player_satoshi {
 
 :::
 
-首先，初始化您的前端项目。 要快速完成此操作，请使用 [`create-dapp` 工具](https://sdk.mystenlabs.com/dapp-kit/create-dapp) 使用 [dApp Kit](https://sdk. mystenlabs.com/dapp-kit)。 在终端或控制台中运行以下命令：
+首先，初始化你的前端项目。 要快速完成此操作，请使用 [`create-dapp` 工具](https://sdk.mystenlabs.com/dapp-kit/create-dapp) 使用 [dApp Kit](https://sdk. mystenlabs.com/dapp-kit)。 在终端或控制台中运行以下命令：
 
 ```
 pnpm create @mysten/dapp
 ```
 
-这个 CLI 命令会引导您完成几个步骤：
+这个 CLI 命令会引导你完成几个步骤：
 
-1. 它会询问您想要使用的起始模板。目前有两个变体：
+1. 它会询问你想要使用的起始模板。目前有两个变体：
 
-   1. `react-client-dapp`：此起始模板包含您可以开始使用的最小 dApp Kit 模板代码。此变体适用于已经熟悉 dApp Kit 的开发人员，不希望有不必要的模板代码。
+   1. `react-client-dapp`：此起始模板包含你可以开始使用的最小 dApp Kit 模板代码。此变体适用于已经熟悉 dApp Kit 的开发人员，不希望有不必要的模板代码。
    1. `react-e2e-counter`：此起始模板包含一个简单的 Counter Sui Move 智能合约，与前端模板代码互动。此变体适用于试图学习如何使用 dApp Kit 的开发人员。
 
-1. 它会提示您命名项目文件夹。
+1. 它会提示你命名项目文件夹。
 
-完成。您的项目已经具备所有必要的代码，可以开始使用。最后，`cd` 进入您的项目文件夹，并运行 `pnpm install` 安装所有依赖项。
+完成。你的项目已经具备所有必要的代码，可以开始使用。最后，`cd` 进入你的项目文件夹，并运行 `pnpm install` 安装所有依赖项。
 
 ### 用户界面布局设计
 
-此前端示例的用户界面（UI）演示了如何使用 dApp Kit，而不是作为一个生产级产品，因此玩家和房屋功能在同一个 UI 中以简化流程。在生产解决方案中，您的前端将仅包含专用于玩家的功能，而后端服务将执行与智能合约中的房屋功能的交互。
+此前端示例的用户界面（UI）演示了如何使用 dApp Kit，而不是作为一个生产级产品，因此玩家和房屋功能在同一个 UI 中以简化流程。在生产解决方案中，你的前端将仅包含专用于玩家的功能，而后端服务将执行与智能合约中的房屋功能的交互。
 
 UI 有两列：
 
@@ -613,7 +613,7 @@ UI 有两列：
 
 ### 探索代码
 
-UI 与游戏的 [单人玩家智能合约](guides/developer/app-examples/coin-flip.mdx#game-module) 变体进行交互。本节将引导您了解智能合约流程的每个步骤以及相应的前端代码。
+UI 与游戏的 [单人玩家智能合约](guides/developer/app-examples/coin-flip.mdx#game-module) 变体进行交互。本节将引导你了解智能合约流程的每个步骤以及相应的前端代码。
 
 :::info
 
@@ -621,7 +621,7 @@ UI 与游戏的 [单人玩家智能合约](guides/developer/app-examples/coin-fl
 
 :::
 
-与其他 React 项目一样，`App.tsx` 是您实现外部布局的地方：
+与其他 React 项目一样，`App.tsx` 是你实现外部布局的地方：
 
 ```typescript title='App.tsx'
 import { ConnectButton, useCurrentAccount } from '@mysten/dapp-kit';
@@ -688,13 +688,13 @@ function App() {
 export default App;
 ```
 
-与其他 dApp 一样，您需要一个 "连接钱包" 按钮来启用用户连接钱包。dApp Kit 包含一个预制的 `ConnectButton` React 组件，您可以重用以帮助用户入门。
+与其他 dApp 一样，你需要一个 "连接钱包" 按钮来启用用户连接钱包。dApp Kit 包含一个预制的 `ConnectButton` React 组件，你可以重用以帮助用户入门。
 
 `useCurrentAccount()` 是 dApp Kit 提供的 React hook，用于查询当前连接的钱包；如果没有钱包连接，则返回 `null`。利用这个行为，防止用户在尚未连接钱包的情况下继续操作。
 
-有两个常量需要放入 `constants.ts` 中才能使应用程序正常工作 – `PACKAGE_ID` 和 `HOUSECAP_ID`。您可以在终端或控制台中运行 Sui CLI 命令发布包后获取这些常量。
+有两个常量需要放入 `constants.ts` 中才能使应用程序正常工作 – `PACKAGE_ID` 和 `HOUSECAP_ID`。你可以在终端或控制台中运行 Sui CLI 命令发布包后获取这些常量。
 
-在确保用户已连接其钱包后，您可以显示前面部分描述的两个列：`PlayerSesh` 和 `HouseSesh` 组件。
+在确保用户已连接其钱包后，你可以显示前面部分描述的两个列：`PlayerSesh` 和 `HouseSesh` 组件。
 
 好的，这是一个很好的开始，可以概览项目了。现在是时候转到初始化 `HouseData` 对象。调用此对象的所有前端逻辑都位于 `HouseInitialize.tsx` 组件中。该组件包含 UI 代码，但执行事务的逻辑如下：
 
@@ -760,7 +760,7 @@ export default App;
   }}
 ```
 
-要在 Sui 中使用可编程事务块（PTB），请创建一个 `TransactionBlock`。要启动 Move 调用，您必须知道智能合约中公共函数的全局标识符。全局标识符通常具有以下形式：
+要在 Sui 中使用可编程事务块（PTB），请创建一个 `TransactionBlock`。要启动 Move 调用，你必须知道智能合约中公共函数的全局标识符。全局标识符通常具有以下形式：
 
 ```
 ${PACKAGE_ID}::${MODULE_NAME}::${FUNCTION_NAME}
@@ -775,14 +775,14 @@ ${PACKAGE_ID}::house_data::initialize_house_data
 在 `initialize_house_data()` Move 函数中，有几个参数需要传递：`HouseCap` ID、房屋赌注和房屋 BLS 公钥：
 
 - 从 `constants.ts` 导入 `HouseCap` ID，这是在前面部分设置的。
-- 对于房屋赌注，使用 `TransactionBlock::splitCoin` 来创建一个新的币，其金额定义为从 Gas Coin `txb.gas` 中拆分的。将 gas coin 视为您账户中用于支付燃料的一个币（可能覆盖账户的整个余额）。这对于 Sui 支付非常有用 - 不需要手动选择用于燃料支付的币或手动拆分/合并以获得正确金额的币，gas coin 是这个过程的单一入口点，所有繁重的工作都在幕后由 SDK 完成。
+- 对于房屋赌注，使用 `TransactionBlock::splitCoin` 来创建一个新的币，其金额定义为从 Gas Coin `txb.gas` 中拆分的。将 gas coin 视为你账户中用于支付燃料的一个币（可能覆盖账户的整个余额）。这对于 Sui 支付非常有用 - 不需要手动选择用于燃料支付的币或手动拆分/合并以获得正确金额的币，gas coin 是这个过程的单一入口点，所有繁重的工作都在幕后由 SDK 完成。
 - 将 BLS 公钥传递为字节 `vector<u8>`。当提供不是链上对象的输入时，使用 `txb.pure` 和从 `@mysten/sui.js/bcs` 导入的 `bcs` 进行 BCS 序列化。
 
-现在签署并执行事务块。dApp Kit 提供了一个 React hook `useSignAndExecuteTransactionBlock()` 来简化这个过程。当执行此 hook 时，它会提示 UI 让您批准、签署和执行事务块。您可以配置 hook 的 `showObjectChanges` 选项，以返回新创建的 `HouseData` 共享对象作为事务块的结果。此 `HouseData` 对象很重要，因为您将其用作后续 Move 调用的输入，因此请将其 ID 保存在某个地方。
+现在签署并执行事务块。dApp Kit 提供了一个 React hook `useSignAndExecuteTransactionBlock()` 来简化这个过程。当执行此 hook 时，它会提示 UI 让你批准、签署和执行事务块。你可以配置 hook 的 `showObjectChanges` 选项，以返回新创建的 `HouseData` 共享对象作为事务块的结果。此 `HouseData` 对象很重要，因为你将其用作后续 Move 调用的输入，因此请将其 ID 保存在某个地方。
 
-很好，现在您知道如何初始化 `HouseData` 共享对象。转到下一个函数调用。
+很好，现在你知道如何初始化 `HouseData` 共享对象。转到下一个函数调用。
 
-在这个游戏中，用户必须创建一个 `Counter` 对象才能开始游戏。因此，在 Player 列 UI 中应该有一个地方列出现有的 `Counter` 对象信息，以供玩家选择。您很可能会在 UI 中的多个位置重复使用 `Counter` 对象的获取逻辑，因此将此逻辑隔离到一个 React hook 中是一个良好的实践，您可以在 `useFetchCounterNft.ts` 中调用它，命名为 `useFetchCounterNft()`：
+在这个游戏中，用户必须创建一个 `Counter` 对象才能开始游戏。因此，在 Player 列 UI 中应该有一个地方列出现有的 `Counter` 对象信息，以供玩家选择。你很可能会在 UI 中的多个位置重复使用 `Counter` 对象的获取逻辑，因此将此逻辑隔离到一个 React hook 中是一个良好的实践，你可以在 `useFetchCounterNft.ts` 中调用它，命名为 `useFetchCounterNft()`：
 
 ```typescript title='containers/Player/useFetchCounterNft.ts'
 import { useCurrentAccount, useSuiClientQuery } from '@mysten/dapp-kit';
@@ -882,9 +882,9 @@ export function PlayerListCounterNft() {
 }
 ```
 
-对于没有现有 `Counter` 对象的情况，为连接的钱包铸造一个新的 `Counter`。当用户点击按钮时，还要在 `PlayerListCounterNft.tsx` 中添加铸造逻辑。您已经知道如何使用 `TransactionBlock` 和 `initialize_house_data()` 构建和执行 Move 调用，您可以在这里实现类似的调用。
+对于没有现有 `Counter` 对象的情况，为连接的钱包铸造一个新的 `Counter`。当用户点击按钮时，还要在 `PlayerListCounterNft.tsx` 中添加铸造逻辑。你已经知道如何使用 `TransactionBlock` 和 `initialize_house_data()` 构建和执行 Move 调用，你可以在这里实现类似的调用。
 
-正如您可能还记得的那样，使用 `TransactionBlock`，事务的输出可以成为下一个事务的输入。调用 `counter_nft::mint()`，它会返回新创建的 `Counter` 对象，并将其用作 `counter_nft::transfer_to_sender()` 的输入，以将 `Counter` 对象转移到调用者钱包：
+正如你可能还记得的那样，使用 `TransactionBlock`，事务的输出可以成为下一个事务的输入。调用 `counter_nft::mint()`，它会返回新创建的 `Counter` 对象，并将其用作 `counter_nft::transfer_to_sender()` 的输入，以将 `Counter` 对象转移到调用者钱包：
 
 ```typescript title='containers/Player/PlayerListCounterNft.tsx'
 const txb = new TransactionBlock();
@@ -912,7 +912,7 @@ execCreateCounterNFT(
 );
 ```
 
-好的，现在您可以使用创建的 `Counter` 对象创建游戏。将游戏创建逻辑隔离到 `PlayerCreateGame.tsx` 中。还有一件事要记住 - 要将输入标记为链上对象，您应该使用 `txb.object()` 以及相应的对象 ID。
+好的，现在你可以使用创建的 `Counter` 对象创建游戏。将游戏创建逻辑隔离到 `PlayerCreateGame.tsx` 中。还有一件事要记住 - 要将输入标记为链上对象，你应该使用 `txb.object()` 以及相应的对象 ID。
 
 ```typescript title='containers/Player/PlayerCreateGame.tsx'
 // Create new transaction block
@@ -947,7 +947,7 @@ execCreateGame(
 );
 ```
 
-最后一步尚未完成：结算游戏。您可以使用 UI 有两种方式来完成结算游戏：
+最后一步尚未完成：结算游戏。你可以使用 UI 有两种方式来完成结算游戏：
 
 1. 创建一个“结算游戏”按钮，并将所有必要的参数传递给 `single_player_satoshi::finish_game()` Move 调用。
 1. 通过事件订阅自动结算游戏。此示例使用此路径来教授关于事件的良好实践以及如何订阅它们。
@@ -1024,14 +1024,14 @@ export function HouseFinishGame() {
 }
 ```
 
-要从 SDK 中获取底层的 `SuiClient` 实例，请使用 `useSuiClient()`。每当 `HouseFinishGame` 组件加载时，您希望订阅事件。为此，请使用核心 React 库中的 React hook `useEffect()`。
+要从 SDK 中获取底层的 `SuiClient` 实例，请使用 `useSuiClient()`。每当 `HouseFinishGame` 组件加载时，你希望订阅事件。为此，请使用核心 React 库中的 React hook `useEffect()`。
 
-`SuiClient` 提供了一个名为 `subscribeEvent()` 的方法，可以让您订阅各种事件类型。实际上，`SuiClient::subscribeEvent()` 是对 RPC 方法 [`suix_subscribeEvent`](/sui-api-ref#suix_subscribeevent) 的薄包装。
+`SuiClient` 提供了一个名为 `subscribeEvent()` 的方法，可以让你订阅各种事件类型。实际上，`SuiClient::subscribeEvent()` 是对 RPC 方法 [`suix_subscribeEvent`](/sui-api-ref#suix_subscribeevent) 的薄包装。
 
-逻辑是每当开始新游戏时，您希望立即结算游戏。要实现这一点，所需的事件是名为 `single_player_satoshi::NewGame` 的 Move 事件类型。如果通过 `event.parsedJson` 检查事件的解析有效载荷，您可以看到在智能合约中声明的相应事件字段。在这种情况下，您只需使用两个字段，即 Game ID 和 VRF 输入。
+逻辑是每当开始新游戏时，你希望立即结算游戏。要实现这一点，所需的事件是名为 `single_player_satoshi::NewGame` 的 Move 事件类型。如果通过 `event.parsedJson` 检查事件的解析有效载荷，你可以看到在智能合约中声明的相应事件字段。在这种情况下，你只需使用两个字段，即 Game ID 和 VRF 输入。
 
-接下来的步骤与前面的 Move 调用类似，但您必须使用 BLS 私钥对 VRF 输入进行签名，然后将 Game ID、签名后的 VRF 输入和 `HouseData` ID 传递给 `single_player_satoshi::finish_game()` Move 调用。
+接下来的步骤与前面的 Move 调用类似，但你必须使用 BLS 私钥对 VRF 输入进行签名，然后将 Game ID、签名后的 VRF 输入和 `HouseData` ID 传递给 `single_player_satoshi::finish_game()` Move 调用。
 
-最后但同样重要的是，记得在 `HouseFinishGame` 组件卸载时取消订阅事件。这很重要，因为您可能不希望多次订阅相同的事件。
+最后但同样重要的是，记得在 `HouseFinishGame` 组件卸载时取消订阅事件。这很重要，因为你可能不希望多次订阅相同的事件。
 
-恭喜，您完成了前端。在构建下一个 Sui 项目时，可以将在这里学到的经验应用到使用 dApp Kit 的过程中。
+恭喜，你完成了前端。在构建下一个 Sui 项目时，可以将在这里学到的经验应用到使用 dApp Kit 的过程中。
