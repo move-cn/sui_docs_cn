@@ -1,19 +1,19 @@
 ---
-title: RPC Best Practices
+title: RPC 最佳实践
 ---
 
-This topic provides some best practices for configuring your RPC settings to ensure a reliable infrastructure for your projects and services built on Sui.
+本章节旨在为您提供一些配置 RPC 设置的最佳实践，以确保您在 Sui 上构建的项目和服务拥有可靠的基础支撑。
 
-- Use dedicated nodes/shared services rather than public endpoints for production apps. The public endpoints maintained by Mysten Labs are rate-limited, and support only approximately 100 requests per 30 seconds. You should not use public endpoints in production applications with high traffic volume.
-- You can either run your own Full nodes, or outsource this to a professional infrastructure provider (preferred for apps that have high traffic). You can find a list of reliable RPC endpoint providers for Sui on the [Sui Dev Portal](https://sui.io/developers?tools=RPC).
+- 对于正式运行的应用，推荐使用专用节点或共享服务，而非公共端点。由 Mysten 实验室维护的公共端点存在请求速率限制，每 30 秒仅能处理约 100 个请求。因此，在流量较大的生产环境中，不应依赖公共端点。
+- 您可以自行运营全节点，或者将此任务外包给专业的基础设施提供商（对于流量较大的应用更为适合）。您可以在 [Sui 开发者门户](https://sui.io/developers?tools=RPC) 上找到值得信赖的 Sui RPC 服务提供商列表。
 
-## RPC provisioning guidance
+## RPC 配置指南
 
-Consider the following when working with a provider:
+在选择服务提供商时，请考虑以下几点：
 
-- **SLA and 24-hour support:** Choose a provider that offers a SLA that meets your needs and 24-hour support.
-- **Onboarding call:** Always do an onboarding call with the provider you select to ensure they can provide service that meets your needs. If you have a high-traffic event, such as an NFT mint coming up, notify your RPC provider with the expected traffic increase at least 48 hours in advance.
-- **Redundancy:** It is important for high-traffic and time-sensitive apps, like NFT marketplaces and DeFi protocols, to ensure they don't rely on just one provider for RPCs. Many projects default to just using a single provider, but that's extremely risky and you should use other providers to provide redundancy.
-- **Traffic estimate:** You should have a good idea about the amount and type of traffic you expect, and you should communicate that information in advance with your RPC provider. During high-traffic events (such as NFT mints), request increased capacity from your RPC provider in advance.
-Bot mitigation - As Sui matures, a lot of bots will emerge on the network. Sui dApp builders should think about bot mitigation at the infrastructure level. This depends heavily on use cases. For NFT minting, bots are undesirable. However, for certain DeFi use cases, bots are necessary. Think about the implications and prepare your infrastructure accordingly.
-- **Provisioning notice:** Make RPC provisioning requests at least one week in advance. This gives operators and providers advance notice so they can arrange for the configure hardware/servers as necessary. If there’s a sudden, unexpected demand, please reach out to us so we can help set you up with providers that have capacity for urgent situations.
+- **服务等级（SLA）和全天候支持：** 选择一个提供符合您需求的服务等级和全天候支持的服务商。
+- **初步沟通：** 在选定服务商后，进行一次初步沟通，确保他们能提供符合您需求的服务。如果您预计将有高流量事件，如 NFT 铸造，应至少提前 48 小时通知您的服务商，以便他们做好流量增加的准备。
+- **多重备份：** 对于高流量和时间敏感的应用，如 NFT 市场和 DeFi 协议，重要的是不要仅依赖单一的服务提供商。许多项目默认使用单一服务商，这是非常危险的。您应考虑使用多个服务提供商以增加系统的冗余性。
+- **流量估计：** 您应对预期的流量量和类型有清晰的了解，并提前与服务商沟通。在高流量事件期间，如 NFT 铸造，提前向服务商申请增加处理能力。
+- **防止机器人行为：** 随着 Sui 的发展，网络上可能出现大量机器人行为。Sui dApp 开发者应该考虑在基础设施层面防止机器人滥用。这取决于具体应用场景。例如，在 NFT 铸造中，机器人通常是不受欢迎的，而在某些 DeFi 场景中，机器人可能是必需的。因此，需要根据您的应用场景，合理规划基础设施以应对机器人行为。
+- **提前规划：** 至少提前一周提交 RPC 配置的请求。这为操作人员和服务提供商提供了准备时间，以便他们安排适当的硬件和服务器配置。如果出现突发的高流量需求，请及时联系我们，我们可以帮助您联系具备应急处理能力的服务提供商。

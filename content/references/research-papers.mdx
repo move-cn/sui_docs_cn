@@ -3,10 +3,9 @@ title: SUI 相关的研究论文
 sidebar_label: 研究论文
 ---
 
-This document contains a list of research papers that are relevant to Sui and have been co-authored by at least one member of the team.
-Some of the ideas of these papers are currently being integrated into Sui, others are in our roadmap, and others are not in our roadmap
-but could be integrated in the future. Start with the [Sui Smart Contract Platform](/doc/sui.pdf) white paper, which contains
-our latest design inspired by previous works below.
+本文档汇集了一系列与 Sui 相关的研究论文，其中至少有一位团队成员参与撰写。
+这些论文中的一些想法目前正在被融入到 Sui 中，其他一些则列在我们的发展路线图上，还有些目前尚未计划集成，但未来可能会考虑。
+建议首先阅读 [Sui 智能合约平台](/doc/sui.pdf) 的白皮书，该白皮书基于下面提到的先前作品，介绍了我们最新的设计理念。
 
 ## FastPay: High-Performance Byzantine Fault Tolerant Settlement {#fastpay}
 
@@ -19,6 +18,11 @@ our latest design inspired by previous works below.
   that Sui extends. FastPay is based on Byzantine Consistent Broadcast as its core primitive, foregoing the expenses of full atomic commit channels
   (consensus). The resulting system has low-latency for both confirmation and payment finality. Remarkably, each validator can be sharded across many
   machines to allow unbounded horizontal scalability.
+- **Summary(cn):** FastPay 是一个允许分布式验证者（其中一些可能是拜占庭式的）维护一个高完整性和高可用性的预付款结算系统的协议。
+  它可以用于以本地价值单位（加密货币）结算支付，或作为一个金融侧基础设施来支持法定货币的零售支付。
+  虽然这不是 Sui 使用的协议，但它提出了基本的安全机制，Sui 在此基础上进行了扩展。FastPay 基于拜占庭一致性广播作为其核心原语，省去了完整原子提交通道（共识）的费用。
+  其结果是一个具有低延迟的系统，既对确认也对支付的最终确定性都是如此。
+  值得注意的是，每个验证者都可以在多台机器上进行分片，以实现无限的水平扩展能力。
 
 ## Narwhal and Tusk: A DAG-based Mempool and Efficient BFT Consensus {#narwhal-and-tusk}
 
@@ -36,6 +40,14 @@ our latest design inspired by previous works below.
   less than 2-sec latency compared with 1,800 tx/sec at 1-sec latency for Hotstuff. Additional workers increase throughput linearly to 600,000 tx/sec
   without any latency increase. Tusk achieves 160,000 tx/sec with about 3 seconds latency. Under faults, both protocols maintain high throughput, but
   Narwhal-HotStuff suffers from increased latency.
+- **Summary(cn):** 我们提出将可靠交易传播的任务与交易排序分开，以实现高性能的拜占庭容错基于法定群体的共识。
+  我们设计并评估了一种内存池协议 Narwhal，专门用于高吞吐量的可靠传播和存储交易的因果历史。
+  Narwhal 能够容忍异步网络，并在出现故障时仍保持高性能。
+  Narwhal 设计为可以通过在每个验证者处使用多个工作器轻松扩展，我们展示了我们可以实现的吞吐量没有可预见的限制。
+  将 Narwhal 与部分同步共识协议（Narwhal-HotStuff）结合使用，即使在出现故障或由于异步导致的间歇性活跃性丧失情况下，也能显著提高吞吐量。
+  然而，活跃性的丧失可能导致更高的延迟。为了在出现故障时实现总体良好的性能，我们设计了 Tusk，这是一种与 Narwhal 配合使用的零消息开销异步共识协议。
+  我们展示了它在各种配置和故障情况下的高性能。
+  作为结果总结，在广域网上，Narwhal-HotStuff 的性能超过每秒 130,000 笔交易，延迟不到 2 秒，而 HotStuff 的性能为每秒 1,800 笔交易，延迟 1 秒。增加工作器可以线性增加吞吐量至每秒 600,000 笔交易，而不增加任何延迟。Tusk 达到每秒 160,000 笔交易，延迟大约 3 秒。在出现故障时，两种协议都能保持高吞吐量，但 Narwhal-HotStuff 会有更多的延迟。
 
 ## Zef: Low-latency, Scalable, Private Payments {#zef}
 
@@ -52,6 +64,13 @@ our latest design inspired by previous works below.
   analysis of the protocol, we are making available an open source implementation of Zef in Rust. Our extensive benchmarks on AWS confirm textbook linear
   scalability and demonstrate a confirmation time under one second at nominal capacity. Compared to existing anonymous payment systems based on a blockchain,
   this represents a latency speedup of three orders of magnitude, with no theoretical limit on throughput.
+- **Summary(cn):** 我们介绍了 Zef，这是首个拜占庭容错（BFT）协议，支持在任意规模下进行匿名数字货币支付。
+  Zef 遵循 FastPay 的通信和安全模型：这两个协议都是异步的、低延迟的、线性可扩展的，并由部分可信的分片验证者提供动力。
+  Zef 进一步引入了作为离线证书的不透明货币，这些货币绑定在用户账户上。
+  为了在支付操作消耗或产生货币时隐藏货币的面值，Zef 使用随机承诺和零知识证明（NIZK）。
+  通过使用 [Coconut](https://arxiv.org/pdf/1802.07344.pdf) 的盲签名和随机化门限匿名凭证，创建的货币被做到不可关联。为了控制与防止货币重放相关的存储成本，Zef 账户的设计使得一旦账户被停用，数据就可以安全移除。
+  除了协议的规范和详细分析之外，我们还提供了用 Rust 编写的 Zef 的开源实现。我们在 AWS 上进行的广泛基准测试证实了教科书级的线性可扩展性，并证明在名义容量下确认时间低于一秒。
+  与基于区块链的现有匿名支付系统相比，这代表了三个数量级的延迟加速，且在理论上没有吞吐量限制。
 
 ## Bullshark: DAG BFT Protocols Made Practical {#bullshark}
 
@@ -63,6 +82,11 @@ our latest design inspired by previous works below.
   and post-quantum safety; but at the same time Bullshark provides a practical low-latency fast-path that exploits synchronous periods. In addition, we introduce
   a standalone partially synchronous version of Bullshark and evaluate it against the state of the art. The resulting protocol is embarrassingly simple 20 LOC
   on top of a DAG-based mempool implementation) and highly efficient, achieving for example, 125k transactions per second and 2 seconds latency with 50 nodes.
+- **Summary(cn):** 我们提出了 Bullshark，这是首个针对部分同步进行优化的基于有向无环图（DAG）的拜占庭容错（BFT）协议。
+  Bullshark 继承了其前身 DAG-Rider 的所有理想特性，如最优平摊复杂性、异步活跃性、零开销，以及后量子安全性；
+  但与此同时，Bullshark 提供了一个实用的低延迟快速路径，用于利用同步时期。
+  此外，我们引入了 Bullshark 的一个独立的部分同步版本，并将其与最新技术进行了对比。
+  最终的协议非常简单（基于 DAG 内存池实现的额外 20 行代码）且高效，例如在 50 个节点的情况下，达到了每秒 125,000 笔交易和 2 秒的延迟。
 
 ## Be Aware of Your Leaders {#awareness}
 
@@ -79,6 +103,13 @@ our latest design inspired by previous works below.
   information to determine a leader locally and achieves Liveness despite this difficulty. A HotStuff implementation fitted with Carousel demonstrates
   drastic performance improvements: it increases throughput over 2x in faultless settings and provides a 20x throughput increase and 5x latency reduction
   in the presence of faults.
+- **Summary(cn):** 区块链的进步对状态机复制（SMR）领域产生了深远影响，许多最先进的区块链-SMR 解决方案都基于两大支柱：链式结构和领导者轮换。
+  然而，用于领导者轮换的预定轮询机制存在一个不希望出现的行为：崩溃的参与方会无限次地被指定为领导者，从而减慢整个系统的性能。
+  在这篇论文中，我们提供了一个新的领导者意识 SMR 框架，除了其他理想特性外，该框架明确了一个领导者利用率要求，它限制了在仅崩溃执行中故障领导者的回合数。
+  我们引入了 Carousel，这是一种基于声誉的新领导者轮换解决方案，旨在实现领导者意识 SMR。适应性领导者轮换的挑战在于，它不能依赖共识来确定领导者，因为共识本身需要一个领导者。
+  Carousel 使用可用的链上信息来本地确定领导者，并在这种困难情况下实现了活跃性。
+  配备 Carousel 的 HotStuff 实现展示了显著的性能提升：在无故障环境下，吞吐量提高了 2 倍以上，在有故障的情况下，吞吐量提高了 20 倍，延迟降低了 5 倍。
+
 
 ## Twins: BFT Systems Made Robust {#twins}
 
@@ -97,6 +128,17 @@ our latest design inspired by previous works below.
   maintenance tasks. Twins requires only a thin wrapper over DiemBFT; we thus envision other systems using it. Building on this idea, one new attack and
   several known attacks against other BFT protocols were materialized as Twins scenarios. In all cases, the target protocols break within fewer than a dozen
   protocol rounds. Hence it is realistic for the Twins approach to expose the problems.
+- **Summary(cn):** 本论文介绍了 Twins，一个自动化的拜占庭攻击单元测试生成器。
+  Twins 实现了三种类型的拜占庭行为：（i）领导者的二义性，（ii）重复投票，以及（iii）丢失内部状态，例如忘记保护投票值的“锁”。
+  为了模拟由拜占庭节点发起的有趣攻击，它不是创建一个节点副本，而是创建两个完全相同的副本，给予这两个副本相同的身份和网络凭据。
+  对系统的其他部分来说，这两个副本看起来无法与单个以“可疑”方式行事的节点区分开。
+  Twins 能够系统性地生成大规模的拜占庭攻击场景，以受控方式执行它们，并检查其行为。Twins 场景会遍历协议轮次并改变节点间的通信模式。
+  Twins 在 DiemBFT 的生产环境中运行，每天可以执行 4400 万个由 Twins 生成的场景。虽然手头的系统没有表现出错误，但为了验证 Twins 实现的目的而故意注入的微妙安全漏洞在几分钟内就被暴露了。
+  Twins 可以帮助开发人员在更新代码库、引入新功能或执行常规维护任务时防止正确性降低。
+  Twins 只需要在 DiemBFT 上做一个薄层封装；因此，我们预见其他系统也可以使用它。
+  在这个想法的基础上，针对其他 BFT 协议的一个新攻击和几个已知攻击被构建为 Twins 场景。
+  在所有情况下，目标协议在不到十几个协议轮次内就崩溃了。因此，利用Twins 方法暴露问题是现实可行的。
+
 
 ## SybilQuorum: Open Distributed Ledgers Through Trust Networks {#sybilquorum}
 
@@ -109,3 +151,7 @@ our latest design inspired by previous works below.
   network based Sybil defenses. We show how nodes expressing their trust relationships through the ledger can bootstrap and operate a value system, and
   general transaction system, and how Sybil attacks are thwarted. We empirically evaluate our system as a secure Federated Byzantine Agreement System, and
   extend the theory of those systems to do so.
+- **Summary(cn):** Sybil 攻击是所有点对点系统的通病，现代开放式分布式账本采用了多种策略来防止这种攻击，从工作量证明、空间、股份或内存等资源，到在许可环境中的传统准入控制。
+  通过 SybilQuorum，我们提出了一种保护开放式分布式账本免受 Sybil 攻击的替代方法，并利用基于社交网络的 Sybil 防御来确保诚实参与者之间的共识。
+  我们展示了节点如何通过账本表达他们的信任关系，从而引导和运营一个价值系统和通用交易系统，以及如何阻止 Sybil 攻击。
+  我们从安全的联邦拜占庭协议系统的角度对我们的系统进行了实证评估，并扩展了这些系统的理论。

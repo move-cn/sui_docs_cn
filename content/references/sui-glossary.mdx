@@ -1,101 +1,78 @@
 ---
-title: 词汇表
+title: 术语表
 slug: /sui-glossary
 ---
 
-Find terms used in Sui defined below.
+以下是 Sui 中使用的一些术语的定义：
 
-### Causal history {#causal-history}
+### 因果历史（Causal History） {#causal-history}
+因果历史是指 Sui 中对象与其直接前任和后继之间的关系。这种历史对于 Sui 使用的因果顺序处理交易至关重要。与其他区块链不同，其他区块链需要读取其整个世界状态来处理每个交易，从而导致延迟。
 
-Causal history is the relationship between an object in Sui and its direct predecessors and successors. This history is essential to the causal order Sui uses to process transactions. In contrast, other blockchains read the entire state of their world for each transaction,
-introducing latency.
+### 因果顺序（Causal Order） {#causal-order}
+[因果顺序]((https://www.scattered-thoughts.net/writing/causal-ordering/)) 是展示交易与它们产生的对象之间关系的一种表示方式，以依赖关系呈现。验证者不能执行依赖于尚未完成的交易所创建对象的交易。与总体排序不同，Sui 使用因果顺序（一种部分排序）。
 
-### Causal order {#causal-order}
+### 证书（Certificate） {#certificate}
+证书是证明交易已被批准或认证的机制。验证者对交易进行投票，聚合器将这些投票中的拜占庭容错多数集合成一个证书，并将其广播给所有 Sui 验证者，从而确认交易。
 
-[Causal order](https://www.scattered-thoughts.net/writing/causal-ordering/) is a representation of the relationship between transactions and the objects they produce, laid out as dependencies. Validators cannot execute a transaction dependent on objects created by a prior transaction that has not finished. Rather than total order, Sui uses causal order (a partial order).
+### 时期（Epoch） {#epoch}
+Sui 网络的运行被时间划分为非重叠的固定时长时期。在特定的时期内，参与网络的验证者集合是固定的。
 
-### Certificate {#certificate}
+### 含糊其辞（Equivocation） {#equivocation}
+在区块链中，含糊其辞是指不诚实的行为者对同一消息提供冲突信息的恶意行为，例如不一致或重复投票。
 
-A certificate is the mechanism proving a transaction was approved or certified. Validators vote on transactions, and aggregators collect a Byzantine-resistant-majority of these votes into a certificate and broadcasts it to all Sui validators, thereby ensuring finality.
+### 最终一致性（Eventual Consistency） {#eventual-consistency}
+[最终一致性](https://en.wikipedia.org/wiki/Eventual_consistency) 是 Sui 采用的共识模型；如果一个诚实的验证者认证了交易，其他所有诚实的验证者最终也会这样做。
 
-### Epoch {#epoch}
-
-Operation of the Sui network is temporally partitioned into non-overlapping, fixed-duration epochs. During a particular epoch, the set of validators participating in the network is fixed.
-
-### Equivocation {#equivocation}
-
-Equivocation in blockchains is the malicious action of dishonest actors giving conflicting information for the same message, such as inconsistent or duplicate voting.
-
-### Eventual consistency {#eventual-consistency}
-
-[Eventual consistency](https://en.wikipedia.org/wiki/Eventual_consistency) is the consensus model employed by Sui; if one honest validator
-certifies the transaction, all of the other honest validators will too eventually.
-
-### Finality {#finality}
-
-[Finality](https://medium.com/mechanism-labs/finality-in-blockchain-consensus-d1f83c120a9a) is the assurance a transaction will not be revoked. This stage is considered closure for an exchange or other blockchain transaction.
+### 最终性（Finality） {#finality}
+[最终性](https://medium.com/mechanism-labs/finality-in-blockchain-consensus-d1f83c120a9a) 是指交易不会被撤销的保证。这个阶段被视为交换或其他区块链交易的结束。
 
 ### Gas {#gas}
+[Gas](https://ethereum.org/en/developers/docs/gas/) 指的是 Sui 网络上执行操作所需的计算工作量。在 Sui 中，gas 由网络的原生货币 SUI 支付。用 SUI 单位计算的执行交易成本被称为交易费用。
 
-[Gas](https://ethereum.org/en/developers/docs/gas/) refers to the computational effort required for executing operations on the Sui network. In Sui, gas is paid with the network's native currency SUI. The cost of executing a transaction in SUI units is referred to as the transaction fee.
+### 创世（Genesis） {#genesis}
+创世是为 Sui 网络创建账户和 gas 对象的初始行为。Sui 提供了一个 `genesis` 命令，允许用户创建并检查设置网络运行的创世对象。
 
-### Genesis {#genesis}
+### 多写对象（Multi-writer Objects） {#multi-writer-objects}
+多写对象是指由多个地址共同拥有的对象。在 Sui 中，影响多写对象的交易需要达成共识。这与只影响单写对象的交易形成对比，后者仅需确认所有者地址的内容即可。
 
-Genesis is the initial act of creating accounts and gas objects for a Sui network. Sui provides a `genesis` command that allows users to create and inspect the genesis object setting up the network for operation.
+### 对象（Object） {#object}
+Sui 的基本存储单位是对象（Object）。与许多其他以地址为中心的区块链不同，Sui 的存储围绕对象展开。Sui 对象有以下主要状态之一：
 
-### Multi-writer objects {#multi-writer-objects}
+- 不可变 - 对象不能被修改。
+- 可变 - 对象可以被更改。
 
-Multi-writer objects are objects that are owned by more than one address. Transactions affecting multi-writer objects require consensus in Sui. This contrasts with transactions affecting only single-writer objects, which require only a confirmation of the owner's address contents.
+此外，可变对象分为以下类别：
 
-### Object {#object}
+- 拥有 - 对象只能由其所有者修改。
+- 共享 - 对象可由任何人修改。
 
-The basic unit of storage in Sui is object. In contrast to many other blockchains, where storage is centered around address and each address contains a key-value store, Sui's storage is centered around objects. Sui objects have one of the following primary states:
+不可变对象不需要这种区分，因为它们没有所有者。
 
-- _Immutable_ - the object cannot be modified.
-- _Mutable_ - the object can be changed.
+### 权益证明（Proof-of-stake） {#proof-of-stake}
+[权益证明](https://en.wikipedia.org/wiki/Proof_of_stake) 是一种区块链共识机制，其中验证者的投票权与他们在网络中绑定的原生货币数量（称为他们在网络中的股份）成正比。这通过迫使恶意行为者需要在区块链中持有大量份额，从而减轻 [Sybil 攻击](https://en.wikipedia.org/wiki/Sybil_attack)。
 
-Further, mutable objects are divided into these categories:
+### 单写对象（Single-writer Objects） {#single-writer-objects}
+单写对象是由一个地址拥有的对象。在 Sui 中，只影响同一地址拥有的单写对象的交易可以仅通过验证发送者地址进行处理，大大加快了交易时间。这些是 _简单交易(simple transactions)_。有关此简单交易模型的示例应用，请参见单写应用（Single-Writer Apps）。
 
-- _Owned_ - the object can be modified only by its owner.
-- _Shared_ - the object can be modified by anyone.
-
-Immutable objects do not need this distinction because they have no owner.
-
-### Proof-of-stake {#proof-of-stake}
-
-[Proof-of-stake](https://en.wikipedia.org/wiki/Proof_of_stake) is a blockchain consensus mechanism where the voting weights of validators or validators is proportional to a bonded amount of the network's native currency (called their stake in the network). This mitigates [Sybil attacks](https://en.wikipedia.org/wiki/Sybil_attack) by forcing bad actors to gain a large stake in the blockchain first.
-
-### Single-writer objects {#single-writer-objects}
-
-Single-writer objects are owned by one address. In Sui, transactions affecting only single-writer objects owned by the same address may proceed with only a verification of the sender's address, greatly speeding transaction times. These are _simple transactions_. See Single-Writer Apps for example applications of this simple transaction model.
-
-### Smart contract {#smart-contract}
-
-A [smart contract](https://en.wikipedia.org/wiki/Smart_contract) is an agreement based upon the protocol for conducting transactions in a blockchain. In Sui, smart contracts are written in the [Move](https://github.com/MystenLabs/awesome-move) programming language.
+### 智能合约（Smart Contract） {#smart-contract}
+[智能合约](https://en.wikipedia.org/wiki/Smart_contract) 是基于区块链交易的协议的一种协议。在 Sui 中，智能合约是用 Move 编程语言编写的。
 
 ### Sui {#sui}
-
-Sui refers to the Sui blockchain, and the [Sui open source project](https://github.com/MystenLabs/sui/) as a whole.
+Sui 指的是 Sui 区块链，以及 [Sui 开源项目](https://github.com/MystenLabs/sui/) 的整体。
 
 ### SUI {#sui-1}
+SUI 是 Sui 网络的原生代币。
 
-SUI is the native token to the Sui network.
+### 全序关系（Total Order） {#total-order}
+[全序关系](https://en.wikipedia.org/wiki/Total_order) 指的是按时间顺序展示传统区块链上处理的所有交易的历史。许多区块链系统维护这种顺序，作为处理交易的唯一方式。相比之下，Sui 尽可能安全地使用因果（部分）顺序。
 
-### Total order {#total-order}
+### 交易（Transaction） {#transaction}
+在 Sui 中，交易指的是对区块链的更改。这可能是一个_简单交易_，仅影响单一写入者、单一地址的对象，例如铸造 NFT 或转移 NFT 或其他代币。这些交易可能绕过 Sui 的共识协议。
 
-[Total order](https://en.wikipedia.org/wiki/Total_order) refers to the ordered presentation of the history of all transactions processed by a traditional blockchain up to a given time. This is maintained by many blockchain systems, as the only way to process transactions. In contrast, Sui uses a causal (partial) order wherever possible and safe.
+更_复杂的交易_影响共享的或由多个地址拥有的对象，例如资产管理和其他 DeFi 应用，通过 [Narwhal 和 Bullshark](https://github.com/MystenLabs/narwhal) 基于 DAG 的内存池和高效的拜占庭容错（BFT）共识进行。
 
-### Transaction {#transaction}
+### 转移（Transfer） {#transfer}
+在 Sui 中，转移是通过命令将代币的拥有者地址更改为新的地址。这是通过 Sui CLI 客户端命令行界面完成的。它是 CLI 客户端提供的众多命令中较为常见的一个。
 
-A transaction in Sui is a change to the blockchain. This may be a _simple transaction_ affecting only single-writer, single-address objects, such as minting an NFT or transferring an NFT or another token. These transactions may bypass the consensus protocol in Sui.
-
-More _complex transactions_ affecting objects that are shared or owned by multiple addresses, such as asset management and other DeFi use cases, go through the [Narwhal and Bullshark](https://github.com/MystenLabs/narwhal) DAG-based mempool and efficient Byzantine Fault Tolerant (BFT) consensus.
-
-### Transfer {#transfer}
-
-A transfer is switching the owner address of a token to a new one via command in Sui. This is accomplished via the Sui CLI client command line interface. It is one of the more common of many commands available in the CLI client.
-
-### Validator {#validator}
-
-A validator in Sui plays a passive role analogous to the more active role of validators and minors in other blockchains. In Sui, validators do not continuously participate in the consensus protocol but are called into action only when receiving a transaction or
-certificate.
+### 验证者（Validator） {#validator}
+Sui 中的验证者扮演着类似于其他区块链中验证者和矿工更活跃角色的被动角色。在 Sui 中，验证者不会持续参与共识协议，而只在接收到交易或证书时被动响应。
