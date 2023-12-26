@@ -1,11 +1,11 @@
 ---
-title: DeepBook Pools
+title: DeepBook 池
 slug: /deepbook-pools
 ---
 
-At the center of DeepBook is a hyper-efficient per-current pair shared-object Pool structure. This architecture maximally utilizes Sui's Narwhal and Bullshark engine to minimize contention and achieve high throughput.
+DeepBook 的核心是一个超高效的每个当前交易对共享对象池结构。该架构最大程度地利用了 Sui 的 Narwhal 和 Bullshark 引擎，以最小化争用并实现高吞吐量。
 
-For each base and quote asset trading pair, a globally shared Pool is created to 1) bookkeep open orders on the order book and 2) handle placement, cancelation, and settlement of orders. Under this architecture, transactions involving different trading pairs can be easily parallelized to maximize throughput.
+对于每个基础和报价资产交易对，创建一个全局共享的池，用于 1) 记账订单簿上的未结订单和 2) 处理订单的下单、取消和结算。在这种架构下，涉及不同交易对的交易可以轻松并行化，以最大程度地提高吞吐量。
 
 ```move
 struct Pool<phantom BaseAsset, phantom QuoteAsset> has key {

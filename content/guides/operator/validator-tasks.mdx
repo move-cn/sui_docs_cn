@@ -1,6 +1,6 @@
 ---
 title: 验证器任务
-description: 作为 Sui 网络上的验证器，有一些流程需要执行，以确保您的节点始终得到优化。
+description: 作为 Sui 网络上的验证器，有一些流程需要执行，以确保你的节点始终得到优化。
 ---
 
 本指南重点介绍作为验证器运行 Sui 节点软件的相关步骤。
@@ -15,11 +15,11 @@ description: 作为 Sui 网络上的验证器，有一些流程需要执行，�
 
 ## 部署
 
-您可以以多种方式部署 Sui 节点。
+你可以以多种方式部署 Sui 节点。
 
 [Docker Hub](https://hub.docker.com/r/mysten/sui-node/tags) 上提供了预构建的容器镜像。
 
-并且在 S3 上有预构建的 `linux/amd64` 二进制文件，您可以使用以下其中一种方法进行获取：
+并且在 S3 上有预构建的 `linux/amd64` 二进制文件，你可以使用以下其中一种方法进行获取：
 
 ```shell
 wget https://releases.sui.io/$SUI_SHA/sui-node
@@ -77,7 +77,7 @@ $ cat /opt/sui/config/validator.yaml | grep db-path
   db-path: /opt/sui/db/consensus_db
 ```
 
-确保您已经挂载了适当大小的磁盘供数据库写入。
+确保你已经挂载了适当大小的磁盘供数据库写入。
 
 - 若要检查本地 Sui 节点数据库的大小：
 
@@ -175,7 +175,7 @@ curl localhost:1337/logging -d "info"
 
 ## 软件更新
 
-当需要更新 Sui 节点软件时，可以使用以下流程。根据部署类型，按照相关的 Systemd 或 Docker Compose 操作手册进行操作。在大多数情况下，您可能不希望重新启动并清除数据库。
+当需要更新 Sui 节点软件时，可以使用以下流程。根据部署类型，按照相关的 Systemd 或 Docker Compose 操作手册进行操作。在大多数情况下，你可能不希望重新启动并清除数据库。
 
 - [Systemd](https://github.com/MystenLabs/sui/blob/main/nre/systemd/README.md#updates)
 - [Docker Compose](https://github.com/MystenLabs/sui/blob/main/nre/docker/README.md#updates)
@@ -219,7 +219,7 @@ chmod +x sui
 
 ### 更新链上元数据
 
-您可以利用 [Validator 工具](https://github.com/MystenLabs/sui/blob/main/nre/validator_tool.md) 来执行以下大部分任务。
+你可以利用 [Validator 工具](https://github.com/MystenLabs/sui/blob/main/nre/validator_tool.md) 来执行以下大部分任务。
 
 活跃/待定的验证器可以通过提交交易来更新其链上元数据。一些元数据的更改会立即生效，包括：
 
@@ -316,7 +316,7 @@ sui client call --package 0x3 --module sui_system --function request_remove_vali
 用法
 `./download_private.sh <directory-name>`
 
-您还可以使用 `download_and_verify_private_binary.sh` 脚本下载和验证上述脚本未包含的特定二进制文件。
+你还可以使用 `download_and_verify_private_binary.sh` 脚本下载和验证上述脚本未包含的特定二进制文件。
 
 用法：
 `./download_and_verify_private_binary.sh <directory-name> <binary-name>`

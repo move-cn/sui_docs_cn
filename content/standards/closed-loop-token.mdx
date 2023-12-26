@@ -1,41 +1,41 @@
 ---
-title: Closed-Loop Token
+title: 闭环令牌
 ---
 
 import BalanceTokenCoin from '@site/static/img/balance-token-coin.png';
 
-Closed-Loop Token allows its creator to limit applications where the token is used, set up custom policies for transfers, spending and conversions. It is defined in the `sui::token` module and is a part of the Sui Framework.
+闭环令牌允许其创建者限制令牌的使用范围，设置转账、花费和转换的自定义策略。它在 `sui::token` 模块中定义，并是 Sui 框架的一部分。
 
-## Background & Use Cases
+## 背景与用例
 
-The standard Coin implementation on Sui is an example of an open-loop system - Coins are free-flowing, [wrappable](/concepts/object-ownership/wrapped), [freely transferable](/concepts/dynamic-fields/transfers/custom-rules#the-store-ability-and-transfer-rules) and can be stored in any application. The best real world analogy would be "cash" - hardly regulated and can be freely used and passed.
+Sui 上的标准 Coin 实现是一个开环系统的例子 - Coins 自由流动，[可包装](/concepts/object-ownership/wrapped)，[可自由转让](/concepts/dynamic-fields/transfers/custom-rules#the-store-ability-and-transfer-rules) 并且可以存储在任何应用程序中。最好的现实世界类比是 "现金" - 几乎没有受到监管，可以自由使用和传递。
 
-However, some applications require constraining the scope of the token to a specific purpose. For example, a token that can only be used for a specific service, or that can be used only by an authorized account, or one whose accounts can be blocked. A real-world analogy would be a "bank account" - regulated, controlled by the bank and compliant with certain rules and policies.
+然而，一些应用程序需要限制令牌的范围到特定目的。例如，仅可用于特定服务的令牌，或仅可由授权帐户使用的令牌，或者其帐户可以被阻止的令牌。现实世界的类比可以是 "银行账户" - 受监管，由银行控制，并符合某些规则和政策。
 
-Specific domains that can benefit from a closed-loop token include:
+可以从闭环令牌中受益的特定领域包括：
 
-- **Loyalty Points** - A token that can only be used for a specific service, e.g. for an airline - granted to frequent flyers and used to purchase tickets or upgrades.
-- **Regulatory-Compliant Tokens** - some jurisdictions require certain checks or restrictions on tokens. For example, a token that can only be used by a verified user, or a single operation with a token can have a limit.
-- **In-Game Currency** - similar to "gems" and "diamonds" in mobile games: a token that can only be used in a game and granted to players for their actions or purchased. Tokens of this kind are often not transferrable and minted in predefined amounts to maintain scarcity and game balance.
+- **忠诚积分** - 仅可用于特定服务的令牌，例如航空公司 - 授予常客并用于购买机票或升级。
+- **合规性令牌** - 一些司法辖区要求对令牌进行某些检查或限制。例如，仅可由经过验证的用户使用的令牌，或者令牌的单个操作可以有限制。
+- **游戏中货币** - 类似于移动游戏中的 "宝石" 和 "钻石"：仅可在游戏中使用的令牌，授予玩家进行操作或购买。这类令牌通常不能转让，并且以预定义的数量铸造，以保持稀缺性和游戏平衡。
 
-## Difference with Coin
+## 与 Coin 的区别
 
 <img className="balance-coin-token" src={BalanceTokenCoin} />
 
-Unlike Coin, which has `key + store` abilities and thus supports wrapping and public transfers, Token has only the `key` ability and cannot be wrapped, stored as a dynamic field, or freely transferred (unless there's a custom policy for that). Due to this restriction, Token **can only be owned by an account** and can't be stored in an application (however, it can be "spent" - see [Spending section](./closed-loop-token/spending.mdx) section).
+与 Coin 不同，Token 仅具有 `key` 能力，因此支持封装和公共转账，并且不能被封装、存储为动态字段或自由转让（除非有自定义策略）。由于这一限制，Token **只能由一个帐户拥有**，并且不能存储在应用程序中（但是，它可以被 "花费" - 请参阅[花费部分](./closed-loop-token/spending.mdx)）。
 
 ```move
-// defined in `sui::coin`
+// 在 `sui::coin` 中定义
 struct Coin<phantom T> has key, store { id: UID, balance: Balance<T> }
 
-// defined in `sui::token`
+// 在 `sui::token` 中定义
 struct Token<phantom T> has key { id: UID, balance: Balance<T> }
 ```
 
-## Compliance and Rules
+## 合规性和规则
 
-Closed-Loop Token allows its creator to set up any rules for transfers, spending and conversions. These rules are specified per action in the [TokenPolicy](./closed-loop-token/token-policy.mdx). [Rules](./closed-loop-token/rules.mdx) are custom programmable restrictions which can be used to implement any request authorization / validation logic.
+闭环令牌允许其创建者为转账、花费和转换设置任何规则。这些规则针对每个动作在 [TokenPolicy](./closed-loop-token/token-policy.mdx) 中指定。[规则](./closed-loop-token/rules.mdx) 是自定义的可编程限制，可用于实现任何请求授权/验证逻辑。
 
-For example, a policy can set a limit on a transfer - X tokens per operation; or require a user to be verified before spending tokens; or allow spending tokens only on a specific service.
+例如，一个策略可以设置转账的限制 - 每次操作 X 个令牌；或要求用户在花费令牌之前进行验证；或仅允许在特定服务上花费令牌。
 
-Rules can be reused across different policies and applications; and can be freely combined to create complex policies.
+规则可以在不同的策略和应用程序之间重用；并且可以自由组合以创建复杂的策略。

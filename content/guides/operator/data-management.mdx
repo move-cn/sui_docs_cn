@@ -1,6 +1,6 @@
 ---
 title: 数据管理
-description: Sui 网络上数据管理的高级描述，可用于优化您的 Sui 全节点配置。
+description: Sui 网络上数据管理的高级描述，可用于优化你的 Sui 全节点配置。
 ---
 
 Managing the data on your Sui Full node is critical to ensuring a healthy Sui network. This topic provides a high-level description of data management on Sui Full nodes that you can use to optimize your Full node configuration. For more information about Sui Full nodes, such as pruning policies and archival settings, see [Run a Sui Full Node](./sui-full-node.mdx).
@@ -32,10 +32,10 @@ Sui 全节点在其永久存储中存储多个类别的数据。
 
 Sui 全节点存储以下类型的数据：
 
-1. **具有关联效果和事件的交易：** Sui 使用唯一的交易摘要检索有关交易的信息，包括其效果和发出的事件。Sui 全节点不需要基本全节点操作的历史交易信息。为了节省驱动器空间，您可以启用修剪以删除此历史数据。
+1. **具有关联效果和事件的交易：** Sui 使用唯一的交易摘要检索有关交易的信息，包括其效果和发出的事件。Sui 全节点不需要基本全节点操作的历史交易信息。为了节省驱动器空间，你可以启用修剪以删除此历史数据。
 2. **检查点：** Sui 将已提交的交易分组到检查点中，然后使用这些检查点实现状态同步。检查点保留包含附加完整性元数据的交易摘要。
-Sui 全节点不需要来自检查点的数据来执行和提交交易，因此您也可以为此数据配置修剪。
-3. **对象：** 变异对象的交易创建新的对象版本。每个对象都有一个唯一的 `(objectId, version)` 对，用于标识该对象。Sui 全节点不需要历史对象版本来执行和提交交易，因此您也可以配置全节点来修剪此数据。
+Sui 全节点不需要来自检查点的数据来执行和提交交易，因此你也可以为此数据配置修剪。
+3. **对象：** 变异对象的交易创建新的对象版本。每个对象都有一个唯一的 `(objectId, version)` 对，用于标识该对象。Sui 全节点不需要历史对象版本来执行和提交交易，因此你也可以配置全节点来修剪此数据。
 4. **索引信息：** 默认情况下，全节点会对已提交的交易进行后处理：它索引已提交的信息以实现高效的聚合和过滤查询。例如，索引对于检索给定发送方的所有历史交易或查找由地址拥有的所有对象可能是有用的。
 
 Sui 全节点支持超过 40 种 RPC 类型，其中包括以下类别：
@@ -60,7 +60,7 @@ Sui 档案实例以与数据库无关的格式存储自创世以来的完整 Sui
 
 :::
 
-作为全节点操作员，您可以通过指定上传档案数据的 URL 来[为您的全节点启用档案回退](./sui-full-node.mdx#set-up-archival-fallback)。目前，Mysten Labs 管理一个 Sui 档案并将其存储在 AWS S3 中。为了确保网络的健康，我们鼓励 Sui 社区设置额外的档案以确保在整个网络中的档案数据可用性。在典型的配置中，一个档案大约滞后最新检查点约 10 分钟。
+作为全节点操作员，你可以通过指定上传档案数据的 URL 来[为你的全节点启用档案回退](./sui-full-node.mdx#set-up-archival-fallback)。目前，Mysten Labs 管理一个 Sui 档案并将其存储在 AWS S3 中。为了确保网络的健康，我们鼓励 Sui 社区设置额外的档案以确保在整个网络中的档案数据可用性。在典型的配置中，一个档案大约滞后最新检查点约 10 分钟。
 
 从头开始的全节点可以通过 [配置档案回退](./sui-full-node.mdx#archival-fallback) 在 `fullnode.yaml` 配置文件中指向存储档案的 S3 存储桶来重播（从而重新验证）自 Sui 创世以来发生的交易。
 
@@ -72,7 +72,7 @@ Sui 档案实例以与数据库无关的格式存储自创世以来的完整 Sui
 
 事务和对象修剪器都在后台运行。从 RocksDB 中逻辑删除条目最终触发磁盘上的数据物理压实，这由 RocksDB 后台作业管理：对磁盘使用的修剪效果不是立即的，可能需要多天。
 
-要了解有关对象修剪策略的更多信息，请参阅 [对象修剪](./sui-full-node.mdx#object-pruning)。您可以在两种模式下配置修剪器：
+要了解有关对象修剪策略的更多信息，请参阅 [对象修剪](./sui-full-node.mdx#object-pruning)。你可以在两种模式下配置修剪器：
 * **激进修剪**（`num-epochs-to-retain: 0`）：首选选项。Sui 尽快修剪旧的对象版本。
 * **基于纪元的修剪**（`num-epochs-to-retain: X`）：Sui 在 X 个纪元后修剪旧的对象版本。
 
@@ -86,7 +86,7 @@ Sui 档案实例以与数据库无关的格式存储自创世以来的完整 Sui
 
 ### 设置存档水印
 
-如果您的全节点配置为将已提交的信息上传到存档，则应确保修剪在相应数据上传之后发生。为此，在 Fullnode.yaml 文件中设置 `use-for-pruning-watermark: true`，如 [档案回退](./sui-full-node.mdx#archival-fallback) 中所述。
+如果你的全节点配置为将已提交的信息上传到存档，则应确保修剪在相应数据上传之后发生。为此，在 Fullnode.yaml 文件中设置 `use-for-pruning-watermark: true`，如 [档案回退](./sui-full-node.mdx#archival-fallback) 中所述。
 
 ## Sui 全节点键值存储备份
 
@@ -96,7 +96,7 @@ Sui 档案实例以与数据库无关的格式存储自创世以来的完整 Sui
 
 ## 修剪策略示例
 
-使用本节的示例配置您的 Sui 全节点。您可以复制示例，然后根据您的环境适当修改值。
+使用本节的示例配置你的 Sui 全节点。你可以复制示例，然后根据你的环境适当修改值。
 
 ### 最小全节点
 
@@ -150,7 +150,7 @@ authority-store-pruning-config:
 
 此配置在仍然修剪历史交易的同时管理完整的对象历史。具有此配置的全节点可以回答所有历史和索引查询（使用事务查询回退进行事务数据），包括需要历史对象的查询，如 `sui_getTransactionBlock()` 的 `showBalanceChanges` 过滤器。
 
-主要的注意事项是当前的设置使得**事务修剪器**领先于**对象修剪器**。对象修剪器可能无法正确清理已被修剪的事务修改的对象。您应该密切监视具有此配置的全节点的磁盘空间增长。
+主要的注意事项是当前的设置使得**事务修剪器**领先于**对象修剪器**。对象修剪器可能无法正确清理已被修剪的事务修改的对象。你应该密切监视具有此配置的全节点的磁盘空间增长。
 
 除了常规（修剪的）快照之外，Mysten Labs 还维护具有完整对象版本历史的特殊 RocksDB 快照，供使用此配置的操作员使用。
 

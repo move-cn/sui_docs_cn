@@ -9,7 +9,7 @@ description: 正式快照提供了一种机制，使节点能够在某个先前�
 1. **不可知性：** 正式快照在本质上与底层数据库选择或协议实现无关。正如活动对象集是协议定义的，正式快照也是如此。
 1. **可验证性：** 正式快照在核心 Sui 协议中得到了一流的支持。因此，它们必须由节点操作员在下载时进行无信任/可验证验证。为支持这一点，协议对在纪元结束时的活动对象状态进行了承诺的签名，正式快照在恢复时会根据此进行检查。如果此验证失败，则节点状态将被移回快照恢复尝试之前的状态。
 
-由于这些快照不包含索引，它们对于验证器和状态同步全节点（SSFNs）最为有用。您可以将快照上传到像 S3、Google Cloud Storage、Azure Blob Storage 等远程对象存储中。这些服务通常在后台运行导出过程，因此您的完整节点性能不会受到影响。在云中存储快照，您可以更有效地从系统或硬件的灾难性故障中恢复。
+由于这些快照不包含索引，它们对于验证器和状态同步全节点（SSFNs）最为有用。你可以将快照上传到像 S3、Google Cloud Storage、Azure Blob Storage 等远程对象存储中。这些服务通常在后台运行导出过程，因此你的完整节点性能不会受到影响。在云中存储快照，你可以更有效地从系统或硬件的灾难性故障中恢复。
 
 ## 启用正式快照
 
@@ -36,9 +36,9 @@ description: 正式快照提供了一种机制，使节点能够在某个先前�
 
 ## 从正式快照恢复
 
-从正式快照下载、验证和恢复的整个过程由 `sui-tool` 中的单个命令处理。运行快照恢复工具后，本地节点状态将反映出您恢复到的纪元结束时的规范状态，然后您可以正常启动节点。要从快照中恢复：
+从正式快照下载、验证和恢复的整个过程由 `sui-tool` 中的单个命令处理。运行快照恢复工具后，本地节点状态将反映出你恢复到的纪元结束时的规范状态，然后你可以正常启动节点。要从快照中恢复：
 
-1. 下载适用于您操作系统的 `sui` 的 `latest` 版本。
+1. 下载适用于你操作系统的 `sui` 的 `latest` 版本。
 1. 运行 `sui-tool download-db-snapshot --formal`，将桶名称和身份验证凭据作为环境变量传递，并提供桶名称、桶类型、要恢复到的纪元和创世块。
 
    ```
@@ -46,7 +46,7 @@ description: 正式快照提供了一种机制，使节点能够在某个先前�
       sui-tool download-db-snapshot --formal --epoch 200 --genesis <PATH-TO-GENESIS-BLOB> --snapshot-bucket mysten-mainnet-formal --snapshot-bucket-type gcs --path <DB-PATH> --num-parallel-downloads 50
    ```
 
-1. 确保更新已下载目录的所有权给 sui 用户（即您运行 `sui-node` 的 Linux 用户）
+1. 确保更新已下载目录的所有权给 sui 用户（即你运行 `sui-node` 的 Linux 用户）
    `sudo chown -R sui:sui  /opt/sui/db/authorities_db/full_node_db/live`。
 1. 启动 Sui 节点。
 
@@ -58,7 +58,7 @@ description: 正式快照提供了一种机制，使节点能够在某个先前�
 
 ## 每个环境使用的 GCS 存储桶
 
-Mysten 经营的存储桶。要访问 Mysten 经营的存储桶，您仍然需要提供有效的凭据，以进行对 GCS（快照桶托管）和 AWS（归档托管）的签名访问。
+Mysten 经营的存储桶。要访问 Mysten 经营的存储桶，你仍然需要提供有效的凭据，以进行对 GCS（快照桶托管）和 AWS（归档托管）的签名访问。
 
 - Testnet: `s3://mysten-testnet-formal/`
 - Mainnet: `s3://mysten-mainnet-formal/`

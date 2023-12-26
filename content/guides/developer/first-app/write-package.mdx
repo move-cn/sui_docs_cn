@@ -3,17 +3,17 @@ title: 编写 Move 包
 description: 在将包上链的第一步是编写定义包逻辑的 Move 代码。Move 包的结构类似于 Rust 中的包。
 ---
 
-在构建 Move 包并运行其代码之前，您必须首先为您的操作系统[安装 Sui 二进制文件](../getting-started/sui-install.mdx)。
+在构建 Move 包并运行其代码之前，你必须首先为你的操作系统[安装 Sui 二进制文件](../getting-started/sui-install.mdx)。
 
 ### 创建包
 
-首先，在您计划存储包的位置打开一个终端或控制台。使用 `sui move new` 命令创建一个名为 `my_first_package` 的空 Move 包：
+首先，在你计划存储包的位置打开一个终端或控制台。使用 `sui move new` 命令创建一个名为 `my_first_package` 的空 Move 包：
 
 ``` shell
 sui move new my_first_package
 ```
 
-运行上述命令将创建一个以您提供的名称（`my_first_package`）命名的目录。该命令使用一个骨架 Move 项目填充新目录，其中包括一个 `sources` 目录和一个 `Move.toml` 清单文件。使用文本编辑器打开清单文件以查看其内容：
+运行上述命令将创建一个以你提供的名称（`my_first_package`）命名的目录。该命令使用一个骨架 Move 项目填充新目录，其中包括一个 `sources` 目录和一个 `Move.toml` 清单文件。使用文本编辑器打开清单文件以查看其内容：
 
 ```shell
 cat my_first_package/Move.toml
@@ -31,7 +31,7 @@ sui = "0000000000000000000000000000000000000000000000000000000000000002"
 
 ### 定义包
 
-现在您有一个包，但它什么都不做。为了使您的包有用，您必须添加包含在 `.move` 源文件中的逻辑，这些文件定义了*模块*。使用文本编辑器或命令行，在包的 `sources` 目录中创建名为 `my_module.move` 的第一个包源文件：
+现在你有一个包，但它什么都不做。为了使你的包有用，你必须添加包含在 `.move` 源文件中的逻辑，这些文件定义了*模块*。使用文本编辑器或命令行，在包的 `sources` 目录中创建名为 `my_module.move` 的第一个包源文件：
 
 ``` shell
 touch my_first_package/sources/my_module.move
@@ -99,7 +99,7 @@ module my_first_package::my_module {
 
 * **第四部分：访问器函数** - 这些函数允许从其他模块读取模块结构的字段。
 
-保存文件后，您就拥有了一个完整的 Move 包。
+保存文件后，你就拥有了一个完整的 Move 包。
 
-在下一个主题中，您将学习构建和测试您的包，使其准备好发布。
+在下一个主题中，你将学习构建和测试你的包，使其准备好发布。
 

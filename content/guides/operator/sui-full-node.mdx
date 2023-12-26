@@ -5,7 +5,7 @@ description: 运行Sui全节点以验证区块链活动，如交易、检查点�
 
 :::info
 
-这些说明适用于高级用户。如果您只需要一个本地开发环境，您应该按照[创建本地Sui网络](../developer/getting-started/local-network.mdx)中的说明创建本地全节点、验证器和水龙头。
+这些说明适用于高级用户。如果你只需要一个本地开发环境，你应该按照[创建本地Sui网络](../developer/getting-started/local-network.mdx)中的说明创建本地全节点、验证器和水龙头。
 
 :::
 
@@ -42,7 +42,7 @@ Sui全节点本质上是网络状态的只读视图。与验证器节点不同�
 
 ## 全节点设置
 
-按照这里的说明运行您自己的Sui全节点。
+按照这里的说明运行你自己的Sui全节点。
 
 ### 硬件要求
 
@@ -54,7 +54,7 @@ Sui全节点本质上是网络状态的只读视图。与验证器节点不同�
 
 ### 软件要求
 
-Sui建议在Linux上运行Sui全节点。Sui支持Ubuntu和Debian发行版。您也可以在macOS上运行Sui全节点。
+Sui建议在Linux上运行Sui全节点。Sui支持Ubuntu和Debian发行版。你也可以在macOS上运行Sui全节点。
 
 确保[更新Rust](https://doc.rust-lang.org/book/ch01-01-installation.html#updating-and-uninstalling)。
 
@@ -79,7 +79,7 @@ cmake
 
 ## 配置全节点
 
-您可以通过使用Docker或从源代码构建来配置Sui全节点。
+你可以通过使用Docker或从源代码构建来配置Sui全节点。
 
 ### 使用Docker Compose
 
@@ -87,23 +87,23 @@ cmake
 
 ### 设置本地Sui存储库
 
-您必须从Sui GitHub存储库获取最新的源文件。
+你必须从Sui GitHub存储库获取最新的源文件。
 1. 设置Sui存储库的分支：
     1. 转到GitHub上的[Sui存储库](https://github.com/MystenLabs/sui)，并单击屏幕右上角的Fork按钮。
-    1. 将Sui存储库的个人分支克隆到本地计算机（确保将您的GitHub用户名插入到URL中）：
+    1. 将Sui存储库的个人分支克隆到本地计算机（确保将你的GitHub用户名插入到URL中）：
     `git clone https://github.com/<YOUR-GITHUB-USERNAME>/sui.git`
-1. 进入您的`sui`存储库：
+1. 进入你的`sui`存储库：
     `cd sui`
 1. 将Sui存储库设置为git远程：
     `git remote add upstream https://github.com/MystenLabs/sui`
-1. 同步您的分支：
+1. 同步你的分支：
     `git fetch upstream`
-1. 检出与您想要运行的网络版本相关联的分支（例如，使用`devnet`来运行Devnet全节点）：
+1. 检出与你想要运行的网络版本相关联的分支（例如，使用`devnet`来运行Devnet全节点）：
     `git checkout --track upstream/<BRANCH-NAME>`
 
 ### 从源代码设置全节点 {#set-up-from-source}
 
-打开终端或控制台，转到您在前面步骤中下载的`sui`目录，完成以下步骤：
+打开终端或控制台，转到你在前面步骤中下载的`sui`目录，完成以下步骤：
 1. 安装所需的先决条件。
 1. 复制[Full node YAML模板](https://github.com/MystenLabs/sui/blob/main/crates/sui-config/data/fullnode-template.yaml)：
     `cp crates/sui-config/data/fullnode-template.yaml fullnode.yaml`
@@ -136,16 +136,16 @@ cmake
 
 ### 启动服务
 
-此时，您的Sui全节点已准备好连接到Sui网络。
+此时，你的Sui全节点已准备好连接到Sui网络。
 
 1. 打开终端或控制台，进入sui目录。
 1. 启动Sui全节点：
     `cargo run --release --bin sui-node -- --config-path fullnode.yaml`
 1. 可选：通过JSON-RPC通过websocket发布/订阅通知。
 
-如果您的设置成功，您的Sui全节点现在已连接到适当的网络。
+如果你的设置成功，你的Sui全节点现在已连接到适当的网络。
 
-您的全节点为Sui JSON-RPC API的读取端点提供服务：`http://127.0.0.1:9000`。
+你的全节点为Sui JSON-RPC API的读取端点提供服务：`http://127.0.0.1:9000`。
 
 ### 故障排除
 
@@ -157,15 +157,15 @@ cmake
 panicked at error binding to 0.0.0.0:9184: error creating server listener: Address already in use (os error 98)
 ```
 
-然后，将您的fullnode.yaml文件中的指标地址更新为使用端口`9180`。
+然后，将你的fullnode.yaml文件中的指标地址更新为使用端口`9180`。
 
 ```shell
 metrics-address: "0.0.0.0:9180"
 ```
 
-## 使用您的全节点的Sui Explorer
+## 使用你的全节点的Sui Explorer
 
-[Sui Explorer](https://suiexplorer.com/)支持连接到自定义RPC URL和本地网络。您可以将Explorer指向您的本地全节点，查看它从网络同步的交易。
+[Sui Explorer](https://suiexplorer.com/)支持连接到自定义RPC URL和本地网络。你可以将Explorer指向你的本地全节点，查看它从网络同步的交易。
 1. 打开浏览器并转到：https://suiexplorer.com/
 1. 在右上角的网络下拉
 
@@ -175,13 +175,13 @@ Sui Explorer显示有关所选网络的信息。
 
 ## 监控
 
-使用Logging、Tracing、Metrics和Observability中的说明监视您的全节点。
+使用Logging、Tracing、Metrics和Observability中的说明监视你的全节点。
 
-默认的度量端口是`9184`。要更改端口，请编辑您的fullnode.yaml文件。
+默认的度量端口是`9184`。要更改端口，请编辑你的fullnode.yaml文件。
 
-## 更新您的全节点
+## 更新你的全节点
 
-每当Sui发布新版本时，您必须使用发布更新您的全节点，以确保其与连接的网络兼容。例如，如果您使用Sui Testnet，则应安装运行在Sui Testnet上的Sui版本。
+每当Sui发布新版本时，你必须使用发布更新你的全节点，以确保其与连接的网络兼容。例如，如果你使用Sui Testnet，则应安装运行在Sui Testnet上的Sui版本。
 
 ### 使用Docker Compose进行更新
 
@@ -193,10 +193,10 @@ docker-compose down --volumes
 
 ### 从源代码更新
 
-如果您按照从源代码构建的说明进行操作，请使用以下步骤更新您的完整节点：
+如果你按照从源代码构建的说明进行操作，请使用以下步骤更新你的完整节点：
 
 1. 关闭正在运行的完整节点。
-2. 进入您的本地Sui存储库所在的目录：
+2. 进入你的本地Sui存储库所在的目录：
     ```shell
     cd sui
     ```
@@ -208,7 +208,7 @@ docker-compose down --volumes
     ```shell
     git fetch upstream
     ```
-1. 重置您的分支：
+1. 重置你的分支：
     ```shell
     git checkout -B <BRANCH-NAME> --track upstream/<BRANCH-NAME>
     ```
@@ -227,13 +227,13 @@ docker-compose down --volumes
     cargo run --release --bin sui-node -- --config-path fullnode.yaml
     ```
     
-您的全节点开始于： http://127.0.0.1:9000.
+你的全节点开始于： http://127.0.0.1:9000.
 
 ## 对象修剪 {#object-pruning}
 
 Sui在事务执行的过程中向数据库添加新的对象版本。这使得以前的版本可以进行垃圾收集。然而，如果不进行修剪，这可能导致数据库性能下降并且需要大量的存储空间。Sui在每个检查点中识别出适合进行修剪的对象，然后在后台执行修剪。
 
-您可以通过在 `fullnode.yaml` 文件中添加 `authority-store-pruning-config` 配置来启用Sui节点的修剪：
+你可以通过在 `fullnode.yaml` 文件中添加 `authority-store-pruning-config` 配置来启用Sui节点的修剪：
 
 ```yaml
 authority-store-pruning-config:
@@ -271,7 +271,7 @@ authority-store-pruning-config:
 
 Sui在检查点完成后后台执行事务修剪。
 
-您可以通过将 `num-epochs-to-retain-for-checkpoints` 添加到节点的 `authority-store-pruning-config` 配置来启用 Full 节点或 Validator 节点的事务修剪：
+你可以通过将 `num-epochs-to-retain-for-checkpoints` 添加到节点的 `authority-store-pruning-config` 配置来启用 Full 节点或 Validator 节点的事务修剪：
 
 ```yaml
 authority-store-pruning-config:
@@ -293,6 +293,6 @@ authority-store-pruning-config:
 
 :::info
 
-如果您修剪事务，归档节点可以帮助确保滞后的对等节点不会丢失任何信息。有关更多信息，请参阅 [Sui Archives](./archives.mdx)。
+如果你修剪事务，归档节点可以帮助确保滞后的对等节点不会丢失任何信息。有关更多信息，请参阅 [Sui Archives](./archives.mdx)。
 
 :::

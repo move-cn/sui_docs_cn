@@ -6,18 +6,18 @@ Sui 水龙头是一个有用的工具，Sui 开发人员可以从中获取免费
 
 ## 先决条件
 
-要从水龙头请求代币，您必须拥有一个能够接收 SUI 代币的钱包地址。如果您还没有地址或需要创建新地址，请参阅 [获取 Sui 地址](./get-address.mdx) 主题。
+要从水龙头请求代币，你必须拥有一个能够接收 SUI 代币的钱包地址。如果你还没有地址或需要创建新地址，请参阅 [获取 Sui 地址](./get-address.mdx) 主题。
 
 ## 通过 Discord 请求测试代币
 
 1. 加入 [Discord](https://discord.gg/sui)。
-   如果您尝试使用新创建的 Discord 帐户加入 Sui Discord 频道，可能需要等待几天进行验证。
-1. 在 Sui [#devnet-faucet](https://discord.com/channels/916379725201563759/971488439931392130) 或 [#testnet-faucet](https://discord.com/channels/916379725201563759/1037811694564560966) Discord 频道中请求测试 SUI 代币。将以下消息发送到频道，并附上您的客户端地址：
+   如果你尝试使用新创建的 Discord 帐户加入 Sui Discord 频道，可能需要等待几天进行验证。
+1. 在 Sui [#devnet-faucet](https://discord.com/channels/916379725201563759/971488439931392130) 或 [#testnet-faucet](https://discord.com/channels/916379725201563759/1037811694564560966) Discord 频道中请求测试 SUI 代币。将以下消息发送到频道，并附上你的客户端地址：
    `!faucet <Your client address>`
 
 ## 通过钱包请求测试代币
 
-您可以在 [Sui 钱包](https://github.com/MystenLabs/mysten-app-docs/blob/main/mysten-sui-wallet.md#add-sui-tokens-to-your-sui-wallet) 中请求测试代币。
+你可以在 [Sui 钱包](https://github.com/MystenLabs/mysten-app-docs/blob/main/mysten-sui-wallet.md#add-sui-tokens-to-your-sui-wallet) 中请求测试代币。
 
 ## 通过 cURL 请求测试代币
 
@@ -33,14 +33,14 @@ curl --location --request POST 'https://faucet.devnet.sui.io/gas' \
 }'
 ```
 
-如果您正在使用本地网络，请根据运行网络的软件包替换 `'https://faucet.devnet.sui.io/gas'` 为适当的值：
+如果你正在使用本地网络，请根据运行网络的软件包替换 `'https://faucet.devnet.sui.io/gas'` 为适当的值：
 
 - `sui-faucet`: `http://127.0.0.1:5003/gas`
 - `sui-test-validator`: `http://127.0.0.1:9123/gas`
 
 ## 通过 TypeScript SDK 请求测试代币
 
-您还可以使用 Sui TypeScript-SDK 访问水龙头。
+你还可以使用 Sui TypeScript-SDK 访问水龙头。
 
 ```typescript
 import { requestSuiFromFaucetV0, getFaucetHost } from '@mysten/sui.js/faucet';
@@ -55,4 +55,4 @@ await requestSuiFromFaucetV0({
 
 ## 在本地网络上测试代币
 
-如果您正在运行本地 Sui 网络，可以从本地水龙头获取代币。有关详细信息，请参阅 [连接到本地网络](./local-network.mdx#use-the-local-faucet) 主题。
+如果你正在运行本地 Sui 网络，可以从本地水龙头获取代币。有关详细信息，请参阅 [连接到本地网络](./local-network.mdx#use-the-local-faucet) 主题。

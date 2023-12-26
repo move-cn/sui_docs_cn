@@ -39,7 +39,7 @@ Sui 中的可观察性栈基于 [Tokio tracing](https://tokio.rs/blog/2019-08-tr
 
 在摘要中，`process_tx` 是一个覆盖处理初始事务请求的跨度，“Checked locks” 是验证器中处理事务的方法中的单个日志消息。
 
-在跨度中定义的键值对属性，包括 `tx_digest` 和添加的任何其他字段，每个发生在跨度内的日志消息都会继承。日志消息可以设置它们自己的键和值。日志继承跨度属性的事实允许您跟踪例如事务跨越线程和进程边界的流程。
+在跨度中定义的键值对属性，包括 `tx_digest` 和添加的任何其他字段，每个发生在跨度内的日志消息都会继承。日志消息可以设置它们自己的键和值。日志继承跨度属性的事实允许你跟踪例如事务跨越线程和进程边界的流程。
 
 ## 键值对模式 {#key-value-pairs-schema}
 
@@ -81,7 +81,7 @@ Sui 包含基于 Prometheus 的指标：
 
 跟踪架构基于 [订阅者](https://github.com/tokio-rs/tracing#project-layout) 的思想，可以将其插入跟踪库以处理并将输出转发到不同的汇聚点以进行查看。多个订阅者可以同时活动。
 
-例如，您可以通过本地辅助日志转发器（例如 [Vector](https://vector.dev)）将 JSON 日志馈送到 JSON 日志，并继续发送到 ElasticSearch 等目的地。
+例如，你可以通过本地辅助日志转发器（例如 [Vector](https://vector.dev)）将 JSON 日志馈送到 JSON 日志，并继续发送到 ElasticSearch 等目的地。
 
 使用日志和指标聚合器（如 Vector）允许在不中断验证器服务器的情况下轻松重新配置，以及卸载可观察性流量。
 
@@ -91,13 +91,13 @@ Sui 包含基于 Prometheus 的指标：
 
 默认情况下，日志（但不是跨度）以对人类可读的方式进行格式化并输出到 stdout，每一行的末尾都带有键值对标签。
 
-您可以配置 `RUST_LOG` 以获取自定义日志输出，包括过滤 - 请参见本主题前面的 [日志级别](#logging-levels) 部分。
+你可以配置 `RUST_LOG` 以获取自定义日志输出，包括过滤 - 请参见本主题前面的 [日志级别](#logging-levels) 部分。
 
 ### 跟踪和跨度输出 {#tracing-and-span-output}
 
 要生成详细的跨度开始和结束日志，定义 `SUI_JSON_SPAN_LOGS` 环境变量。这会导致所有输出以 JSON 格式呈现，这不是默认启用的，因为它不够人类可读。
 
-您可以将此输出发送到工具或服务以进行索引、警报、聚合和分析。
+你可以将此输出发送到工具或服务以进行索引、警报、聚合和分析。
 
 以下是在验证器中使用跨度日志的证书处理的示例输出。请注意 `START` 和 `END` 注释，以及嵌套的 `DB_UPDATE_STATE` 嵌套在 `PROCESS_CERT` 中。还请注意 `elapsed_milliseconds`，它记录了每个跨度的持续时间。
 
@@ -152,7 +152,7 @@ SUI_TRACING_ENABLE=1 RUST_LOG="info,sui_core=trace" ./sui start
 
 Sui 默认在大多数平台上使用 [jemalloc 内存分配器](https://jemalloc.net/)，并有代码启用了使用 jemalloc 的采样分析器的自动内存分析功能，该分析器非常轻量级且专为生产使用而设计。分析代码最多每 5 分钟产生一次分析，仅在总内存增加了默认的 20% 时才会生成。分析文件的命名为 `jeprof.<TIMESTAMP>.<memorysize>MB.prof`，以便于与指标和事件轻松对应，以便调试。
 
-要使内存分析正常工作，您需要设置环境变量 `_RJEM_MALLOC_CONF=prof:true`。如果使用 [Docker 镜像](https://hub.docker.com/r/mysten/sui-node)，它们会自动设置。
+要使内存分析正常工作，你需要设置环境变量 `_RJEM_MALLOC_CONF=prof:true`。如果使用 [Docker 镜像](https://hub.docker.com/r/mysten/sui-node)，它们会自动设置。
 
 运行某些基于分配器的堆分析器，如 [Bytehound](https://github.com/koute/bytehound)，将基本上禁用自动 jemalloc 分析，因为它们会干扰或不实现 `jemalloc_ctl` 统计 API。
 

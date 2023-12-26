@@ -6,7 +6,7 @@ description: Sui 网络的数据库快照使全节点运营者能够在不执行
 
 数据库快照提供了数据库存储的特定时间点的视图。在 Sui 中，数据库快照捕获了运行数据库的节点在一个时期结束时对 Sui 网络的视图。虽然验证器可以启用快照，但它们通常对全节点运营者最有价值。
 
-Sui 网络的快照使全节点运营者能够在不执行创世后发生的所有交易的情况下引导全节点。您可以将快照上传到远程对象存储，如 S3、Google Cloud Storage、Azure Blob Storage 和类似的服务。这些服务通常在后台运行导出过程，因此您的全节点的性能不会降低。使用存储在云中的快照，您更容易从系统或硬件的灾难性故障中迅速恢复。
+Sui 网络的快照使全节点运营者能够在不执行创世后发生的所有交易的情况下引导全节点。你可以将快照上传到远程对象存储，如 S3、Google Cloud Storage、Azure Blob Storage 和类似的服务。这些服务通常在后台运行导出过程，因此你的全节点的性能不会降低。使用存储在云中的快照，你更容易从系统或硬件的灾难性故障中迅速恢复。
 
 为了维持健康的 Sui 网络，Sui 鼓励 Sui 社区启动更多的快照，以确保在整个网络上有更强的数据可用性。
 
@@ -23,11 +23,11 @@ Sui 支持两种类型的快照：
 
 :::
 
-您可以配置全节点快照以在每个时期结束时生成一个状态快照。单个全节点可以生成 RocksDB 快照、正式快照或两者兼而有之。
+你可以配置全节点快照以在每个时期结束时生成一个状态快照。单个全节点可以生成 RocksDB 快照、正式快照或两者兼而有之。
 
 ## 启用快照
 
-默认情况下，全节点不会生成快照。要启用此功能，您必须为全节点应用特定的配置。
+默认情况下，全节点不会生成快照。要启用此功能，你必须为全节点应用特定的配置。
 
 按照以下步骤更改全节点的配置：
 
@@ -84,7 +84,7 @@ state-snapshot-write-config:
 要从 RocksDB 快照还原，请执行以下步骤：
 
 1. 将要还原的时期的快照下载到本地磁盘。每个时期在 s3 存储桶中有一个快照。
-2. 将快照放入 fullnode.yaml 文件中的 `db-config` 值指向的目录中。例如，如果 `db-config` 值指向 `/opt/sui/db/authorities_db/full_node_db`，并且您想从时期 10 还原，则使用以下命令将快照复制到具有此命令的目录：
+2. 将快照放入 fullnode.yaml 文件中的 `db-config` 值指向的目录中。例如，如果 `db-config` 值指向 `/opt/sui/db/authorities_db/full_node_db`，并且你想从时期 10 还原，则使用以下命令将快照复制到具有此命令的目录：
 
    `aws s3 cp s3://<BUCKET_NAME>/epoch_10 /opt/sui/db/authorities_db/full_node_db/live --recursive`。
    
@@ -96,7 +96,7 @@ state-snapshot-write-config:
 
 :::info
 
-当您从快照还原全节点时，请将其写入路径 `/opt/sui/db/authorities_db/full_node_db/live`。要还原验证器节点，请使用路径 `/opt/sui/db/authorities_db/live`。
+当你从快照还原全节点时，请将其写入路径 `/opt/sui/db/authorities_db/full_node_db/live`。要还原验证器节点，请使用路径 `/opt/sui/db/authorities_db/live`。
 
 :::
 
@@ -127,10 +127,10 @@ state-snapshot-write-config:
 Mysten Labs 托管了两个快照存储访问级别。**高吞吐量、开启付费的桶** 和 **免费、无需权限的桶**。
 
 **高吞吐量、开启付费的桶：**
-* GCS 和 S3 都设置为开启付费。这意味着在从这些桶下载时，您需要提供一组有效的 AWS/GCP 凭据。
-[开启付费](https://cloud.google.com/storage/docs/requester-pays) 意味着您需要支付拉取快照数据的出站费用。
-* 如果您正在寻找最佳的下载速度，我们建议使用启用了 [传输加速](https://aws.amazon.com/s3/transfer-acceleration/)
-* 如果您寻找最佳的下载速度，我们建议使用启用了 [transfer acceleration](https://aws.amazon.com/s3/transfer-acceleration/) 的 S3 存储桶。
+* GCS 和 S3 都设置为开启付费。这意味着在从这些桶下载时，你需要提供一组有效的 AWS/GCP 凭据。
+[开启付费](https://cloud.google.com/storage/docs/requester-pays) 意味着你需要支付拉取快照数据的出站费用。
+* 如果你正在寻找最佳的下载速度，我们建议使用启用了 [传输加速](https://aws.amazon.com/s3/transfer-acceleration/)
+* 如果你寻找最佳的下载速度，我们建议使用启用了 [transfer acceleration](https://aws.amazon.com/s3/transfer-acceleration/) 的 S3 存储桶。
 
 **免费、无权限的存储桶:**
 * 这些目前托管在 Cloudflare R2，目前仅在北美，但我们计划很快添加更多的区域。

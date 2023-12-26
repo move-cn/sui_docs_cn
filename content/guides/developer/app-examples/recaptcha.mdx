@@ -4,17 +4,17 @@ description: 编写并部署一个使用 reCAPTCHA 验证用户在与合同交�
 draft: true
 ---
 
-本指南将向您展示如何编写并部署一个使用 reCAPTCHA 验证用户在与合同交互之前是否为人类（而不是机器人）的 Move 智能合约。CAPTCHA 是一种机器人缓解方法，要求您通过挑战测试来证明您是人类。CAPTCHA 测试在阻止机器人执行任务方面是有效的，但如果测试过于困难或频繁，对于合法用户来说可能变得令人讨厌或令人沮丧。reCAPTCHA 是 CAPTCHA 测试的一种形式。
+本指南将向你展示如何编写并部署一个使用 reCAPTCHA 验证用户在与合同交互之前是否为人类（而不是机器人）的 Move 智能合约。CAPTCHA 是一种机器人缓解方法，要求你通过挑战测试来证明你是人类。CAPTCHA 测试在阻止机器人执行任务方面是有效的，但如果测试过于困难或频繁，对于合法用户来说可能变得令人讨厌或令人沮丧。reCAPTCHA 是 CAPTCHA 测试的一种形式。
 
-本指南假定您已经 [安装了 Sui](../getting-started/sui-install.mdx) 并了解 Sui 的基础知识。
+本指南假定你已经 [安装了 Sui](../getting-started/sui-install.mdx) 并了解 Sui 的基础知识。
 
 ## Move 智能合约
 
-与所有 Sui dApp 一样，链上的一个 Move 包驱动着 reCAPTCHA 模块的逻辑。以下说明将引导您创建和发布该模块。
+与所有 Sui dApp 一样，链上的一个 Move 包驱动着 reCAPTCHA 模块的逻辑。以下说明将引导你创建和发布该模块。
 
 ### reCAPTCHA 模块
 
-在开始之前，您必须初始化一个 Move 包。在您要存储示例的目录中打开终端或控制台，并运行以下命令以创建一个名为 `recaptcha` 的空包：
+在开始之前，你必须初始化一个 Move 包。在你要存储示例的目录中打开终端或控制台，并运行以下命令以创建一个名为 `recaptcha` 的空包：
 
 ```bash
 sui move new recaptcha
@@ -96,7 +96,7 @@ fun init(ctx: &mut TxContext) {
 - `Registry` 结构存储用户地址与有资格与智能合约交互的过期时间的映射。它还有一个 `window` 字段，指定时间窗口的长度（以毫秒为单位）。时间窗口是用户在通过 reCAPTCHA 测试后有资格与智能合约交互的时间段。
 - [`init` 函数](concepts/sui-move-concepts/init.mdx) 为 `Registry` 创建一个[共享对象](concepts/object-ownership/shared.mdx)。该函数在智能合约部署到区块链时调用。该函数创建一个具有唯一 ID 的新注册表对象，并将时间窗口设置为常量值。
 
-到目前为止，您已经在模块中设置了数据结构。
+到目前为止，你已经在模块中设置了数据结构。
 现在，创建一个验证消息的函数
 
 ```rust title='recaptcha.move'
@@ -158,7 +158,7 @@ public fun msg_to_ts(
 - 如果用户地址在动态字段中不存在作为键，它将在动态字段中添加一个新的键值对。键是用户地址，值是资格到期时间。到期时间通过调用 `msg_to_ts` 函数计算，该函数将消息转换为以毫秒为单位的时间戳。
 - 如果用户地址在动态字段中已存在作为键，它将更新键的值为新的资格到期时间。
 
-现在您已经实现了 `verify`，可以继续下一步，演示如何与合约交互。编写一个 `interact` 函数，检查用户是否已验证。
+现在你已经实现了 `verify`，可以继续下一步，演示如何与合约交互。编写一个 `interact` 函数，检查用户是否已验证。
 
 ```rust title='recaptcha.move'
 // Define a public function for interacting with the registry object
@@ -205,7 +205,7 @@ public fun interact(
 - 如果当前时间戳超出资格的时间窗口，它将使用错误代码 `EVerificationExpired` 中止执行。这意味着用户必须再次通过 reCAPTCHA 测试才能与智能合约进行交互。
 - 如果不存在现有的交互历史记录，它将使用错误代码 `ENotYetVerified` 中止执行。这意味着用户尚未通过 reCAPTCHA 测试，不能与智能合约进行交互。
 
-至此，您的 `recaptcha.move` 代码已完成。
+至此，你的 `recaptcha.move` 代码已完成。
 
 ## 部署
 
@@ -217,7 +217,7 @@ public fun interact(
 
 ## 后端
 
-要实现 reCAPTCHA 的后端，您需要创建一个可以处理 HTTP 请求和响应的 `express` 应用程序。您还需要安装一些依赖项，如 `@noble/ed25519`、`axios`、`cors`、`helmet`、`morgan` 和 `dotenv`。这些包可帮助您处理密码学、HTTP 请求、跨域资源共享、安全性、日志记录和环境变量。
+要实现 reCAPTCHA 的后端，你需要创建一个可以处理 HTTP 请求和响应的 `express` 应用程序。你还需要安装一些依赖项，如 `@noble/ed25519`、`axios`、`cors`、`helmet`、`morgan` 和 `dotenv`。这些包可帮助你处理密码学、HTTP 请求、跨域资源共享、安全性、日志记录和环境变量。
 
 以下是创建后端的步骤：
 
@@ -358,7 +358,7 @@ export default app;
 
 ## 前端
 
-要实现 reCAPTCHA 的前端，您需要创建一个 React 应用程序，它可以渲染用户界面并与后端和智能合约交互。您还需要安装一些依赖项，如 `@mysten/dapp-kit`、`@mysten/sui.js`、`axios` 和 `react-google-recaptcha`。这些包可帮助您集成钱包、执行事务、处理 HTTP 请求以及呈现 reCAPTCHA。
+要实现 reCAPTCHA 的前端，你需要创建一个 React 应用程序，它可以渲染用户界面并与后端和智能合约交互。你还需要安装一些依赖项，如 `@mysten/dapp-kit`、`@mysten/sui.js`、`axios` 和 `react-google-recaptcha`。这些包可帮助你集成钱包、执行事务、处理 HTTP 请求以及呈现 reCAPTCHA。
 
 以下是创建前端的步骤：
 

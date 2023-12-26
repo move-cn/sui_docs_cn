@@ -12,9 +12,9 @@ title: 节点工具
 
 ## 准备工作
 
-1. 确保您已完成所有[先决条件](../developer/getting-started/sui-install.mdx#prerequisites)。
+1. 确保你已完成所有[先决条件](../developer/getting-started/sui-install.mdx#prerequisites)。
 
-2. 构建 `sui` 二进制文件，您需要用于创世典礼。此步骤可以在任何您喜欢的机器上完成。它不必在运行验证器的机器上执行。
+2. 构建 `sui` 二进制文件，你需要用于创世典礼。此步骤可以在任何你喜欢的机器上完成。它不必在运行验证器的机器上执行。
 
     1. 克隆 git 存储库：
 
@@ -28,18 +28,18 @@ title: 节点工具
 
            `cargo build --bin sui`
 
-    4. 记住您的二进制文件的路径：
+    4. 记住你的二进制文件的路径：
 
            `export SUI_BINARY="$(pwd)/target/debug/sui"`
 
-3. 运行以下命令设置您的 Sui 帐户和 CLI 环境。
+3. 运行以下命令设置你的 Sui 帐户和 CLI 环境。
 
-    1. 如果这是第一次运行此程序，它将要求您提供 Sui Fullnode Server URL 和有意义的环境别名。它还将在 `sui.keystore` 中生成一个随机的密钥对和一个配置文件 `client.yaml`。如果您已经拥有验证器帐户密钥，请将其替换。
+    1. 如果这是第一次运行此程序，它将要求你提供 Sui Fullnode Server URL 和有意义的环境别名。它还将在 `sui.keystore` 中生成一个随机的密钥对和一个配置文件 `client.yaml`。如果你已经拥有验证器帐户密钥，请将其替换。
 
-    2. 如果您已经设置好了，请确保
+    2. 如果你已经设置好了，请确保
       a. `client.yaml` 中的 `rpc` 是正确的。
       b. `client.yaml` 中的 `active_address` 是正确的。
-      b. `sui.keystore` 包含您的帐户密钥对。
+      b. `sui.keystore` 包含你的帐户密钥对。
 
         如果此时找不到 `client.yaml` 或 `sui.keystore` 的位置，或者有其他问题，请阅读[Sui 客户端 CLI 教程](/references/cli/client.mdx)。
 
@@ -48,7 +48,7 @@ title: 节点工具
         ```
 
 ```mdx
-4. 为了测试您已连接到网络并正确配置了配置，请运行以下命令显示您的验证器信息。
+4. 为了测试你已连接到网络并正确配置了配置，请运行以下命令显示你的验证器信息。
 
 ``` bash
 $ sui validator display-metadata
@@ -82,7 +82,7 @@ $ sui validator display-metadata <validator-address>
 $ sui validator update-metadata --help
 ```
 
-您可以更新以下链上元数据：
+你可以更新以下链上元数据：
 1. 名称
 1. 描述
 1. 图像 URL
@@ -97,7 +97,7 @@ $ sui validator update-metadata --help
 
 值得注意的是，仅上述前4个元数据立即生效。
 
-如果从第 5 到第 11 点更改任何元数据，它们将仅在下一个时期之后更改 - 对于这些元数据，您将希望在下一个时期后立即重新启动验证器程序，使用新的密钥文件和/或更新的 `validator.yaml` 配置。特别确保新地址没有被防火墙阻挡。
+如果从第 5 到第 11 点更改任何元数据，它们将仅在下一个时期之后更改 - 对于这些元数据，你将希望在下一个时期后立即重新启动验证器程序，使用新的密钥文件和/或更新的 `validator.yaml` 配置。特别确保新地址没有被防火墙阻挡。
 
 运行以下命令以查看如何更新每个元数据。
 
@@ -157,7 +157,7 @@ $ sui validator make-validator-info <name> <description> <image-url> <project-ur
 
 这将生成一个 `validator.info` 文件和密钥对文件。此命令的输出包括：
   1. 四个密钥对文件（[更多信息](./validator-tasks.mdx#key-management)）。 ==使用最小可见性设置它们的权限（例如 chmod 600）并安全地存储它们==。在运行以下验证器节点时，它们是必需的，如下面所述。
-    a. 如果您仔细遵循本指南，此密钥对实际上是从您的 `sui.keystore` 文件复制的。
+    a. 如果你仔细遵循本指南，此密钥对实际上是从你的 `sui.keystore` 文件复制的。
   2. 包含验证器信息的 `validator.info` 文件。**仔细检查所有信息是否正确**。
 
 然后运行
@@ -168,11 +168,11 @@ $ sui validator become-candidate {path-to}validator.info
 
 以提交一个链上交易成为验证器候选人。参数是先前步骤中生成的 validator.info 文件的文件路径。**确保交易成功（在输出中打印）。**
 
-在此时，您是验证器候选人，可以开始接受自我质押和委托质押。
+在此时，你是验证器候选人，可以开始接受自我质押和委托质押。
 
-**如果您还没有，请现在启动一个全节点以赶上网络。当您正式加入委员会但未完全更新时，您无法对网络进行有意义的贡献，并且可能会受到对等体报告的影响，因此面临您和您的委托人质押奖励降低的风险。**
+**如果你还没有，请现在启动一个全节点以赶上网络。当你正式加入委员会但未完全更新时，你无法对网络进行有意义的贡献，并且可能会受到对等体报告的影响，因此面临你和你的委托人质押奖励降低的风险。**
 
-一旦您收集到足够的质押金额，请运行
+一旦你收集到足够的质押金额，请运行
 
 ``` bash
 $ sui validator join-committee
@@ -188,7 +188,7 @@ $ sui validator join-committee
 $ sui validator leave-committee
 ```
 
-然后您将从下一个时期开始从委员会中删除。
+然后你将从下一个时期开始从委员会中删除。
 
 ### 生成用于创建 PoP 的有效载荷
 

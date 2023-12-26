@@ -1,15 +1,15 @@
 ---
-title: Routing a Swap
+title: 路由交换
 slug: /routing-a-swap
 ---
 
-This section shows how to construct and execute a trade using a smart-routing swap.
+本节介绍如何使用智能路由进行交易。
 
-## 1. Find the Best Route to Swap {#swap-route}
+## 1. 查找最佳交换路线 {#swap-route}
 
-To use the smart routing functionality, one should first find the best route. The route uses a Depth-First-Search (DFS) algorithm to find all the routes in the swap pools and use dry-run to simulate how much token one can get from each route. The function will return the best route which can provide maximum tokens.
+要使用智能路由功能，首先应找到最佳路线。该路线使用深度优先搜索（DFS）算法在交换池中找到所有路线，并使用干运行来模拟从每个路线中可以获得多少代币。该函数将返回能够提供最大代币的最佳路线。
 
-**Typescript SDK for invoking `findBestRoute`**
+**调用 `findBestRoute` 的 Typescript SDK**
 
 ```ts
 /**
@@ -49,11 +49,11 @@ public async findBestRoute(tokenInObject: string, tokenOut: string, amountIn: nu
 }
 ```
 
-## 2. Place a Market Order with the a given Routing Path {#market-order}
+## 2. 使用给定的路由路径下市价单 {#market-order}
 
-Once users find the best route to swap the tokens, they can place the market order using this route. In this function, users input the path as one of the parameters to build a transaction for execution.
+一旦用户找到最佳的代币交换路线，他们可以使用此路线下市价单。在此函数中，用户将路线作为参数之一输入，以构建要执行的交易。
 
-**Typescript SDK for invoking `placeMarketOrderWithSmartRouting`**
+**调用 `placeMarketOrderWithSmartRouting` 的 Typescript SDK**
 
 ```ts
 /**

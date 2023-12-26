@@ -6,7 +6,7 @@ title: Groth16
 
 零知识简洁非交互知识论证（zk-SNARKs）是一类零知识证明，它们是非交互式的，具有简洁的证明大小和高效的验证时间。其中一个重要且广泛使用的变体是基于配对的 zk-SNARKs，例如 [Groth16](https://eprint.iacr.org/2016/260.pdf) 证明系统，它是最高效且广泛使用的之一。
 
-Sui 中的 Move API 使您能够使用 Groth16 zk-SNARKs 在 BN254 或 BLS12-381 椭圆曲线构造上高效验证可以用 NP 完全语言表示的任何陈述。
+Sui 中的 Move API 使你能够使用 Groth16 zk-SNARKs 在 BN254 或 BLS12-381 椭圆曲线构造上高效验证可以用 NP 完全语言表示的任何陈述。
 
 有一些用于表达这些陈述的高级语言，例如 [Circom](https://docs.circom.io)，在以下示例中使用。
 
@@ -47,7 +47,7 @@ circom main.circom --r1cs --wasm
 
 ### 生成证明
 
-要生成在 Sui 中可验证的证明，您需要生成一个见证。此示例使用 Arkworks 的 [ark-circom](https://github.com/gakonst/ark-circom) Rust 库。该代码为电路构建了一个见证，并为给定的输入生成了一个证明。最后，它验证了证明的正确性。
+要生成在 Sui 中可验证的证明，你需要生成一个见证。此示例使用 Arkworks 的 [ark-circom](https://github.com/gakonst/ark-circom) Rust 库。该代码为电路构建了一个见证，并为给定的输入生成了一个证明。最后，它验证了证明的正确性。
 
 ```rust
 use ark_bn254::Bn254;
@@ -88,11 +88,11 @@ fn main() {
 }
 ```
 
-验证证明的 Sui API 需要一个特殊处理过的验证密钥，其中仅使用值的子集。理想情况下，此准备好的验证密钥的计算每个电路只需进行一次。您可以使用 Sui Move API 的 `sui::groth16::prepare_verifying_key` 方法，使用先前用过的 `params.vk` 值的序列化进行此处理。
+验证证明的 Sui API 需要一个特殊处理过的验证密钥，其中仅使用值的子集。理想情况下，此准备好的验证密钥的计算每个电路只需进行一次。你可以使用 Sui Move API 的 `sui::groth16::prepare_verifying_key` 方法，使用先前用过的 `params.vk` 值的序列化进行此处理。
 
 `prepare_verifying_key` 函数的输出是一个包含四个字节数组的向量，对应于 `vk_gamma_abc_g1_bytes`、`alpha_g1_beta_g2_bytes`、`gamma_g2_neg_pc_bytes`、`delta_g2_neg_pc_bytes`。
 
-要验证证明，您还需要两个输入，即 `proof_inputs_bytes` 和 `proof_points_bytes`，其中包含公共输入和证明。这些是从先前示例的 `inputs` 和 `proof` 值计算的序列化，您可以在 Rust 中进行如下计算：
+要验证证明，你还需要两个输入，即 `proof_inputs_bytes` 和 `proof_points_bytes`，其中包含公共输入和证明。这些是从先前示例的 `inputs` 和 `proof` 值计算的序列化，你可以在 Rust 中进行如下计算：
 
 ```rust
 let mut proof_inputs_bytes = Vec::new();
@@ -104,7 +104,7 @@ proof.b.serialize_compressed(&mut proof_points_bytes).unwrap();
 proof.c.serialize_compressed(&mut proof_points_bytes).unwrap();
 ```
 
-以下示例智能合约准备了一个验证密钥并验证相应的证明。此示例使用 BN254 椭圆曲线构造，该构造作为 `prepare_verifying_key` 和 `verify_groth16_proof` 函数的第一个参数给出。对于 BLS12-381 构造，您可以改用 `bls12381` 函数。
+以下示例智能合约准备了一个验证密钥并验证相应的证明。此示例使用 BN254 椭圆曲线构造，该构造作为 `prepare_verifying_key` 和 `verify_groth16_proof` 函数的第一个参数给出。对于 BLS12-381 构造，你可以改用 `bls12381` 函数。
 
 ```rust
 module test::groth16_test {

@@ -1,32 +1,30 @@
 ---
-title: Sui Object Display
-description: The Sui Object Display standard is a template engine that enables on-chain management of off-chain representation (display) for a type.
+title: Sui 对象显示
+description: Sui 对象显示标准是一种模板引擎，可实现对类型的链上管理和链下表示（显示）。
 ---
 
-The Sui Object Display standard is a template engine that enables on-chain management of off-chain representation (display) for a type. With it, you can substitute data for an object into a template string. The standard doesn’t limit the fields you can set. You can use the  `{property}` syntax to access all object properties, and then insert them as a part of the template string.
+Sui 对象显示标准是一种模板引擎，可实现对类型的链上管理和链下表示（显示）。通过它，你可以将对象的数据替代为模板字符串。标准不限制你可以设置的字段。你可以使用 `{property}` 语法访问所有对象属性，然后将它们插入模板字符串中。
 
-Use a `Publisher` object that you own to set `sui::display` for a type. For more information about `Publisher` objects, see [Publisher](https://examples.sui.io/basics/publisher.html) topic in *Sui Move by Example*.
+使用你拥有的 `Publisher` 对象为类型设置 `sui::display`。有关 `Publisher` 对象的更多信息，请参阅 *Sui Move by Example* 中的 [Publisher](https://examples.sui.io/basics/publisher.html) 主题。
 
-In Sui Move, `Display<T>` represents an object that specifies a set of named templates for the type `T`. For example, for a type `0x2::capy::Capy` the display syntax is:  `Display<0x2::capy::Capy>`.
+在 Sui Move 中，`Display<T>` 表示一个为类型 `T` 指定一组命名模板的对象。例如，对于类型 `0x2::capy::Capy`，显示语法为：`Display<0x2::capy::Capy>`。
 
-Sui Full nodes process all objects of the type `T` by matching the `Display` definition, and return the processed result when you query an object with the `{ showDisplay: true }` setting in the query.
+Sui 全节点通过匹配 `Display` 定义来处理类型 `T` 的所有对象，并在查询中使用 `{ showDisplay: true }` 设置时返回处理结果。
 
-## Display properties
+## 显示属性
 
-The basic set of properties suggested includes:
+建议的基本属性集包括：
 
-- `name` - A name for the object. The name is displayed when users view the object.
-- `description` - A description for the object. The description is displayed when users view the object.
-- `link` - A link to the object to use in an application.
-- `image_url` - A URL or a blob with the image for the object.
-- `thumbnail_url` - A URL to a **smaller** image to use in wallets, explorers, and other products as a preview.
-- `project_url` - A link to a website associated with the object or creator.
-- `creator` - A string that indicates the object creator.
+- `name` - 对象的名称。用户查看对象时显示该名称。
+- `description` - 对象的描述。用户查看对象时显示该描述。
+- `link` - 在应用程序中使用的指向对象的链接。
+- `image_url` - 对象的图像的 URL 或 blob。
+- `thumbnail_url` - 用于在钱包、浏览器和其他产品中作为预览的 **较小** 图像的 URL。
+- `project_url` - 与对象或创建者相关联的网站链接。
+- `creator` - 表示对象创建者的字符串。
 
-
-### An example Sui Hero module
-The following code sample demonstrates how the `Display` for an example `Hero` module varies based on the `name`, `id`, and `image_url` properties of the type `Hero`.
-The following represents the template the `init` function defines:
+### 一个 Sui Hero 模块的示例
+以下代码示例演示了根据类型 `Hero` 的 `name`、`id` 和 `image_url` 属性，`Hero` 模块的 `Display` 如何变化。以下表示 `init` 函数定义的模板：
 
 ```json
 {
@@ -119,10 +117,10 @@ module examples::my_hero {
 }
 ```
 
-## Work with Object Display
+## 使用对象显示
 
-The `display::new<T>` call creates a `Display`, either in a custom function or module initializer, or as part of a programmable transaction.
-The following code sample demonstrates how to create a `Display`:
+调用 `display::new<T>` 可以创建一个 `Display`，可以在自定义函数或模块初始化器中创建，也可以作为可编程交易的一部分。
+以下代码示例演示了如何创建一个 `Display`：
 
 ```move
 module sui::display {
@@ -133,7 +131,7 @@ module sui::display {
 }
 ```
 
-After you create the `Display`, you can modify it. The following code sample demonstrates how to modify a `Display`:
+创建了 `Display` 之后，你可以对其进行修改。以下代码示例演示了如何修改一个 `Display`：
 
 ```move
 module sui::display {
@@ -152,9 +150,9 @@ module sui::display {
 }
 ```
 
-Next, the `update_version` call applies the changes and sets the `Display` for the `T` by emitting an event. Full nodes receive the event and use the data in the event to retrieve a template for the type.
+接下来，`update_version` 调用应用更改并通过触发事件设置 `T` 的 `Display`。全节点接收事件并使用事件中的数据检索类型的模板。
 
-The following code sample demonstrates how to use the `update_version` call:
+以下代码示例演示了如何使用 `update_version` 调用：
 
 ```move
 module sui::display {
@@ -163,12 +161,12 @@ module sui::display {
 }
 ```
 
-## Sui utility objects
+## Sui 实用对象
 
-In Sui, utility objects enable authorization for capabilities. Almost all modules have features that can be accessed only with the required capability. Generic modules allow one capability per application, such as a marketplace. Some capabilities mark ownership of a shared object on-chain, or access the shared data from another account.
-With capabilities, it is important to provide a meaningful description of objects to facilitate user interface implementation. This helps avoid accidentally transferring the wrong object when objects are similar. It also provides a user-friendly description of items that users see.
+在 Sui 中，实用对象允许对功能进行授权。几乎所有模块都具有只能通过所需功能访问的功能。通用模块允许每个应用程序使用一个功能，例如市场。某些功能标记链上共享对象的所有权，或从另一个账户访问共享数据。
+使用功能时，提供对象的有意义描述是重要的，以便促进用户界面的实现。这有助于避免在对象相似时意外传输错误的对象。它还为用户看到的项目提供了用户友好的描述。
 
-The following example demonstrates how to create a capy capability:
+以下示例演示了如何创建一个 capy 功能：
 
 ```move
 module capy::utility {
@@ -179,12 +177,12 @@ module capy::utility {
 }
 ```
 
-## Typical objects with data duplication
+## Sui 实用对象
 
-A common case with in-game items is to have a large number of similar objects grouped by some criteria. It is important to optimize their size and the cost to mint and update them. Typically, a game uses a single source image or URL per group or item criteria. Storing the source image inside of every object is not optimal.
-In some cases, users mint in-game items when a game allows them or when they purchase an in-game item. To enable this, some IPFS/Arweave metadata must be created and stored in advance. This requires additional logic that is usually not related to the in-game properties of the item.
+在 Sui 中，实用对象允许对功能进行授权。几乎所有模块都具有只能通过所需功能访问的功能。通用模块允许每个应用程序使用一个功能，例如市场。某些功能标记链上共享对象的所有权，或从另一个账户访问共享数据。
+使用功能时，提供对象的有意义描述是重要的，以便促进用户界面的实现。这有助于避免在对象相似时意外传输错误的对象。它还为用户看到的项目提供了用户友好的描述。
 
-The following example demonstrates how to create a Capy:
+以下示例演示了如何创建一个 capy 功能：
 
 ```move
 module capy::capy_items {
@@ -197,13 +195,13 @@ module capy::capy_items {
 }
 ```
 
-## Unique objects with dynamic representation
+## 具有动态表示的唯一对象
 
-Sui Capys use dynamic image generation. When a Capy is born, its attributes determine the Capy’s appearance, such as color or pattern. When a user puts an item on a Capy, the Capy’s appearance changes. When users put multiple items on a Capy, there’s a chance of a bonus for a combination of items.
+Sui Capys 使用动态图像生成。当一个 Capy 诞生时，其属性确定了 Capy 的外观，如颜色或图案。当用户将物品放在 Capy 上时，Capy 的外观会发生变化。当用户在 Capy 上放置多个物品时，有机会获得物品组合的奖励。
 
-To implement this, the Capys game API service refreshes the image in response to a user-initiated change. The URL for a Capy is a template with the `capy.id`. But storing the full URL - as well as other fields in the Capy object due to their diverse population - also leads to users paying for excess storage and increased gas fees.
+为了实现这一点，Capy 游戏 API 服务会在用户发起更改时刷新图像。Capy 的 URL 是一个带有 `capy.id` 的模板。但是，存储完整的 URL - 以及由于它们的多样化人口而在 Capy 对象中存储其他字段 - 还会导致用户支付过多的存储和增加的 gas 费用。
 
-The following example demonstrates how to implement dynamic image generation:
+以下示例演示了如何实现动态图像生成：
 
 ```move
 module capy::capy {
@@ -217,9 +215,9 @@ module capy::capy {
 }
 ```
 
-## Objects with unique static content
+## 具有唯一静态内容的对象
 
-This is the simplest scenario - an object represents everything itself. It is very easy to apply a metadata standard to an object of this kind, especially if the object stays immutable forever. However, if the metadata standard evolves and some ecosystem projects add new features for some properties, this object always stays in its original form and might require backward-compatible changes.
+这是最简单的情景 - 一个对象代表着它自己的一切。将元数据标准应用于这种类型的对象非常容易，特别是如果对象永远保持不可变。然而，如果元数据标准发展，一些生态系统项目为某些属性添加新功能，这个对象始终保持在其原始形式，并可能需要向后兼容的更改。
 
 ```move
 module sui::devnet_nft {

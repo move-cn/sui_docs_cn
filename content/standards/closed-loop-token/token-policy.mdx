@@ -2,11 +2,11 @@
 title: Token Policy
 ---
 
-`TokenPolicy` is a shared object which can be created by the Token owner using the `TreasuryCap`. Having a publicly available `TokenPolicy` would enable on-chain discovery of allowed actions and their conditions. This is useful for wallets and other services that want to provide a better user experience for token holders.
+`TokenPolicy` 是一个共享对象，可以由 Token 持有者使用 `TreasuryCap` 创建。拥有一个公开可用的 `TokenPolicy` 将使得可以在链上发现允许的操作及其条件。对于想要为代币持有者提供更好用户体验的钱包和其他服务而言，这是非常有用的。
 
-## Create & Share
+## 创建与共享
 
-A new TokenPolicy is created using the `token::new_policy` function. The function takes the `TreasuryCap` as an argument and returns a `TokenPolicy` object and a managing capability.
+可以使用 `token::new_policy` 函数创建一个新的 TokenPolicy。该函数以 `TreasuryCap` 作为参数，并返回一个 `TokenPolicy` 对象和一个管理能力。
 
 ```move
 // module: sui::token
@@ -16,11 +16,11 @@ public fun new_policy<T>(
 ): (TokenPolicy<TokenType>, TokenPolicyCap<TokenType>);
 ```
 
-> *The `TokenPolicy` object must be shared with the `token::share_policy` function*
+> *必须使用 `token::share_policy` 函数共享 `TokenPolicy` 对象*
 
-## Allow & Disallow
+## 允许与禁止
 
-To allow method without any conditions, use the `token::allow` function. The function takes a `TokenPolicy` and `TokenPolicyCap` as arguments. If allowed, the action can be confirmed in the `TokenPolicy` using the `token::confirm_request` function (see [ActionRequest](./action-request#confirming-with-tokenpolicy)).
+要允许不带任何条件的方法，请使用 `token::allow` 函数。该函数接受一个 `TokenPolicy` 和一个 `TokenPolicyCap` 作为参数。如果允许，则可以在 `TokenPolicy` 中使用 `token::confirm_request` 函数确认该操作（请参阅 [ActionRequest](./action-request#confirming-with-tokenpolicy)）。
 
 ```move
 // module sui::token
@@ -32,17 +32,17 @@ public fun allow<T>(
 );
 ```
 
-> *Similarly, the `token::disallow` function can be used to completely disable an action; it takes the same arguments as `token::allow`.*
+> *类似地，`token::disallow` 函数可用于完全禁用操作；它与 `token::allow` 接受相同的参数。*
 
-## Adding Rules
+## 添加规则
 
-`TokenPolicy` can specify custom conditions for each action. These conditions are called "Rules" and are typically implemented as separate Move modules. The identifier of the Rule is its type.
+`TokenPolicy` 可以为每个操作指定自定义条件。这些条件被称为 "Rules"，通常以单独的 Move 模块实现。规则的标识符是它的类型。
 
 :::info
-Visit the [Rules](./rules.mdx) section for more information.
+有关更多信息，请访问 [Rules](./rules.mdx) 部分。
 :::
 
-Structure of the `TokenPolicy` is as follows (pseudo-code). Each action can have multiple Rules associated with it.
+`TokenPolicy` 的结构如下（伪代码）。每个操作可以与多个规则关联。
 
 ```yaml
 TokenPolicy
@@ -57,7 +57,8 @@ TokenPolicy
     ...
 ```
 
-To add a Rule for an action, use the `token::add_rule_for_action` function. The function takes a `TokenPolicy` and `TokenPolicyCap` as arguments. The Rule is specified by its type (eg `0x0...::denylist::Denylist`).
+要为操作添加规则，请使用 `token::add_rule_for_action` 函数。该函数接受 `TokenPolicy` 和 `TokenPolicyCap` 作为参数。规则由其类型指定（例如 `0x0...::denylist::Denylist`）。
+
 
 
 ```move
@@ -70,11 +71,11 @@ public fun add_rule_for_action<T, Rule: drop>(
 );
 ```
 
-> *Signature for the reverse operation `token::remove_rule_for_action` is symmetrical to `token::add_rule_for_action`.*
+> *与 `token::add_rule_for_action` 对称的反向操作 `token::remove_rule_for_action` 的签名相同。*
 
-## Consume Spent Balance
+## 消耗已花费的余额
 
-Spent balance can be consumed from the `TokenPolicy` using the `token::flush` function. It requires a `TreasuryCap`.
+可以使用 `token::flush` 函数从 `TokenPolicy` 中消耗已花费的余额。它需要一个 `TreasuryCap`。
 
 ```move
 // module sui::token
@@ -85,7 +86,7 @@ public fun flush<T>(
 );
 ```
 
-## Cheatsheet: TokenPolicy API
+## 速查表: TokenPolicy API
 
 | Function                    | Note                                                                 |
 |-----------------------------|----------------------------------------------------------------------|

@@ -1,15 +1,15 @@
 ---
-title: DeepBook Orders
+title: DeepBook 订单
 slug: /deepbook-orders
 ---
 
-## Order Book Structure {#order-book-structure}
+## 订单簿结构 {#order-book-structure}
 
-DeepBook adopts a hyper-efficient approach to store orders. Each Pool stores the unfilled maker orders. Taker orders are filled instantaneously within the same transaction the order is submitted. Bid and ask orders are stored separately, each with a two-level nested Crit-bit Tree. The first level Crit-bit Tree is ordered using the price of the maker order, and the second level Crit-bit Tree is ordered using the order id of the maker order.
+DeepBook 采用了一种超高效的方法来存储订单。每个池存储未成交的挂单。吃单在提交订单的同一事务中即时成交。买单和卖单分别存储，每个都有一个两级嵌套的 Crit-bit 树。第一级 Crit-bit 树使用挂单的价格排序，第二级 Crit-bit 树使用挂单的订单 id 排序。
 
-## Placing Orders {#placing-orders}
+## 下单 {#placing-orders}
 
-DeepBook supports the placement of market orders and limit orders. DeepBook also supports a few configurations of limit orders, which will be covered in the API section. When users submit a market order, it is matched against the existing maker orders on the order book instantaneously in the same transaction upon submission of the market order. When users submit a limit order, the limit order is first matched against the existing maker orders as a taker order. If the order cannot be fully filled, the remaining quantity can either be injected as a maker order or be dropped, depending on the configuration of the limit order. See the API section for further details.
+DeepBook 支持市价单和限价单的下单。DeepBook 还支持一些限价单的配置，这将在 API 部分介绍。当用户提交市价单时，它将立即在提交市价单的同一事务中与订单簿上的现有挂单匹配。当用户提交限价单时，限价单首先作为吃单与现有的挂单匹配。如果订单无法完全成交，剩余数量可以作为挂单注入或丢弃，具体取决于限价单的配置。有关更多详细信息，请参见 API 部分。
 
 ```move
 struct Order has store, drop {
@@ -30,13 +30,13 @@ struct Order has store, drop {
 }
 ```
 
-## Order Matching {#order-matching}
+## 订单匹配 {#order-matching}
 
-Order matching occurs when a taker order is submitted to the CLOB without a centralized entity or crank involvement. Taker orders are matched against the existing maker orders in the CLOB in the same transaction the taker order is submitted.
+订单匹配发生在吃单订单提交到 CLOB 时，没有中央实体或曲柄参与。吃单订单与 CLOB 中的现有挂单在提交吃单订单的同一事务中匹配。
 
-## Order Tracking {#order-tracking}
+## 订单追踪 {#order-tracking}
 
-DeepBook supports efficient tracking of maker orders. Each unfilled maker order is associated with a unique u64 order id, and users can query the order status using the order id together with the Sui RPC call. Users can also subscribe to the event stream emitted by DeepBook related to changes in order status. DeepBook currently supports the following events, `OrderPlaced`, `OrderFilled` and `OrderCanceled`.
+DeepBook 支持高效追踪挂单。每个未成交的挂单都与一个唯一的 u64 订单 id 关联，用户可以使用订单 id 与 Sui RPC 调用一起查询订单状态。用户还可以订阅 DeepBook 发出的与订单状态变化相关的事件流。DeepBook 目前支持以下事件，`OrderPlaced`、`OrderFilled` 和 `OrderCanceled`。
 
 ```move
 /// Emitted when a maker order is injected into the order book.
@@ -69,7 +69,7 @@ struct OrderFilled<phantom BaseAsset, phantom QuoteAsset> has copy, store, drop 
 }
 ```
 
-The following example uses the [Sui TypeScript SDK](https://sdk.mystenlabs.com/typescript) to connect via websocket to listen to events.
+以下示例使用[Sui TypeScript SDK](https://sdk.mystenlabs.com/typescript)通过 WebSocket 连接以监听事件。
 
 ```javascript
 const local_client = new SuiClient({ url: 'https://fullnode.mainnet.sui.io:443/' });

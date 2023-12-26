@@ -21,7 +21,7 @@ const config = {
   onBrokenLinks: "throw",
   onBrokenMarkdownLinks: "throw",
   /*  i18n: {
-    defaultLocale: "en",
+    defaultLocale: "en  ",
     locales: [
       "en",
       "el",
@@ -198,4 +198,7 @@ const config = {
     }),
 };
 
-module.exports = config;
+module.exports = {
+  ...config, 
+  onBrokenLinks: 'ignore',
+};

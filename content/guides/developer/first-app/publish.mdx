@@ -2,9 +2,9 @@
 title: 发布包
 ---
 
-在您可以调用 Move 包中的函数（超出模拟 Sui 执行场景）之前，该包必须在 Sui 网络上可用。当您发布一个包时，实际上是在网络上创建一个不可变的 Sui 对象，任何人都可以访问。
+在你可以调用 Move 包中的函数（超出模拟 Sui 执行场景）之前，该包必须在 Sui 网络上可用。当你发布一个包时，实际上是在网络上创建一个不可变的 Sui 对象，任何人都可以访问。
 
-要将您的包发布到 Sui 网络，您可以使用 Sui 客户端 CLI 的 `sui client publish` 命令。在包在网络上变得可用后，您可以使用 `sui client call` 命令来访问包中提供的函数。
+要将你的包发布到 Sui 网络，你可以使用 Sui 客户端 CLI 的 `sui client publish` 命令。在包在网络上变得可用后，你可以使用 `sui client call` 命令来访问包中提供的函数。
 
 ### 模块初始化器
 
@@ -23,7 +23,7 @@ title: 发布包
 - `fun init(otw: EXAMPLE, ctx: &TxContext)`
 - `fun init(otw: EXAMPLE, ctx: &mut TxContext)`
 
-虽然 `sui move` 命令不直接支持显式发布，但您仍然可以使用测试框架测试模块初始化器，将第一笔交易专门用于执行初始化函数。
+虽然 `sui move` 命令不直接支持显式发布，但你仍然可以使用测试框架测试模块初始化器，将第一笔交易专门用于执行初始化函数。
 
 继续使用幻想游戏的例子，`init` 函数应该创建一个 `Forge` 对象。
 
@@ -40,7 +40,7 @@ title: 发布包
     }
 ```
 
-到目前为止，您的测试调用了 `init` 函数，但初始化函数本身没有被测试以确保它正确创建了一个 `Forge` 对象。为了测试这个功能，修改 `sword_create` 函数，使其接受锻造厂作为参数，并在函数末尾更新已创建的剑的数量：
+到目前为止，你的测试调用了 `init` 函数，但初始化函数本身没有被测试以确保它正确创建了一个 `Forge` 对象。为了测试这个功能，修改 `sword_create` 函数，使其接受锻造厂作为参数，并在函数末尾更新已创建的剑的数量：
 
 ```move
     /// Constructor for creating swords
@@ -93,4 +93,4 @@ title: 发布包
 
 正如新的测试函数所示，第一笔交易（显式地）调用初始化器。接下来的交易检查 `Forge` 对象是否已创建并正确初始化。
 
-如果此时尝试对整个包运行测试，您将遇到由于`new_sword` 函数签名更改而导致的现有测试的编译错误。为了使测试再次运行，需要进行适应的更改是您的练习。如果需要帮助，可以参考包的源代码（所有测试已经适当调整）[first_package](https://github.com/MystenLabs/sui/tree/main/examples/move/first_package/sources/example.move)。
+如果此时尝试对整个包运行测试，你将遇到由于`new_sword` 函数签名更改而导致的现有测试的编译错误。为了使测试再次运行，需要进行适应的更改是你的练习。如果需要帮助，可以参考包的源代码（所有测试已经适当调整）[first_package](https://github.com/MystenLabs/sui/tree/main/examples/move/first_package/sources/example.move)。
