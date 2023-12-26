@@ -169,7 +169,7 @@ const concepts = [
 	},
 	{
 		type: 'category',
-		label: 'Sui 建筑学',
+		label: 'Sui 体系结构',
 		link: {
 			type: 'doc',
 			id: 'concepts/sui-architecture',

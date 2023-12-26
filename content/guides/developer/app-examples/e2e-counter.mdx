@@ -2,7 +2,7 @@
 title: 分布式计数器
 ---
 
-此示例将引导您构建一个基本的分布式计数器应用程序，涵盖了将您的 Move 代码连接到客户端应用程序的完整端到端流程。该应用程序允许您创建任何人都可以递增的计数器，但只有所有者可以重置。此示例假设您已经设置了一个带有 dApp Kit 的 React 应用程序，并具有所需的 `Providers`，如 [使用 Sui TypeScript SDK 的客户端应用程序](../first-app/client-tssdk.mdx) 中所述。
+此示例将引导你构建一个基本的分布式计数器应用程序，涵盖了将你的 Move 代码连接到客户端应用程序的完整端到端流程。该应用程序允许你创建任何人都可以递增的计数器，但只有所有者可以重置。此示例假设你已经设置了一个带有 dApp Kit 的 React 应用程序，并具有所需的 `Providers`，如 [使用 Sui TypeScript SDK 的客户端应用程序](../first-app/client-tssdk.mdx) 中所述。
 
 {@include: ../../../snippets/info-pnpm-required.mdx}
 
@@ -12,7 +12,7 @@ title: 分布式计数器
 pnpm create @mysten/dapp --template react-client-dapp
 ```
 
-要快速开始，您可以使用以下 `template` 值自动创建此示例：
+要快速开始，你可以使用以下 `template` 值自动创建此示例：
 
 ```bash
 pnpm create @mysten/dapp --template react-e2e-counter
@@ -20,16 +20,16 @@ pnpm create @mysten/dapp --template react-e2e-counter
 
 ## 添加一个 Move 模块
 
-您需要的第一个元素是一个用于交互的 Move 包。此示例不深入讨论 Move 代码本身，而是介绍如何部署它，并将其连接到您的 dApp。
+你需要的第一个元素是一个用于交互的 Move 包。此示例不深入讨论 Move 代码本身，而是介绍如何部署它，并将其连接到你的 dApp。
 
-首先，在您的项目根目录下创建一个新的 `move` 目录，用于存放您的 Move 代码，然后将其设置为活动目录：
+首先，在你的项目根目录下创建一个新的 `move` 目录，用于存放你的 Move 代码，然后将其设置为活动目录：
 
 ```bash
 mkdir move
 cd move
 ```
 
-接下来，使用 [Sui 客户端 CLI](references/cli/client.mdx) 生成一个新的 Move 包。如果您已经 [安装了 Sui](guides/developer/getting-started/sui-install.mdx)，则 Sui CLI 已经在您的系统上。在终端或控制台中运行以下命令：
+接下来，使用 [Sui 客户端 CLI](references/cli/client.mdx) 生成一个新的 Move 包。如果你已经 [安装了 Sui](guides/developer/getting-started/sui-install.mdx)，则 Sui CLI 已经在你的系统上。在终端或控制台中运行以下命令：
 
 ```bash
 sui move new counter
@@ -37,7 +37,7 @@ sui move new counter
 
 这将在新的 `move/counter` 目录中创建一个新的空 Move 包，其中包含一个 [Move.toml](references/move/move-toml.mdx) 文件和一个空的 `sources` 目录。
 
-在 `sources` 下添加您的 Move 代码，创建一个新的 `counter.move` 文件：
+在 `sources` 下添加你的 Move 代码，创建一个新的 `counter.move` 文件：
 
 ```move
 module counter::counter {
@@ -74,7 +74,7 @@ module counter::counter {
 }
 ```
 
-现在您有了 Move 代码，需要将其发布。Sui TypeScript SDK 示例和应用程序模板默认使用 `testnet`，因此配置您的代码以匹配要部署到的网络。
+现在你有了 Move 代码，需要将其发布。Sui TypeScript SDK 示例和应用程序模板默认使用 `testnet`，因此配置你的代码以匹配要部署到的网络。
 
 首先，通过将 Move.toml 中的 `rev` 从 `framework/testnet` 更改为 `framework/devnet` 来更新 Move.toml 中的 Sui 依赖项。
 
@@ -85,7 +85,7 @@ Sui = { git = "https://github.com/MystenLabs/sui.git", subdir = "crates/sui-fram
 ...
 ```
 
-接下来，配置 Sui CLI 以将 `devnet` 作为活动环境。如果您还没有设置 `devnet` 环境，可以在终端或控制台中运行以下命令：
+接下来，配置 Sui CLI 以将 `devnet` 作为活动环境。如果你还没有设置 `devnet` 环境，可以在终端或控制台中运行以下命令：
 
 ```bash
 sui client new-env --alias devnet --rpc https://fullnode.devnet.sui.io:443
@@ -97,7 +97,7 @@ sui client new-env --alias devnet --rpc https://fullnode.devnet.sui.io:443
 sui client switch --env devnet
 ```
 
-现在，使用以下命令发布您的 Move 代码：
+现在，使用以下命令发布你的 Move 代码：
 
 ```bash
 sui client publish --gas-budget 10000000 counter
@@ -109,7 +109,7 @@ sui client publish --gas-budget 10000000 counter
 
 :::
 
-此命令的输出包含一个 `packageId` 值，您需要保存该值才能使用该包。
+此命令的输出包含一个 `packageId` 值，你需要保存该值才能使用该包。
 
 ```bash
 ----- Object changes ----
@@ -133,7 +133,7 @@ Array [
 ----- Balance changes ----
 ```
 
-将您在自己的响应中收到的 `packageId` 值添加到项目中的新 `constants.ts` 文件中：
+将你在自己的响应中收到的 `packageId` 值添加到项目中的新 `constants.ts` 文件中：
 
 ```bash
 export const COUNTER_PACKAGE_ID =
@@ -142,7 +142,7 @@ export const COUNTER_PACKAGE_ID =
 
 ## 创建计数器
 
-现在您已经发布了 Move 代码，您可以开始构建 UI 以使用 Move 包。 您需要一种方法来创建新的 `Counter` 对象。 通过创建一个新的 `CreateCounter` 组件来完成此操作：
+现在你已经发布了 Move 代码，你可以开始构建 UI 以使用 Move 包。 你需要一种方法来创建新的 `Counter` 对象。 通过创建一个新的 `CreateCounter` 组件来完成此操作：
 
 ```ts
 export function CreateCounter(props: { onCreated: (id: string) => void }) {
@@ -164,9 +164,9 @@ export function CreateCounter(props: { onCreated: (id: string) => void }) {
 }
 ```
 
-该组件呈现一个按钮，使用户能够创建计数器。 现在，更新您的 `create` 函数，以便它调用 Move 模块中的 `create` 函数。
+该组件呈现一个按钮，使用户能够创建计数器。 现在，更新你的 `create` 函数，以便它调用 Move 模块中的 `create` 函数。
 
-为此，您需要使用适当的 `moveCall` 交易构造一个 `TransactionBlock`，然后签署并执行可编程交易块 (PTB)。
+为此，你需要使用适当的 `moveCall` 交易构造一个 `TransactionBlock`，然后签署并执行可编程交易块 (PTB)。
 
 首先，从 `@mysten/sui.js` 导入 `TransactionBlock`，从之前创建的constants.ts文件导入“COUNTER_PACKAGE_ID”，从 `@mysten/dapp-kit` 导入 `useSignAndExecuteTransactionBlock`。
 ```ts
@@ -176,7 +176,7 @@ import { TransactionBlock } from '@mysten/sui.js/transactions';
 import { COUNTER_PACKAGE_ID } from './constants';
 ```
 
-接下来，在组件中调用 `useSignAndExecuteTransactionBlock` 挂钩，它提供了一个 `mutate` 函数，您可以在 `create` 函数中使用：
+接下来，在组件中调用 `useSignAndExecuteTransactionBlock` 挂钩，它提供了一个 `mutate` 函数，你可以在 `create` 函数中使用：
 
 ```ts
 export function CreateCounter(props: { onCreated: (id: string) => void }) {
@@ -231,8 +231,8 @@ function create() {
 }
 ```
 
-您现在有了一个可以创建新的 `Counter` 对象的功能组件，但如果按原样使用它，可能会遇到一些一致性问题，即您成功执行了 `TransactionBlock`，但数据尚未索引以供读取 来自 RPC 节点。 为了确保 TransactionBlock 可用，您可以使用 SuiClient 的 waitForTransactionBlock 方法。
-要获取 `SuiClient` 的实例，您可以使用 dApp Kit 中的 `useSuiClient` 挂钩：
+你现在有了一个可以创建新的 `Counter` 对象的功能组件，但如果按原样使用它，可能会遇到一些一致性问题，即你成功执行了 `TransactionBlock`，但数据尚未索引以供读取 来自 RPC 节点。 为了确保 TransactionBlock 可用，你可以使用 SuiClient 的 waitForTransactionBlock 方法。
+要获取 `SuiClient` 的实例，你可以使用 dApp Kit 中的 `useSuiClient` 挂钩：
 ```ts
 import { useSignAndExecuteTransactionBlock, useSuiClient } from '@mysten/dapp-kit';
 
@@ -244,7 +244,7 @@ export function CreateCounter(props: { onCreated: (id: string) => void }) {
 }
 ```
 
-现在，您可以在“create”函数中使用 `suiClient` 来等待 `TransactionBlock` 被索引：
+现在，你可以在“create”函数中使用 `suiClient` 来等待 `TransactionBlock` 被索引：
 
 ```ts
 function create() {
@@ -281,7 +281,7 @@ function create() {
 
 ## 设置路由
 
-现在您的用户可以创建计数器，您需要一种路由到他们的方法。 React 应用程序中的路由可能很复杂，但此示例使其保持基本。 设置您的应用程序，以便默认呈现 `CreateCounter` 组件，如果您想显示特定计数器，您可以将其 ID 放入 URL 的哈希部分。
+现在你的用户可以创建计数器，你需要一种路由到他们的方法。 React 应用程序中的路由可能很复杂，但此示例使其保持基本。 设置你的应用程序，以便默认呈现 `CreateCounter` 组件，如果你想显示特定计数器，你可以将其 ID 放入 URL 的哈希部分。
 
 ```ts
 import { ConnectButton, useCurrentAccount } from '@mysten/dapp-kit';
@@ -319,13 +319,13 @@ export default function App() {
 }
 ```
 
-这设置了您的应用程序以从 URL 读取哈希值，并在哈希值是有效对象 ID 时获取计数器的 ID。然后，如果有计数器 ID，则渲染 `Counter`（您在下一步中定义），否则渲染来自前一步的 `CreateCounter` 按钮。创建计数器时，更新 URL 并设置计数器 ID。
+这设置了你的应用程序以从 URL 读取哈希值，并在哈希值是有效对象 ID 时获取计数器的 ID。然后，如果有计数器 ID，则渲染 `Counter`（你在下一步中定义），否则渲染来自前一步的 `CreateCounter` 按钮。创建计数器时，更新 URL 并设置计数器 ID。
 
 ## 构建计数器用户界面
 
-对于您的计数器，您想要显示三个元素：
+对于你的计数器，你想要显示三个元素：
 
-- 当前计数，您可以使用 `getObject` RPC 方法从对象中获取。
+- 当前计数，你可以使用 `getObject` RPC 方法从对象中获取。
 - 一个增加按钮，调用增加 Move 函数。
 - 一个重置按钮，调用 `set_value` Move 函数并将值设置为 `0`。只有在当前用户拥有计数器时才显示。
 
@@ -371,9 +371,9 @@ function getCounterFields(data: SuiObjectData) {
 }
 ```
 
-这个片段有一些新概念需要检查。它使用 `useSuiClientQuery` hook 进行 `getObject` RPC 调用。这将返回一个表示您的计数器的数据对象。dApp Kit 不知道您的计数器对象具有哪些字段，因此定义一个 `getCounterFields` 辅助函数，该函数获取计数器字段，并添加了一个类型转换，以便您可以在组件中访问期望的 `value` 和 `owner` 字段。
+这个片段有一些新概念需要检查。它使用 `useSuiClientQuery` hook 进行 `getObject` RPC 调用。这将返回一个表示你的计数器的数据对象。dApp Kit 不知道你的计数器对象具有哪些字段，因此定义一个 `getCounterFields` 辅助函数，该函数获取计数器字段，并添加了一个类型转换，以便你可以在组件中访问期望的 `value` 和 `owner` 字段。
 
-代码还添加了一个 `executeMoveCall` 函数，仍然需要实现。这与您用来创建计数器的 `create` 函数的工作方式相同。与您为 `CreateCounter` 使用回调属性不同，您可以使用 `useSuiClientQuery` 提供的 refetch，在执行 PTB 后重新加载您的 `Counter` 对象。
+代码还添加了一个 `executeMoveCall` 函数，仍然需要实现。这与你用来创建计数器的 `create` 函数的工作方式相同。与你为 `CreateCounter` 使用回调属性不同，你可以使用 `useSuiClientQuery` 提供的 refetch，在执行 PTB 后重新加载你的 `Counter` 对象。
 
 ```ts
 import {
@@ -425,4 +425,4 @@ export function Counter({ id }: { id: string }) {
 }
 ```
 
-您的计数器应用程序现在已准备好进行计数。 要了解有关 dApp Kit 的更多信息，请查看 [dApp Kit 文档](https://sdk.mystenlabs.com/dapp-kit)。
+你的计数器应用程序现在已准备好进行计数。 要了解有关 dApp Kit 的更多信息，请查看 [dApp Kit 文档](https://sdk.mystenlabs.com/dapp-kit)。

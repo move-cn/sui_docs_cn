@@ -6,7 +6,7 @@ const standards = [
 	'standards/kiosk',
 	{
 		type: 'category',
-		label: '深度书籍',
+		label: 'DeepBook',
 		link: {
 			type: 'doc',
 			id: 'standards/deepbook',

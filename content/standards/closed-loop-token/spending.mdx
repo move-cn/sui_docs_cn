@@ -1,30 +1,30 @@
 ---
-title: Spending
+title: 消费
 ---
 
-Because `Token` type does not have the `store` ability, it is impossible to "store" it in another object. Hence, Coin-like approaches to spending are not possible - an application that takes `Token` as a payment won't be able to add it to its balance. To address this issue, `Token` has a "spend" method, which allows "spending" it in one application and then delivering it as a `spent_balance` to the [TokenPolicy](./token-policy.mdx) or burning right away with a `TreasuryCap`.
+由于 `Token` 类型没有 `store` 能力，因此无法将其“存储”在另一个对象中。因此，不可能采用类似于 Coin 的方式进行消费 - 接受 `Token` 作为支付的应用程序将无法将其添加到其余额中。为了解决这个问题，`Token` 有一个 "spend" 方法，允许在一个应用程序中 "消费" 它，然后将其作为 `spent_balance` 交付给 [TokenPolicy](./token-policy.mdx) 或者立即使用 `TreasuryCap` 进行销毁。
 
-## Spend Action
+## 消费操作
 
-`Token` can be spent by calling the `spend` method. It takes the following arguments:
+通过调用 `spend` 方法，可以消费 `Token`。它接受以下参数：
 
 ```move
 // module sui::token
 public fun spend<T>(token: Token<T>, ctx: &mut TxContext): ActionRequest<T>;
 ```
 
-As you can see from the signature, the `Token` object is consumed. Its balance becomes the `spent_balance` in the [ActionRequest](./action-request.mdx#actionrequest-structure).
+从签名中可以看出，`Token` 对象被消耗。其余额将成为 [ActionRequest](./action-request.mdx#actionrequest-structure) 中的 `spent_balance`。
 
-## Spent Token
+## 消费的 Token
 
-The `ActionRequest` for the "spend" action contains the `Balance` of the spent `Token`, and it can either be confirmed [with a `TreasuryCap`](./action-request#confirming-with-treasurycap) or [delivered to the TokenPolicy](./action-request#confirming-with-tokenpolicy). In the first case, the Balance will be "burned" directly in the `TreasuryCap`, and in the second case, it will be delivered to the TokenPolicy's "spent_balance".
+“消费” 操作的 `ActionRequest` 包含被消费的 `Token` 的 `Balance`，可以通过 [使用 `TreasuryCap` 确认](./action-request#confirming-with-treasurycap) 或者 [交付给 TokenPolicy](./action-request#confirming-with-tokenpolicy)。在第一种情况下，余额将直接在 `TreasuryCap` 中 "销毁"，在第二种情况下，它将被交付到 TokenPolicy 的 "spent_balance"。
 
-Spent balance cannot be used in any way, and it is not possible to "withdraw" it. The only available action is ["flushing"](./token-policy#consume-spent-balance) - burning the `spent_balance` by bringing a `TreasuryCap`.
+已消费的余额无法以任何方式使用，也不可能 "提取" 它。唯一可用的操作是 ["刷新"](./token-policy#consume-spent-balance) - 通过提供 `TreasuryCap` 来销毁 `spent_balance`。
 
 
-## Gating the Spend Action
+## 限制消费操作
 
-Normally, the `spend` action should have at least one "Rule" assigned to it to prevent aimless spending, and the recommended way of authorizing the spend in an application that accepts the Token is to "stamp" it right in the function where a spend is performed. For example:
+通常，`spend` 操作应该至少有一个分配给它的 "Rule"，以防止无谓的消费，并且在接受 Token 的应用程序中授权 `spend` 的推荐方式是在执行 `spend` 的函数中直接进行 "戳记"。例如：
 
 ```move
 /// Rule-like witness to stamp the ActionRequest

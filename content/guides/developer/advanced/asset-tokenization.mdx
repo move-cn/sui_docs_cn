@@ -34,7 +34,7 @@ import Tabs from '@theme/Tabs';
 
 - **销毁能力**
     
-    在创建资产时，您可以定义资产的分数是否有资格从流通中删除或销毁。删除或销毁资产的过程称为燃烧。
+    在创建资产时，你可以定义资产的分数是否有资格从流通中删除或销毁。删除或销毁资产的过程称为燃烧。
 
     如果一个代币化的资产可以被销毁，那么燃烧一部分会导致流通供应减少燃烧物品的余额。然而，总供应保持不变，允许在需要时再次铸造被燃烧的分数，从而保持资产的预定总供应量。
 
@@ -46,7 +46,7 @@ import Tabs from '@theme/Tabs';
 
 :::info
 
-此参考实现使用 Kiosk 原语来确保创建的 TAs 在其创建者定义的策略内运作。我们建议您使用实现，以便拥有支持规则的可销售 TAs（例如：版税、佣金等）。
+此参考实现使用 Kiosk 原语来确保创建的 TAs 在其创建者定义的策略内运作。我们建议你使用实现，以便拥有支持规则的可销售 TAs（例如：版税、佣金等）。
 如果在 Kiosk 原语内运作不是必需的，则解锁模块及与 Transfer Policies 相关的某些代理方法可以被排除。
 
 :::
@@ -290,7 +290,7 @@ import Tabs from '@theme/Tabs';
 
     此函数利用嵌套在 Registry 中的发布者以及发件人的发布者。它生成并返回与 `TokenizedAsset<T>` 特定的转让策略和相关的转让策略 cap。此类型 'T' 源自 Publisher 对象。
 
-    它还生成一个包装在 `ProtectedTP<T>` 对象中的空转让策略，该对象是共享的。您可以在特定条件下使用此功能来覆盖 kiosk 锁定规则。
+    它还生成一个包装在 `ProtectedTP<T>` 对象中的空转让策略，该对象是共享的。你可以在特定条件下使用此功能来覆盖 kiosk 锁定规则。
 
     ```rust
     public fun setup_tp<T: drop>(
@@ -551,7 +551,7 @@ unlock module-->>User: Returns Asset Cap
 
 ## 变种
 
-提供的包和模块演示了如何为您的项目实现资产代币化。您的特定用例可能需要更改合同以方便使用或引入新功能。
+提供的包和模块演示了如何为你的项目实现资产代币化。你的特定用例可能需要更改合同以方便使用或引入新功能。
 
 ### 示例方便更改
 
@@ -592,7 +592,7 @@ public fun kiosk_join<T>(
 
 :::
 
-假设您希望允许用户燃烧资产，而不仅仅是管理员。这仍然需要是一个经过授权的操作，但它将允许以用例特定的目的（例如，燃烧您收集到的所有收藏品以合并它们）使用代币化资产。为了实现这一功能，管理员可以铸造包含他们被允许燃烧的资产ID的门票。为了支持此功能，您必须重新设计智能合同，并将管理员与每个资产的资金库分开，后者现在仅保存与供应相关的信息。需要进行的示例更改如下：
+假设你希望允许用户燃烧资产，而不仅仅是管理员。这仍然需要是一个经过授权的操作，但它将允许以用例特定的目的（例如，燃烧你收集到的所有收藏品以合并它们）使用代币化资产。为了实现这一功能，管理员可以铸造包含他们被允许燃烧的资产ID的门票。为了支持此功能，你必须重新设计智能合同，并将管理员与每个资产的资金库分开，后者现在仅保存与供应相关的信息。需要进行的示例更改如下：
 
 **结构体**
 
@@ -652,9 +652,9 @@ public fun burn_with_ticket<T>(
 
 ## 发布
 
-在这个阶段，您可以选择手动部署合同，或使用自动部署合同并为您设置大多数 `.env` 资产代币化相关字段的 publish bash 脚本。
+在这个阶段，你可以选择手动部署合同，或使用自动部署合同并为你设置大多数 `.env` 资产代币化相关字段的 publish bash 脚本。
 `.env.template` 文件表示脚本会自动填写的变量。
-您可以在这里查看一个参考：
+你可以在这里查看一个参考：
 
 ```
 SUI_NETWORK = rpc endpoint of the network of your choice | auto filled by publish script
@@ -699,7 +699,7 @@ sui client publish --gas-budget <GAS-BUDGET>
 
 对于 gas 预算，使用一个标准值，比如 `20000000`。
 
-包应该会成功部署，然后您会看到：
+包应该会成功部署，然后你会看到：
 
 ```bash
 UPDATING GIT DEPENDENCY https://github.com/MystenLabs/sui.git
@@ -709,9 +709,9 @@ BUILDING asset_tokenization
 Successfully verified dependencies on-chain against source.
 ```
 
-您还可以查看大量信息和交易效果。
+你还可以查看大量信息和交易效果。
 
-您应该选择并在 .env 文件中的相应字段中存储 `package ID` 和 `registry ID`。
+你应该选择并在 .env 文件中的相应字段中存储 `package ID` 和 `registry ID`。
 
 然后，需要修改 `Move.toml` 文件。在 `[package]` 部分下，添加 `published-at = <package ID>`。此外，在 `[addresses]` 部分下，用相同的 `package ID` 替换 `0x0`。
 
@@ -725,7 +725,7 @@ Successfully verified dependencies on-chain against source.
 npm run publish-asset-tokenization
 ```
 
-发布后，您现在可以按照手动流程中的说明编辑 `Move.toml` 文件。
+发布后，你现在可以按照手动流程中的说明编辑 `Move.toml` 文件。
 
 有关此过程的更多详细信息，请参阅设置文件夹的 [README](https://github.com/MystenLabs/asset-tokenization/tree/main/setup)。
 
@@ -744,7 +744,7 @@ sui client publish --gas-budget <GAS-BUDGET>
 
 对于 Gas 预算，请使用标准值，例如“20000000”。
 
-该包应该成功部署，然后您会看到：
+该包应该成功部署，然后你会看到：
 
 ```bash
 UPDATING GIT DEPENDENCY https://github.com/MystenLabs/sui.git
@@ -755,9 +755,9 @@ BUILDING template
 Successfully verified dependencies on-chain against source.
 ```
 
-您还可以查看大量信息和交易效果。
+你还可以查看大量信息和交易效果。
 
-您应该选择并在 .env 文件中的相应字段中存储 `package ID`、资产 `metadata ID`、`asset cap ID` 和 `Publisher ID`。
+你应该选择并在 .env 文件中的相应字段中存储 `package ID`、资产 `metadata ID`、`asset cap ID` 和 `Publisher ID`。
 
 ### 自动
 
@@ -767,7 +767,7 @@ Successfully verified dependencies on-chain against source.
 - 确保 `asset_tokenization` 包地址与原始部署相同（如果升级则与 `published-at` 相同）。
 - 通过更改 `publishNewAsset` 函数的输入参数，对模板字段进行任何更改。
 - 运行 `npm run publish-template`。
-- 您应该选择并在 .env 文件中的相应字段中存储 *Template Package ID*、*asset metadata ID*、*asset cap ID* 和 *publisher ID*。
+- 你应该选择并在 .env 文件中的相应字段中存储 *Template Package ID*、*asset metadata ID*、*asset cap ID* 和 *publisher ID*。
 
 有关此过程的更多详细信息，请参阅设置文件夹的 [README](https://github.com/MystenLabs/asset-tokenization/tree/main/setup)。
 
@@ -779,13 +779,13 @@ Successfully verified dependencies on-chain against source.
 
 :::tip
 
-您可以在 [move-binary-format-wasm](https://github.com/MystenLabs/sui/tree/main/sdk/move-binary-format-wasm) Sui 存储库的子文件夹中找到 WASM 库的公共引用。
+你可以在 [move-binary-format-wasm](https://github.com/MystenLabs/sui/tree/main/sdk/move-binary-format-wasm) Sui 存储库的子文件夹中找到 WASM 库的公共引用。
 
 :::
 
-此功能的开发旨在实现在 Web 环境中对 Move 字节码进行序列化和反序列化。本质上，此功能允许您在 Web 环境中编辑现有合同。
+此功能的开发旨在实现在 Web 环境中对 Move 字节码进行序列化和反序列化。本质上，此功能允许你在 Web 环境中编辑现有合同。
 
-在资产标记化的情况下，这些编辑允许您创建和发布表示要标记化的实物或数字资产的新类型。
+在资产标记化的情况下，这些编辑允许你创建和发布表示要标记化的实物或数字资产的新类型。
 
 ### 字节码操作 {#bytecode-manipulation}
 
@@ -795,7 +795,7 @@ Successfully verified dependencies on-chain against source.
 
 :::
 
-在进行如何进行这些编辑之前，了解库如何公开模板模块字节码非常重要。这个过程目前是手动的。这要求您构建并检索已编译的字节码。为此，请转到模板文件夹并运行以下命令：
+在进行如何进行这些编辑之前，了解库如何公开模板模块字节码非常重要。这个过程目前是手动的。这要求你构建并检索已编译的字节码。为此，请转到模板文件夹并运行以下命令：
 
 ```bash
 xxd -c 0 -p build/template/bytecode_modules/template.mv | head -n 1 
@@ -808,7 +808,7 @@ xxd -c 0 -p build/template/bytecode_modules/template.mv | head -n 1
   </summary>
 ```
 
-您应该收到的响应类似于以下内容：
+你应该收到的响应类似于以下内容：
 
 ```bash
 a11ceb0b060000000a010010021026033637046d0a05776807df01ec0108cb03800106cb043
@@ -838,7 +838,7 @@ a6563740f7075626c69635f7472616e736665720673656e64657204736f6d6506737472696e
 </details>
 ```
 
-复制您收到的输出，并将其粘贴到 [bytecode-template.ts](https://github.com/MystenLabs/asset-tokenization/blob/main/setup/src/utils/genesis_bytecode.ts) 文件中的 `getBytecode` 方法的 return 指令中。
+复制你收到的输出，并将其粘贴到 [bytecode-template.ts](https://github.com/MystenLabs/asset-tokenization/blob/main/setup/src/utils/genesis_bytecode.ts) 文件中的 `getBytecode` 方法的 return 指令中。
 
 此外，由于模板包包含两个模块，因此还需要以类似的方式检索 genesis 模块的字节码。但是，这个模块的字节码没有被编辑，也不会被直接使用。这个操作与 WASM 库直接无关，但对于成功部署编辑后的模板模块是必要的。要获取 genesis 的字节码，请转到 `template` 文件夹并运行：
 
@@ -846,13 +846,13 @@ a6563740f7075626c69635f7472616e736665720673656e64657204736f6d6506737472696e
 xxd -c 0 -p build/template/bytecode_modules/genesis.mv | head -n 1 
 ```
 
-这个输出的格式与模板模块相似，但长度较短。与您在模板模块中所做的操作类似，您需要复制此输出，但这次将其粘贴到 [genesis_bytecode.ts](https://github.com/MystenLabs/asset-tokenization/blob/main/setup/src/utils/genesis_bytecode.ts) 文件中的 bytecode 常量变量中。
+这个输出的格式与模板模块相似，但长度较短。与你在模板模块中所做的操作类似，你需要复制此输出，但这次将其粘贴到 [genesis_bytecode.ts](https://github.com/MystenLabs/asset-tokenization/blob/main/setup/src/utils/genesis_bytecode.ts) 文件中的 bytecode 常量变量中。
 
-通过上述设置，库现在可以通过反序列化、编辑和再次序列化字节码来操作字节码，以便您可以发布它。
+通过上述设置，库现在可以通过反序列化、编辑和再次序列化字节码来操作字节码，以便你可以发布它。
 
 ### 更近距离查看模板模块
 
-看一下模板模块，您应该看到已定义了一些常量：
+看一下模板模块，你应该看到已定义了一些常量：
 
 ```rust
 ...
@@ -865,7 +865,7 @@ const BURNABLE: bool = true;
 ...
 ```
 
-这些常量充当 WASM 库能够修改的参考点。如果您查看执行编辑和部署的 TypeScript 代码，可以看到这些字段是如何被识别和更新的：
+这些常量充当 WASM 库能够修改的参考点。如果你查看执行编辑和部署的 TypeScript 代码，可以看到这些字段是如何被识别和更新的：
 
 ```tsx
 ...
@@ -892,13 +892,13 @@ const bytesToPublish = wasm.serialize(JSON.stringify(compiledModule));
 检查 `updateConstant` 方法，该方法用于更新常量。此方法接受四个参数：
 
 - 一个 `idx`（索引），它是在常量池中声明的常量的顺序。从 Move 文件中定义的第一个常量开始，按照顺序递增，第一个常量的索引为 0。
-- 一个包含您想要更改的常量的更新值的 `value`。
+- 一个包含你想要更改的常量的更新值的 `value`。
 - 一个包含常量当前值的 `expectedValue`。
 - 一个包含常量当前类型的 `expectedType`。
 
 最后两个参数是必需的，以最小化意外更新错误常量的风险，因为该库直接操作已编译的字节码，这是非常危险的。
 
-此外，`changeIdentifiers` 方法会更新标识符，这在我们的案例中是模块名和结构名。该方法接受一个 JSON 对象作为参数，其中键是模块中当前标识符的名称，而值是您要将其更改为的期望名称。
+此外，`changeIdentifiers` 方法会更新标识符，这在我们的案例中是模块名和结构名。该方法接受一个 JSON 对象作为参数，其中键是模块中当前标识符的名称，而值是你要将其更改为的期望名称。
 
 最后，要部署更改后的模板模块，构建并发布：
 
@@ -922,11 +922,11 @@ const tx = new TransactionBlock();
 ...
 ```
 
-正如 [字节码操纵](#bytecode-manipulation) 部分所述，您需要发布的模块是模板和创世模块，这就是 `modules` 数组中有两个元素的原因。还需要包括涉及包的 `Move.toml` 文件中定义的任何依赖项。之前使用的 `packageId` 是 `asset_tokenization` 包部署到的地址。
+正如 [字节码操纵](#bytecode-manipulation) 部分所述，你需要发布的模块是模板和创世模块，这就是 `modules` 数组中有两个元素的原因。还需要包括涉及包的 `Move.toml` 文件中定义的任何依赖项。之前使用的 `packageId` 是 `asset_tokenization` 包部署到的地址。
 
 ## TypeScript
 
-现在，您可以开始与部署的智能合约和您的代币化资产进行交互。
+现在，你可以开始与部署的智能合约和你的代币化资产进行交互。
 
 在项目的设置目录中的终端或控制台中，使用以下命令：
 
@@ -940,11 +940,11 @@ const tx = new TransactionBlock();
     
 在执行命令后，控制台会显示交易的效果。
 
-通过在 Sui Explorer 中搜索交易摘要，您可以找到已创建的对象。随后，从这些对象中选择并保存 `TransferPolicy ID` 和 `ProtectedTP ID` 到您的 .env 文件中的相应字段。
+通过在 Sui Explorer 中搜索交易摘要，你可以找到已创建的对象。随后，从这些对象中选择并保存 `TransferPolicy ID` 和 `ProtectedTP ID` 到你的 .env 文件中的相应字段。
 
 - **添加规则**
 
-    在项目的 `setup/src/functions` 目录中的 `transferPolicyRules.ts` 文件中，您可以修改代码以包含所需的转账策略规则。
+    在项目的 `setup/src/functions` 目录中的 `transferPolicyRules.ts` 文件中，你可以修改代码以包含所需的转账策略规则。
 
     要修改的代码片段：
     
@@ -962,25 +962,25 @@ const tx = new TransactionBlock();
             // .removePersonalKioskRule()
     ```
     
-通过运行命令 `npm run call tp-rules`，您可以将规则添加到您的转账策略。
+通过运行命令 `npm run call tp-rules`，你可以将规则添加到你的转账策略。
 
-现在，投资者可以根据您设置的规则交易您资产的部分。
+现在，投资者可以根据你设置的规则交易你资产的部分。
 
 - **选择 Kiosk**
 
-    如果需要可销售的资产，您必须将代币化资产放置在一个 kiosk 中。随后，您可以将它们列出并出售给其他用户。将对象锁定在 kiosk 中是必不可少的，以防止在定义的策略之外进行未经授权的使用。
+    如果需要可销售的资产，你必须将代币化资产放置在一个 kiosk 中。随后，你可以将它们列出并出售给其他用户。将对象锁定在 kiosk 中是必不可少的，以防止在定义的策略之外进行未经授权的使用。
 
-    最佳实践建议为所有操作使用一个综合性的 kiosk。然而，这可能并不总是适用。因此，该项目要求只使用一个个人 kiosk，以确保一致性和更好的管理，即使您拥有多个 kiosk。
+    最佳实践建议为所有操作使用一个综合性的 kiosk。然而，这可能并不总是适用。因此，该项目要求只使用一个个人 kiosk，以确保一致性和更好的管理，即使你拥有多个 kiosk。
 
-    要强制执行此规则，请执行命令 `npm run call select-kiosk`。这将为您提供用于此项目的特定 kiosk ID。
+    要强制执行此规则，请执行命令 `npm run call select-kiosk`。这将为你提供用于此项目的特定 kiosk ID。
 
-    然后，在您的 .env 文件中的相应字段中存储提供的 Kiosk ID。
+    然后，在你的 .env 文件中的相应字段中存储提供的 Kiosk ID。
 
 - **铸造**
 
-    在项目的 `setup/src/functions` 目录中找到的 `mint.ts` 文件中，您可以编辑代码以铸造您资产的所需类型（NFT/FT）和余额。
+    在项目的 `setup/src/functions` 目录中找到的 `mint.ts` 文件中，你可以编辑代码以铸造你资产的所需类型（NFT/FT）和余额。
 
-    如前所述，如果提供了额外的元数据，则代币化资产将被视为具有值为一的 NFT。但是，如果没有额外的元数据，代币化资产将被视为 FT，您可以灵活选择其余额，该余额可以超过一。
+    如前所述，如果提供了额外的元数据，则代币化资产将被视为具有值为一的 NFT。但是，如果没有额外的元数据，代币化资产将被视为 FT，你可以灵活选择其余额，该余额可以超过一。
 
     以下是代码的示例，需要进行修改：
 
@@ -1011,15 +1011,15 @@ const tx = new TransactionBlock();
     }
     ```
     
-通过执行命令 `npm run call mint`，将铸造一个新的代币化资产。您可以将对象的 `ID` 保存在 .env 文件中以供将来参考。
+通过执行命令 `npm run call mint`，将铸造一个新的代币化资产。你可以将对象的 `ID` 保存在 .env 文件中以供将来参考。
 
 - **锁定**
 
     在 kiosk 中锁定对象对于防止任何未经授权的使用超出已建立的策略是至关重要的。
 
-    通过执行命令 `npm run call lock`，您的新铸造的代币化资产将被安全地放置在您的 kiosk 中。
+    通过执行命令 `npm run call lock`，你的新铸造的代币化资产将被安全地放置在你的 kiosk 中。
 
-    在运行该命令之前，请确保您的 `.env` 文件中的 `TOKENIZED_ASSET` 字段已填充为您打算锁定的对象。
+    在运行该命令之前，请确保你的 `.env` 文件中的 `TOKENIZED_ASSET` 字段已填充为你打算锁定的对象。
 
 - **铸造和锁定**
 
@@ -1027,9 +1027,9 @@ const tx = new TransactionBlock();
 
 - **列出**
 
-    现在，您的代币化资产已被放置并锁定在 kiosk 中，您可以继续将其列出出售。
+    现在，你的代币化资产已被放置并锁定在 kiosk 中，你可以继续将其列出出售。
 
-    在项目的 `setup/src/functions` 目录中找到的 `listItem.ts` 文件中，您可以调整代码以指定要列出的所需资产。
+    在项目的 `setup/src/functions` 目录中找到的 `listItem.ts` 文件中，你可以调整代码以指定要列出的所需资产。
 
     需要修改的代码片段：
     
@@ -1044,7 +1044,7 @@ const tx = new TransactionBlock();
         .finalize();
     ```
     
-    通过运行命令 `npm run call list`，您的代币化资产将被列出并可供出售。
+    通过运行命令 `npm run call list`，你的代币化资产将被列出并可供出售。
 
 - **购买**
 
@@ -1063,20 +1063,20 @@ const tx = new TransactionBlock();
 
 - **Join**
 
-    当您执行命令 `npm run call join` 时，会合并两个指定的 FT 类型代币化资产。在运行命令之前，请确保您的 `.env` 文件中的字段 `FT1` 和 `FT2` 已填入您打算合并的对象。
+    当你执行命令 `npm run call join` 时，会合并两个指定的 FT 类型代币化资产。在运行命令之前，请确保你的 `.env` 文件中的字段 `FT1` 和 `FT2` 已填入你打算合并的对象。
 
 - **Burn**
 
-    当您打算销毁代币化资产时，请执行 `npm run call burn` 命令。在执行此操作之前，请确保您的 `.env` 文件中的字段 `TOKENIZED_ASSET` 已填入您打算销毁的对象。
+    当你打算销毁代币化资产时，请执行 `npm run call burn` 命令。在执行此操作之前，请确保你的 `.env` 文件中的字段 `TOKENIZED_ASSET` 已填入你打算销毁的对象。
 
 - **获取余额**
 
-    通过执行 `npm run call get-balance` 命令，您可以检索与指定代币化资产关联的余额值。
+    通过执行 `npm run call get-balance` 命令，你可以检索与指定代币化资产关联的余额值。
 
 - **获取 Supply**
 
-    通过执行 `npm run call get-supply` 命令，您可以检索表示资产当前流通供应的值。
+    通过执行 `npm run call get-supply` 命令，你可以检索表示资产当前流通供应的值。
 
 - **获取 Total Supply**
 
-    通过执行 `npm run call get-total-supply` 命令，您可以检索表示资产当前总流通供应的值。
+    通过执行 `npm run call get-total-supply` 命令，你可以检索表示资产当前总流通供应的值。

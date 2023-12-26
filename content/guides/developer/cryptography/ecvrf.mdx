@@ -1,10 +1,10 @@
 ---
 title: 椭圆曲线可验证随机函数
 sidebar_label: ECVRF
-description: 椭圆曲线可验证随机函数是一种密码算法，它使您能够生成一个随机数并提供证明该数字是使用秘密密钥生成的。
+description: 椭圆曲线可验证随机函数是一种密码算法，它使你能够生成一个随机数并提供证明该数字是使用秘密密钥生成的。
 ---
 
-可验证随机函数（VRF）是一种密码原语，使您能够生成一个随机数并提供证明该数字是使用秘密密钥生成的。任何人都可以使用与秘密密钥对应的公钥验证证明，因此您可以将其用作生成任何人都可以验证的输出的随机数生成器（RNG）。在链上需要可验证的随机性的应用程序也可以从其使用中受益。
+可验证随机函数（VRF）是一种密码原语，使你能够生成一个随机数并提供证明该数字是使用秘密密钥生成的。任何人都可以使用与秘密密钥对应的公钥验证证明，因此你可以将其用作生成任何人都可以验证的输出的随机数生成器（RNG）。在链上需要可验证的随机性的应用程序也可以从其使用中受益。
 
 ## VRF 构造
 
@@ -44,7 +44,7 @@ Output: 2b7e45821d80567761e8bb3fc519efe5ad80cdb4423227289f960319bbcf6eea1aef30c0
 
 ### 验证证明
 
-您可以在智能合约中使用 Sui Move 框架的 `sui::ecvrf::ecvrf_verify` 来验证证明和输出：
+你可以在智能合约中使用 Sui Move 框架的 `sui::ecvrf::ecvrf_verify` 来验证证明和输出：
 
 ```move
 module math::ecvrf_test {
@@ -62,7 +62,7 @@ module math::ecvrf_test {
 }
 ```
 
-您还可以使用 CLI 工具进行验证：
+你还可以使用 CLI 工具进行验证：
 
 ```shell
 cargo run --bin ecvrf-cli verify --output 2b7e45821d80567761e8bb3fc519efe5ad80cdb4423227289f960319bbcf6eea1aef30c023617d73f589f98272b87563c6669f82b51dafbeb5b9cf3b17c73437 --proof 18ccf8bf316f00b387fc6e7b26f2d3ddadbf5e9c66d3a30986f12b208108551f9c6da87793a857d79261338a50430074b1dbc7f8f05e492149c51313381248b4229ebdda367146dbbbf95809c7fb330d --input 48656c6c6f2c20776f726c6421 --public-key 928744da5ffa614d65dd1d5659a8e9dd558e68f8565946ef3d54215d90cba015

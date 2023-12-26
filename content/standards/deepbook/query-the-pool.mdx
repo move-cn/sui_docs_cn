@@ -1,15 +1,15 @@
 ---
-title: Query The Pool
+title: 查询池
 slug: /query-the-pool
 ---
 
-This section shows how to query the pool and order status.
+本节介绍如何查询池和订单状态。
 
-## 1. Order Status {#order-status}
+## 1. 订单状态 {#order-status}
 
-For limit order, users could query its info using the following API functions
+对于限价订单，用户可以使用以下 API 函数查询其信息。
 
-**Function signature for query order info in Move contract**
+**在 Move 合约中查询订单信息的函数签名**
 
 ```move
 /// Parameters expected by this func
@@ -27,11 +27,11 @@ public fun get_order_status<BaseAsset, QuoteAsset>(
 ): &Order
 ```
 
-## 2. Pool Status {#pool-status}
+## 2. 池状态 {#pool-status}
 
-We provide API functions to query the depth of level2 orders on both ask-side and bid-side.
+我们提供 API 函数来查询卖方和买方的 level2 订单深度。
 
-**Function signature for get depth of level2 order (ask side) in Move contract**
+**在 Move 合约中获取 level2 订单深度（卖方）的函数签名**
 
 ```move
 /// Parameters expected by this func
@@ -50,13 +50,13 @@ public fun get_level2_book_status_bid_side<BaseAsset, QuoteAsset>(
 ): (vector<u64>, vector<u64>)
 ```
 
-## 3 User Account Status {#user-account-status}
+## 3 用户账户状态 {#user-account-status}
 
-### 3.1 Open Orders {#open-orders}
+### 3.1 未结订单 {#open-orders}
 
-We provide API function to list all open orders under one account
+我们提供 API 函数来列出一个账户下的所有未结订单。
 
-**Function signature for list all open orders in Move contract**
+**在 Move 合约中列出所有未结订单的函数签名**
 
 ```move
 /// Parameters expected by this func
@@ -72,11 +72,11 @@ public fun list_open_orders<BaseAsset, QuoteAsset>(
 ): vector<Order>
 ```
 
-### 3.2 Account Balance {#order-status}
+### 3.2 账户余额 {#order-status}
 
-We provide API function to query the custodian account balance for users. Note that each pool will have its own custodian account.
+我们提供 API 函数来查询用户的托管账户余额。请注意，每个池都将有自己的托管账户。
 
-**Function signature for query user balance in Move contract**
+**在 Move 合约中查询用户余额的函数签名**
 
 ```move
 /// Parameters expected by this func

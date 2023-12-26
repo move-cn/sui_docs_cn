@@ -1,11 +1,11 @@
 ---
 title: 构建可编程交易块
-description: 使用 Sui TypeScript SDK，您可以创建可编程交易块以在单个事务中执行多个命令。
+description: 使用 Sui TypeScript SDK，你可以创建可编程交易块以在单个事务中执行多个命令。
 ---
 
-本指南探讨了如何使用 TypeScript SDK 在 Sui 上创建可编程交易块（PTB）。有关 PTB 是什么的概述，请参阅[可编程交易块](/concepts/transactions/prog-txn-blocks.mdx)的概念部分。如果您尚未安装 Sui TypeScript SDK，请按照[Sui TypeScript SDK 网站上的安装说明](https://sdk.mystenlabs.com/typescript/install)进行操作。
+本指南探讨了如何使用 TypeScript SDK 在 Sui 上创建可编程交易块（PTB）。有关 PTB 是什么的概述，请参阅[可编程交易块](/concepts/transactions/prog-txn-blocks.mdx)的概念部分。如果你尚未安装 Sui TypeScript SDK，请按照[Sui TypeScript SDK 网站上的安装说明](https://sdk.mystenlabs.com/typescript/install)进行操作。
 
-此示例从构建一个 PTB 开始，以发送 Sui。如果您熟悉传统 Sui 交易类型，这类似于 `paySui` 交易。要构建交易，请导入 `TransactionBlock` 类并进行构建：
+此示例从构建一个 PTB 开始，以发送 Sui。如果你熟悉传统 Sui 交易类型，这类似于 `paySui` 交易。要构建交易，请导入 `TransactionBlock` 类并进行构建：
 
 ```ts
 import { TransactionBlock } from "@mysten/sui.js";
@@ -48,7 +48,7 @@ transfers.forEach((transfer, index) => {
 });
 ```
 
-定义了 PTB 后，您可以使用 `signAndExecuteTransactionBlock` 直接使用 `signer` 执行它。
+定义了 PTB 后，你可以使用 `signAndExecuteTransactionBlock` 直接使用 `signer` 执行它。
 
 ```ts
 signer.signAndExecuteTransactionBlock({ transactionBlock: txb });
@@ -56,7 +56,7 @@ signer.signAndExecuteTransactionBlock({ transactionBlock: txb });
 
 ## 构造输入
 
-输入是您向 PTB 提供外部值的方式。例如，定义要转移的 Sui 金额，或传递到 Move 调用或共享对象中的对象。
+输入是你向 PTB 提供外部值的方式。例如，定义要转移的 Sui 金额，或传递到 Move 调用或共享对象中的对象。
 
 目前有两种定义输入的方法：
 
@@ -83,7 +83,7 @@ Sui 支持以下事务命令：
 
 ## 将事务结果作为参数传递
 
-您可以将事务命令的结果用作后续事务命令的参数。事务构建器上的每个事务命令方法都返回对事务结果的引用。
+你可以将事务命令的结果用作后续事务命令的参数。事务构建器上的每个事务命令方法都返回对事务结果的引用。
 
 ```ts
 // Split a coin object off of the gas object:
@@ -102,17 +102,17 @@ txb.transferObjects([mintMany[0], mintMany[1]], txb.pure(address));
 
 ## 使用 gas 代币
 
-通过 PTB，您可以使用 gas 付款代币使用 `splitCoin` 构建具有固定余额的代币。这对于 Sui 付款非常有用，并且避免了需要预先选择代币。您可以使用 `txb.gas` 在 PTB 中访问 gas 代币，并且它是任何参数的有效输入；除了 `transferObjects` 外，`txb.gas` 必须通过引用使用。实际上，这意味着您还可以使用 `mergeCoins` 添加到 gas 代币，或者使用 `moveCall` 借用它进行 Move 函数。
+通过 PTB，你可以使用 gas 付款代币使用 `splitCoin` 构建具有固定余额的代币。这对于 Sui 付款非常有用，并且避免了需要预先选择代币。你可以使用 `txb.gas` 在 PTB 中访问 gas 代币，并且它是任何参数的有效输入；除了 `transferObjects` 外，`txb.gas` 必须通过引用使用。实际上，这意味着你还可以使用 `mergeCoins` 添加到 gas 代币，或者使用 `moveCall` 借用它进行 Move 函数。
 
-您还可以使用 `transferObjects` 转移 gas 代币，以便将您的全部代币余额转移到另一个地址。
+你还可以使用 `transferObjects` 转移 gas 代币，以便将你的全部代币余额转移到另一个地址。
 
 ## 获取 PTB 字节
 
-如果您需要 PTB 字节，而不是签署或执行 PTB，可以在事务构建器本身上使用 `build` 方法。
+如果你需要 PTB 字节，而不是签署或执行 PTB，可以在事务构建器本身上使用 `build` 方法。
 
 :::tip
 
-您可能需要在 PTB 上显式调用 `setSender()` 以确保填充 `sender` 字段。这通常由签署者在签署事务之前完成，但如果您自己构建 PTB 字节，则不会自动执行。
+你可能需要在 PTB 上显式调用 `setSender()` 以确保填充 `sender` 字段。这通常由签署者在签署事务之前完成，但如果你自己构建 PTB 字节，则不会自动执行。
 
 :::
 
@@ -124,9 +124,9 @@ const txb = new TransactionBlock();
 await txb.build({ provider });
 ```
 
-在大多数情况下，构建需要您的 JSON RPC 提供程序完全解析输入值。
+在大多数情况下，构建需要你的 JSON RPC 提供程序完全解析输入值。
 
-如果您有 PTB 字节，还可以将它们转换回 `TransactionBlock` 类：
+如果你有 PTB 字节，还可以将它们转换回 `TransactionBlock` 类：
 
 ```ts
 const bytes = getTransactionBlockBytesFromSomewhere();
@@ -135,7 +135,7 @@ const txb = TransactionBlock.from(bytes);
 
 ## 离线构建
 
-如果您希望离线构建 PTB（即无需 `provider`），则需要完全定义所有输入值和 gas 配置（请参阅以下示例）。对于纯值，您可以提供一个 `Uint8Array`，它将直接用于事务。对于对象，您可以使用 `Inputs` 辅助程序构建对象引用。
+如果你希望离线构建 PTB（即无需 `provider`），则需要完全定义所有输入值和 gas 配置（请参阅以下示例）。对于纯值，你可以提供一个 `Uint8Array`，它将直接用于事务。对于对象，你可以使用 `Inputs` 辅助程序构建对象引用。
 
 ```ts
 import { Inputs } from "@mysten/sui.js";
@@ -158,7 +158,7 @@ txb.object(Inputs.SharedObjectRef({ objectId, initialSharedVersion, mutable }));
 
 ### gas 价格
 
-默认情况下，gas 价格设置为网络的参考 gas 价格。您还可以通过在事务构建器上调用 `setGasPrice` 明确设置 PTB 的 gas 价格。
+默认情况下，gas 价格设置为网络的参考 gas 价格。你还可以通过在事务构建器上调用 `setGasPrice` 明确设置 PTB 的 gas 价格。
 
 ```ts
 txb.setGasPrice(gasPrice);
@@ -166,7 +166,7 @@ txb.setGasPrice(gasPrice);
 
 ### 预算
 
-默认情况下，gas 预算通过预先执行 PTB 的干扰运行自动推导。然后，干扰运行的 gas 消耗用于确定事务的余额。您可以通过在事务构建器上调用 `setGasBudget` 明确为事务设置 gas 预算来覆盖此行为。
+默认情况下，gas 预算通过预先执行 PTB 的干扰运行自动推导。然后，干扰运行的 gas 消耗用于确定事务的余额。你可以通过在事务构建器上调用 `setGasBudget` 明确为事务设置 gas 预算来覆盖此行为。
 
 :::info
 
@@ -192,13 +192,13 @@ txb.setGasPayment([coin1, coin2]);
 
 ### dApp / 钱包集成
 
-钱包标准接口已更新，以直接支持 `TransactionBlock` 类型。从 dApp 到钱包的所有 `signTransaction` 和 `signAndExecuteTransaction` 调用都预期提供一个 `TransactionBlock` 类。然后，可以将此 PTB 类序列化并发送到您的钱包以进行执行。
+钱包标准接口已更新，以直接支持 `TransactionBlock` 类型。从 dApp 到钱包的所有 `signTransaction` 和 `signAndExecuteTransaction` 调用都预期提供一个 `TransactionBlock` 类。然后，可以将此 PTB 类序列化并发送到你的钱包以进行执行。
 
-为了将 PTB 序列化以发送到钱包，Sui 建议使用 `txb.serialize()` 函数，该函数返回 PTB 的不透明字符串表示形式，可以从钱包标准 dApp 上下文传递到您的钱包。然后，可以使用 `TransactionBlock.from()` 将其转换回 `TransactionBlock`。
+为了将 PTB 序列化以发送到钱包，Sui 建议使用 `txb.serialize()` 函数，该函数返回 PTB 的不透明字符串表示形式，可以从钱包标准 dApp 上下文传递到你的钱包。然后，可以使用 `TransactionBlock.from()` 将其转换回 `TransactionBlock`。
 
 :::tip
 
-不应在 dApp 代码中从字节构建 PTB。使用 `serialize` 而不是 `build` 允许您在钱包内部构建 PTB 字节。这允许钱包根据需要执行 gas 逻辑和选择代币。
+不应在 dApp 代码中从字节构建 PTB。使用 `serialize` 而不是 `build` 允许你在钱包内部构建 PTB 字节。这允许钱包根据需要执行 gas 逻辑和选择代币。
 
 :::
 
