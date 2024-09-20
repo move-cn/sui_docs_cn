@@ -74,6 +74,21 @@ const guides = [
 			},
 			{
 				type: 'category',
+				label: '代币',
+				link: {
+					type: 'doc',
+					id: 'guides/developer/coin-token',
+				},
+				items: [
+							'guides/developer/coin-token/regulated-coin-and-deny-list',
+    						'guides/developer/coin-token/in-game-currency',
+     						'guides/developer/coin-token/loyalty-tokens',
+
+				
+				],
+			},
+			{
+				type: 'category',
 				label: '密码学',
 				link: {
 					type: 'doc',

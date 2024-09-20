@@ -1,0 +1,102 @@
+---
+title: 创建Coin和Token
+description: 构建你的第一个dApp并在链上发布。这些指南演示了你在Sui上开始开发之前需要了解的基础知识。
+---
+
+在 Sui 上，币（Coins）和代币（Tokens）是相似的。在实际操作中，这两个术语常常可以互换使用，但它们在实现上存在一些差异。
+你可以在相关的标准文档中了解这些差异，分别是 [封闭回路代币](https://docs.sui.io/standards/closed-loop-token)（Closed-Loop Token） 和 [币](https://docs.sui.io/standards/coin)（Coin）
+
+在 Sui 上发布一个币类似于发布一个新的类型。主要的区别在于创建币时需要一个一次性见证（`One-Time Witness` 简称“owt”）。
+
+```move
+module examples::my_coin {
+    use sui::coin::{Self, TreasuryCap};
+
+    public struct MY_COIN has drop {}
+
+    fun init(witness: MY_COIN, ctx: &mut TxContext) {
+        let (treasury, metadata) = coin::create_currency(witness, 6, b"MY_COIN", b"", b"", option::none(), ctx);
+        transfer::public_freeze_object(metadata);
+        transfer::public_transfer(treasury, ctx.sender())
+    }
+
+    public fun mint(
+        treasury_cap: &mut TreasuryCap<MY_COIN>,
+        amount: u64,
+        recipient: address,
+        ctx: &mut TxContext,
+    ) {
+        let coin = coin::mint(treasury_cap, amount, ctx);
+        transfer::public_transfer(coin, recipient)
+    }
+}
+
+```
+
+`Coin<T>` 是 Sui 上的一个通用币的实现，使用`TreasuryCap`对象作为参数发送交易到模块`sui::coin::Coin`进行交易
+
+示例模块包含一个`铸币（mint）`函数。你需要将 `init` 函数中创建的 `TreasuryCap `传递给模块的 mint 函数。该函数随后使用`Coin `模块中的 `mint` 函数创建一个币，并将其转移到指定的地址。
+
+```move
+public fun mint(
+    treasury_cap: &mut TreasuryCap<MY_COIN>,
+    amount: u64,
+    recipient: address,
+    ctx: &mut TxContext,
+) {
+    let coin = coin::mint(treasury_cap, amount, ctx);
+    transfer::public_transfer(coin, recipient)
+}
+```
+
+## Sui 控制台
+
+如果你将前面的示例发布到 Sui 网络，你可以使用 Sui 客户端的 call 命令来铸造币并将其发送到你提供的地址。有关命令行界面的更多信息，请参阅 Sui CLI。
+
+:::tip
+从 Sui v1.24.1 版本开始，CLI 命令不再需要 --gas-budget 参数。
+:::
+
+如果调用成功，控制台会显示结果，其中包括一个**余额变化部分**，包含以下信息：
+
+```move
+...
+
+Owner: Account Address ( <RECIPIENT-ADDRESS> )
+CoinType: <PACKAGE-ID>::mycoin::MYCOIN
+Amount: <COIN-AMOUNT>
+
+...
+```
+
+### 权限名单（DenyList）
+
+Sui 框架提供了一个名为 `DenyList` 的单例共享对象，持有 `DenyCap`的用户可以访问它，以指定一个无法使用 Sui 核心类型的地址列表。`DenyList `的使用场景主要集中在限制某些地址访问特定类型的币。这在创建 Sui 上的权限限制代币时非常有用，例如，当法规要求阻止已知不良行为者使用这些币作为交易输入时。
+
+:::info
+提示 `DenyList `对象是一个系统对象，地址为 `0x403`。你无法自行创建它。
+:::
+
+### 创建权限限制代币（regulated coin）
+
+如果你需要阻止特定地址访问你的币，可以使用 `create_regulated_currency `函数（而不是 `create_currency`）来创建它。
+
+在内部逻辑中，`create_regulated_currency` 使用` create_currency` 函数来创建币，还会生成一个`DenyCap`对象，该对象允许其持有者控制 `DenyList` 对象中币的拒绝列表。因此，使用 `create_regulated_currency `创建币的方式与前面的示例类似，只需添加一个`DenyCap`对象的传输给模块发布者。
+
+### 创建代币（tokens）
+
+代币重复使用了 `sui::coin` 模块中的 `TreasuryCap`，因此它们具有相同的初始化过程。`coin::create_currency `函数保证了 `TreasuryCap` 的唯一性，并强制创建一个`CoinMetadata`对象。
+
+类似于币的功能用于铸造和销毁代币，他们两者都需要 `TreasuryCap`作为参数传入：
+
+- `token::mint` - 铸造代币
+- `token::burn` - 销毁代币
+
+详细的代币操作请参阅 [封闭回路代币](https://docs.sui.io/standards/closed-loop-token)（Closed-Loop Token）。
+
+## 相关链接
+
+- [闭环代币标准](../../standards/closed-loop-token.mdx): Sui 上创建代币的标准的详细信息。
+- [忠诚代币](./coin-token/loyalty-tokens.mdx): 创建用于奖励用户忠诚度的代币。
+- [游戏代币](./coin-token/in-game-currency.mdx): 如何创建游戏代币和使用游戏代币的实例。
+- [权限限制代币和受限名单](./coin-token/regulated-coin-and-deny-list.mdx): 创建权限限制代币币，并添加或移除拒绝名单中的地址。
