@@ -89,6 +89,18 @@ const guides = [
 			},
 			{
 				type: 'category',
+				label: 'NFT',
+				link: {
+					type: 'doc',
+					id: 'guides/developer/nft',
+				},
+				items: [
+							'guides/developer/nft/nft-rental',
+    						'guides/developer/nft/asset-tokenization',
+				],
+			},
+			{
+				type: 'category',
 				label: '密码学',
 				link: {
 					type: 'doc',

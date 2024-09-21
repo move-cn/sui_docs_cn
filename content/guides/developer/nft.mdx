@@ -1,0 +1,177 @@
+---
+title: 创建一个NFT（非同质化代币）
+---
+
+在 Sui 中，所有的一切都是对象`object`。此外，因为`object`都是独一无二、不可替代和可拥有的，所以在` sui` 上面的所有都可以看作是非同质化代币
+
+在 Sui 上创建 `NFT` 与在其他非基于对象的区块链上有所不同。那些区块链需要专门的标准来处理定义`NFT`属性，
+因为它们基于智能合约与代币 ID 之间的映射。例如，以太坊上的`ERC-721`标准就是为了将全局唯一的 ID 与相关的智能合约地址配对，
+以在以太坊上创建一个唯一的代币实例
+
+在 Sui 上面每一个对象已经拥有了一个独一无二的 ID，所以无论你是处理一百万个同质化代币还是上千个不同的非同质化代币，你的智能合约都是在和一个单独的对象进行交互。
+
+假设你同时创建了一个在 Sui 和 另外一个非基于区块链平台上面的`Excitable Chimp NFT`的集合体。在其他区块链平台中，你需要通过和合约进行交互，以使用`NFT ID`从链下存储中获取到类似于姓名等相应的信息。
+但是在 Sui 上面，名字属性是作为定义 NFT 本身的对象的一个字段，这样的结构设计智能合约只需要返回相应的名称字段即可，使得可以更直接获取到`NFT`的信息
+
+### 示例
+
+下面示例是在在 Sui 上创建一个最基本的 ` NFT`。`TestnetNFT`结构体定义了具有 `id`、`name`、`description` 和`url`字段。
+
+```move
+public struct TestnetNFT has key, store {
+    id: UID,
+    name: string::String,
+    description: string::String,
+    url: Url,
+}
+```
+
+在这个示例中，任何人都可以通过调用` mint_to_sender`函数来铸造一个 NFT。顾名思义，该函数创建一个新的 `TestnetNFT`就会发送给发起调用的地址
+
+```move
+#[allow(lint(self_transfer))]
+public fun mint_to_sender(
+    name: vector<u8>,
+    description: vector<u8>,
+    url: vector<u8>,
+    ctx: &mut TxContext
+) {
+    let sender = ctx.sender();
+    let nft = TestnetNFT {
+        id: object::new(ctx),
+        name: string::utf8(name),
+        description: string::utf8(description),
+        url: url::new_unsafe_from_bytes(url)
+    };
+
+    event::emit(NFTMinted {
+        object_id: object::id(&nft),
+        creator: sender,
+        name: nft.name,
+    });
+
+    transfer::public_transfer(nft, sender);
+}
+```
+
+这个模块包含返回 NFT 的元数据的函数。参考我们上述的假设，我们可以直接调用下列`name`函数来获取 name 属性。正如你所见，该函数只需要简单返回该 NFT 的字段信息即可
+
+```move
+public fun name(nft: &TestnetNFT): &string::String {
+    &nft.name
+}
+```
+
+### 点击查看完整代码
+
+<details>
+<summary>
+查看此模块的完整源代码
+</summary>
+
+```move
+module examples::testnet_nft {
+    use sui::url::{Self, Url};
+    use std::string;
+    use sui::event;
+
+    /// 一个简单的任何人可以创建的NFT的实例
+    public struct TestnetNFT has key, store {
+        id: UID,
+        /// Name for the token
+        name: string::String,
+        /// Description of the token
+        description: string::String,
+        /// URL for the token
+        url: Url,
+        // TODO: allow custom attributes
+    }
+
+    // ===== 事件 =====
+
+    public struct NFTMinted has copy, drop {
+        // The Object ID of the NFT
+        object_id: ID,
+        // The creator of the NFT
+        creator: address,
+        // The name of the NFT
+        name: string::String,
+    }
+
+    // ===== 公开调用函数 =====
+
+    /// 获取到NFT的 name 属性
+    public fun name(nft: &TestnetNFT): &string::String {
+        &nft.name
+    }
+
+    /// 获取到NFT的 description 属性
+    public fun description(nft: &TestnetNFT): &string::String {
+        &nft.description
+    }
+
+    /// 获取到NFT的 url 属性
+    public fun url(nft: &TestnetNFT): &Url {
+        &nft.url
+    }
+
+    // ===== Entrypoints =====
+
+    #[allow(lint(self_transfer))]
+    /// 铸造新的NFT
+    public fun mint_to_sender(
+        name: vector<u8>,
+        description: vector<u8>,
+        url: vector<u8>,
+        ctx: &mut TxContext
+    ) {
+        let sender = ctx.sender();
+        let nft = TestnetNFT {
+            id: object::new(ctx),
+            name: string::utf8(name),
+            description: string::utf8(description),
+            url: url::new_unsafe_from_bytes(url)
+        };
+
+        event::emit(NFTMinted {
+            object_id: object::id(&nft),
+            creator: sender,
+            name: nft.name,
+        });
+
+        transfer::public_transfer(nft, sender);
+    }
+
+    /// 发送 NFT
+    public fun transfer(
+        nft: TestnetNFT, recipient: address, _: &mut TxContext
+    ) {
+        transfer::public_transfer(nft, recipient)
+    }
+
+    /// 更新 NFT 的 description属性
+    public fun update_description(
+        nft: &mut TestnetNFT,
+        new_description: vector<u8>,
+        _: &mut TxContext
+    ) {
+        nft.description = string::utf8(new_description)
+    }
+
+    /// 永久删除 NFT
+    public fun burn(nft: TestnetNFT, _: &mut TxContext) {
+        let TestnetNFT { id, name: _, description: _, url: _ } = nft;
+        id.delete()
+    }
+}
+
+```
+
+</details>
+
+## 相关链接
+
+- NFT 租赁（NFT Rental）：使用 Kiosk 应用租赁 NFT 的示例。
+- 资产代币化（Asset Tokenization）：使用 NFT 对现实世界资产进行代币化的示例。
+- [Kiosk](../../standards/kiosk.mdx)：Sui 网络上的资产存储。
+- Kiosk 应用（Kiosk Apps）：扩展 Kiosk 标准功能的应用。
