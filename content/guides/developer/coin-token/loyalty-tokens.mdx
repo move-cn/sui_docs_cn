@@ -1,0 +1,202 @@
+---
+title: 忠诚代币
+---
+
+使用 Sui 的`Closed-Loop Token`的标准 ，您可以创建仅适用于一些特定服务的代币，
+例如：航空公司希望向经常乘坐飞机的旅客发放代币以购买机票或升级舱位。
+
+下面的示例演示了创建一种忠诚度代币，持有者可以使用该代币在数字礼品店购买商品
+
+## 示例
+
+忠诚度代币示例演示了使用`Closed-Loop Token`标准创建的忠诚度代币。
+实现此示例，管理者将向您服务的用户发送 `LOYALTY`代币作为对他们忠诚度的奖励。
+该示例创建了一个礼品店，持有者可以使用` LOYALTY` 代币购买礼品。
+
+### examples::loyalty
+
+`loyalty.move` 源文件包含 `examples::loyalty `模块代码，用于创建忠诚度代币。该模块包含一次性见证（OTW）
+，用于创建与模块同名的代币（`LOYALTY`），该代币仅具有 `drop `属性且没有任何字段。这些是`OTW`的特性，确保`LOYALTY`类型仅有一个实例。
+
+```move
+public struct LOYALTY has drop {}
+```
+
+模块的`init`函数使用 `LOYALTY `OTW 创建代币。所有`init`函数仅在包发布事件时运行一次。
+初始化函数在调用 `create_currency `时使用了之前定义的 `LOYALTY `OTW 类型。该函数将权限能力和铸造能力转移到发布合约的地址。持有这些可转移能力的地址可以铸造新的` LOYALTY` 代币并修改其属性。
+
+```move
+fun init(otw: LOYALTY, ctx: &mut TxContext) {
+    let (treasury_cap, coin_metadata) = coin::create_currency(
+        otw,
+        0, // no decimals
+        b"LOY", // symbol
+        b"Loyalty Token", // name
+        b"Token for Loyalty", // description
+        option::none(), // url
+        ctx
+    );
+
+    let (mut policy, policy_cap) = token::new_policy(&treasury_cap, ctx);
+
+    token::add_rule_for_action<LOYALTY, GiftShop>(
+        &mut policy,
+        &policy_cap,
+        token::spend_action(),
+        ctx
+    );
+
+    token::share_policy(policy);
+
+    transfer::public_freeze_object(coin_metadata);
+    transfer::public_transfer(policy_cap, tx_context::sender(ctx));
+    transfer::public_transfer(treasury_cap, tx_context::sender(ctx));
+}
+```
+
+`reward_user`是铸造`LOYALTY`代币的函数，拥有铸造权限的地址可以调用这个函数铸造新的`LOYALTY`代币并将其发送到目标地址。其中
+该函数使用 token::mint 函数创建代币，并使用 token::transfer 将其发送给目标接收者。
+
+```move
+public fun reward_user(
+    cap: &mut TreasuryCap<LOYALTY>,
+    amount: u64,
+    recipient: address,
+    ctx: &mut TxContext
+) {
+    let token = token::mint(cap, amount, ctx);
+    let req = token::transfer(token, recipient, ctx);
+
+    token::confirm_with_treasury_cap(cap, req, ctx);
+}
+```
+
+最后，该示例包括一个`buy_a_gift`函数，用于处理 `LOYALTY 代`币兑换礼物的操作。
+该函数确保礼物的价格与所花费的`LOYALTY`代币数量相匹配，然后使用 token::spend 函数进行账目处理。
+
+```move
+public fun buy_a_gift(
+    token: Token<LOYALTY>,
+    ctx: &mut TxContext
+): (Gift, ActionRequest<LOYALTY>) {
+    assert!(token::value(&token) == GIFT_PRICE, EIncorrectAmount);
+
+    let gift = Gift { id: object::new(ctx) };
+    let mut req = token::spend(token, ctx);
+
+    token::add_approval(GiftShop {}, &mut req, ctx);
+
+    (gift, req)
+}
+```
+
+## 完整代码
+
+显示此示例的完整源代码（包括注释），或使用相关链接部分中的链接查看项目源代码。
+
+<details>
+<summary>
+查看此模块的完整源代码
+</summary>
+
+```move
+/// 该模块展示了一个封闭回路忠诚度代币。应用管理员会将 `Token` 作为奖励发送给用户以表彰他们的忠诚。该 `Token`
+/// 可用于在商店中购买 `Gift`。
+///
+/// 操作：
+/// - spend - 在商店中花费代币
+module examples::loyalty {
+    use sui::coin::{Self, TreasuryCap};
+    use sui::token::{Self, ActionRequest, Token};
+
+    /// 代币数量与 `GIFT_PRICE` 不匹配。
+    const EIncorrectAmount: u64 = 0;
+
+    /// `Gift` 的价格。
+    const GIFT_PRICE: u64 = 10;
+
+    /// 代币 / 硬币的一次性见证。
+    public struct LOYALTY has drop {}
+
+    /// 这是 `GiftShop` 的规则要求。规则不需要是独立的应用程序，有些规则作为应用程序本身的一部分是有意义的，比如这个。
+    public struct GiftShop has drop {}
+
+    /// Gift 对象 - 可用 10 个代币购买。
+    public struct Gift has key, store {
+        id: UID
+    }
+
+    // 创建一个新的 LOYALTY 货币，为其创建一个 `TokenPolicy`，并允许所有被奖励的用户花费 `Token`。
+    fun init(otw: LOYALTY, ctx: &mut TxContext) {
+        let (treasury_cap, coin_metadata) = coin::create_currency(
+            otw,
+            0, // 无小数位
+            b"LOY", // 代币符号
+            b"Loyalty Token", // 代币名称
+            b"Token for Loyalty", // 代币描述
+            option::none(), // 无网址
+            ctx
+        );
+
+        let (mut policy, policy_cap) = token::new_policy(&treasury_cap, ctx);
+
+        // 但我们通过这个商店限制了花费：
+        token::add_rule_for_action<LOYALTY, GiftShop>(
+            &mut policy,
+            &policy_cap,
+            token::spend_action(),
+            ctx
+        );
+
+        token::share_policy(policy);
+
+        transfer::public_freeze_object(coin_metadata);
+        transfer::public_transfer(policy_cap, tx_context::sender(ctx));
+        transfer::public_transfer(treasury_cap, tx_context::sender(ctx));
+    }
+
+    /// 实用函数，用于奖励用户。应用管理员可以调用此函数来奖励用户的忠诚 :)
+    ///
+    /// 默认情况下，持有 `TreasuryCap` 的人可以进行 `Mint` 操作，因此无需确认；然而，`transfer` 操作
+    /// 需要确认，并且可以使用 `TreasuryCap` 进行确认。
+    public fun reward_user(
+        cap: &mut TreasuryCap<LOYALTY>,
+        amount: u64,
+        recipient: address,
+        ctx: &mut TxContext
+    ) {
+        let token = token::mint(cap, amount, ctx);
+        let req = token::transfer(token, recipient, ctx);
+
+        token::confirm_with_treasury_cap(cap, req, ctx);
+    }
+
+    /// 用 10 个代币购买一个礼物。接收 `Gift`，并花费 `Token`
+/// （存储在 `ActionRequest` 的 `burned_balance` 字段中）。
+    public fun buy_a_gift(
+        token: Token<LOYALTY>,
+        ctx: &mut TxContext
+    ): (Gift, ActionRequest<LOYALTY>) {
+        assert!(token::value(&token) == GIFT_PRICE, EIncorrectAmount);
+
+        let gift = Gift { id: object::new(ctx) };
+        let mut req = token::spend(token, ctx);
+
+        // 仅因为我们设置了此规则而需要
+        token::add_approval(GiftShop {}, &mut req, ctx);
+
+        (gift, req)
+    }
+}
+
+
+```
+
+</details>
+
+## 相关链接
+
+- [闭环代币标准](../../../standards/closed-loop-token.mdx): Sui 上创建代币的标准的详细信息
+- [源码](https://github.com/MystenLabs/sui/blob/main/examples/move/token/sources/loyalty.move): Github 上的实例源码
+- [忠诚代币](./loyalty-tokens.mdx): 如何创建游戏代币和使用游戏代币的实例
+- [权限限制代币和受限名单](./regulated-coin-and-deny-list.mdx): 如何在 sui 链上创建标准的权限限制代币的实例

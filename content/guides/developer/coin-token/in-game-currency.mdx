@@ -1,0 +1,330 @@
+---
+title: 游戏货币
+---
+
+在 Sui 中使用闭环代币标准，你可以创建游戏内货币（例如手机游戏中的点卷或钻石），这些货币可以通过玩家的操作获得，也可以通过购买获取。你可以在 Sui 上铸造这些代币，但玩家只能在游戏的内部使用这些代币。
+这类代币一般是不能转让，并且你通常会在预设的数量内铸造它们，以保持稀缺性和游戏平衡。
+
+以下示例展示了如何创建名为 GEM 的游戏内货币，它代表一定数量的 SUI。在该示例中，用户可以使用 SUI 购买可用于游戏内货币的 GEM。例子通过代码注释来了解示例的逻辑。
+
+## 示例
+
+Sui 的代码库中提供了一个创建游戏内货币的基本规则。用于创建下面实例的游戏货币，该 Move 模块位于 gems.move 源文件中
+
+### Module examples::sword
+
+`examples::sword` 模块创建了一个具有游戏内价值的对象：Sword。该模块将 GEM（另一种有价值的游戏内物品）的价值赋予了 Sword，并且提供了用 GEM 换取 Sword 的逻辑
+
+```move
+module examples::sword {
+    use sui::token::{Self, Token, ActionRequest};
+    use examples::gem::GEM;
+
+    const EWrongAmount: u64 = 0;
+
+    const SWORD_PRICE: u64 = 10;
+
+    public struct Sword has key, store { id: UID }
+
+    public fun buy_sword(
+        gems: Token<GEM>, ctx: &mut TxContext
+    ): (Sword, ActionRequest<GEM>) {
+        assert!(SWORD_PRICE == token::value(&gems), EWrongAmount);
+        (
+            Sword { id: object::new(ctx) },
+            token::spend(gems, ctx)
+        )
+    }
+}
+```
+
+### Module examples::gem
+
+`examples::gem` 模块创建了游戏内货币 GEM。用户使用可以使用 SUI 来购买 GEM 货币，然后可以用获取到的 GEM 换取 Sword。该模块定义了三种类型的 GEM（小、中、大），每组代表不同的游戏内价值。常量存储了每个包的价值以及每组包含的实际 GEM 数量。
+
+该模块的 `init `函数使用 `coin::create_currency` 创建了 GEM。init 函数只在模块发布时运行一次，并设置了游戏代币（Sword）的规则，冻结了该代币的`metadata`，并将管理游戏代币能力转移给了包的发布者。
+
+```move
+fun init(otw: GEM, ctx: &mut TxContext) {
+    let (treasury_cap, coin_metadata) = coin::create_currency(
+        otw, 0, b"GEM", b"Capy Gems", // otw, decimal, symbol, name
+        b"In-game currency for Capy Miners", none(), // description, url
+        ctx
+    );
+
+    let (mut policy, cap) = token::new_policy(&treasury_cap, ctx);
+
+    token::allow(&mut policy, &cap, buy_action(), ctx);
+    token::allow(&mut policy, &cap, token::spend_action(), ctx);
+
+    transfer::share_object(GemStore {
+        id: object::new(ctx),
+        gem_treasury: treasury_cap,
+        profits: balance::zero()
+    });
+
+    transfer::public_freeze_object(coin_metadata);
+    transfer::public_transfer(cap, ctx.sender());
+    token::share_policy(policy);
+}
+```
+
+该模块通过 buy_gems 函数处理 GEM 的购买。
+
+```move
+public fun buy_gems(
+    self: &mut GemStore, payment: Coin<SUI>, ctx: &mut TxContext
+): (Token<GEM>, ActionRequest<GEM>) {
+    let amount = coin::value(&payment);
+    let purchased = if (amount == SMALL_BUNDLE) {
+        SMALL_AMOUNT
+    } else if (amount == MEDIUM_BUNDLE) {
+        MEDIUM_AMOUNT
+    } else if (amount == LARGE_BUNDLE) {
+        LARGE_AMOUNT
+    } else {
+        abort EUnknownAmount
+    };
+
+    coin::put(&mut self.profits, payment);
+
+    let gems = token::mint(&mut self.gem_treasury, purchased, ctx);
+    let req = token::new_request(buy_action(), purchased, none(), none(), ctx);
+
+    (gems, req)
+}
+```
+
+点击查看完整代码模块的演示
+
+<details>
+<summary>
+查看此模块的完整源代码
+</summary>
+
+```move
+
+module examples::gem {
+    use std::option::none;
+    use std::string::{Self, String};
+    use sui::sui::SUI;
+    use sui::balance::{Self, Balance};
+    use sui::tx_context::{sender};
+    use sui::coin::{Self, Coin, TreasuryCap};
+
+    use sui::token::{Self, Token, ActionRequest};
+
+    const EUnknownAmount: u64 = 0;
+
+    const SMALL_BUNDLE: u64 = 10_000_000_000;
+    const SMALL_AMOUNT: u64 = 100;
+
+    const MEDIUM_BUNDLE: u64 = 100_000_000_000;
+    const MEDIUM_AMOUNT: u64 = 5_000;
+
+    const LARGE_BUNDLE: u64 = 1_000_000_000_000;
+    const LARGE_AMOUNT: u64 = 100_000;
+
+    #[allow(lint(coin_field))]
+    public struct GemStore has key {
+        id: UID,
+        profits: Balance<SUI>,
+        gem_treasury: TreasuryCap<GEM>,
+    }
+
+    public struct GEM has drop {}
+
+    fun init(otw: GEM, ctx: &mut TxContext) {
+        let (treasury_cap, coin_metadata) = coin::create_currency(
+            otw, 0, b"GEM", b"Capy Gems", // otw, decimal, symbol, name
+            b"In-game currency for Capy Miners", none(), // description, url
+            ctx
+        );
+
+        let (mut policy, cap) = token::new_policy(&treasury_cap, ctx);
+
+        token::allow(&mut policy, &cap, buy_action(), ctx);
+        token::allow(&mut policy, &cap, token::spend_action(), ctx);
+
+        transfer::share_object(GemStore {
+            id: object::new(ctx),
+            gem_treasury: treasury_cap,
+            profits: balance::zero()
+        });
+
+        transfer::public_freeze_object(coin_metadata);
+        transfer::public_transfer(cap, ctx.sender());
+        token::share_policy(policy);
+    }
+
+    public fun buy_gems(
+        self: &mut GemStore, payment: Coin<SUI>, ctx: &mut TxContext
+    ): (Token<GEM>, ActionRequest<GEM>) {
+        let amount = coin::value(&payment);
+        let purchased = if (amount == SMALL_BUNDLE) {
+            SMALL_AMOUNT
+        } else if (amount == MEDIUM_BUNDLE) {
+            MEDIUM_AMOUNT
+        } else if (amount == LARGE_BUNDLE) {
+            LARGE_AMOUNT
+        } else {
+            abort EUnknownAmount
+        };
+
+        coin::put(&mut self.profits, payment);
+
+        let gems = token::mint(&mut self.gem_treasury, purchased, ctx);
+        let req = token::new_request(buy_action(), purchased, none(), none(), ctx);
+
+        (gems, req)
+    }
+
+    public fun buy_action(): String { string::utf8(b"buy") }
+}
+
+```
+
+</details>
+
+### 全部完整代码（包括注释）
+
+点击显示此示例的完整源代码（包括注释），或使用相关链接部分中的 [链接](#related-links) 查看 GitHub 上的项目源代码。
+
+<details>
+<summary>
+查看完整源代码
+</summary>
+
+```move
+/// Sword(剑的模块)
+module examples::sword {
+    use sui::token::{Self, Token, ActionRequest};
+    use examples::gem::GEM;
+
+    /// 尝试用错误的金额购买剑。
+    const EWrongAmount: u64 = 0;
+
+    /// 一把剑的价格用宝石表示。
+    const SWORD_PRICE: u64 = 10;
+
+    /// 可以用宝石购买的游戏物品。
+    public struct Sword has key, store { id: UID }
+
+    /// 用宝石购买剑。
+    public fun buy_sword(
+        gems: Token<GEM>, ctx: &mut TxContext
+    ): (Sword, ActionRequest<GEM>) {
+        assert!(SWORD_PRICE == token::value(&gems), EWrongAmount);
+        (
+            Sword { id: object::new(ctx) },
+            token::spend(gems, ctx)
+        )
+    }
+}
+```
+
+```move
+/// gem(游戏代币模块)
+module examples::gem {
+    use std::option::none;
+    use std::string::{Self, String};
+    use sui::sui::SUI;
+    use sui::balance::{Self, Balance};
+    use sui::tx_context::{sender};
+    use sui::coin::{Self, Coin, TreasuryCap};
+
+    use sui::token::{Self, Token, ActionRequest};
+
+    /// 尝试用意外的金额购买宝石。
+    const EUnknownAmount: u64 = 0;
+
+    /// 10 SUI 是一小包宝石的价格。
+    const SMALL_BUNDLE: u64 = 10_000_000_000;
+    const SMALL_AMOUNT: u64 = 100;
+
+    /// 100 SUI 是一中包宝石的价格。
+    const MEDIUM_BUNDLE: u64 = 100_000_000_000;
+    const MEDIUM_AMOUNT: u64 = 5_000;
+
+    /// 1000 SUI 是一大包宝石的价格。
+    /// 这是最划算的选择。
+    const LARGE_BUNDLE: u64 = 1_000_000_000_000;
+    const LARGE_AMOUNT: u64 = 100_000;
+
+    #[allow(lint(coin_field))]
+    /// 宝石可以通过商店购买。
+    public struct GemStore has key {
+        id: UID,
+        /// 销售宝石的利润。
+        profits: Balance<SUI>,
+        /// 游戏内货币的国库上限。
+        gem_treasury: TreasuryCap<GEM>,
+    }
+
+    /// 创建游戏内货币的 OTW。
+    public struct GEM has drop {}
+
+    // 在模块初始化时，我们创建游戏内货币并定义不同类型操作的规则。
+    fun init(otw: GEM, ctx: &mut TxContext) {
+        let (treasury_cap, coin_metadata) = coin::create_currency(
+            otw, 0, b"GEM", b"Capy Gems", // otw, 小数, 符号, 名称
+            b"Capy Miner 的游戏内货币", none(), // 描述, url
+            ctx
+        );
+
+        // 创建 GEM 的 TokenPolicy
+        let (mut policy, cap) = token::new_policy(&treasury_cap, ctx);
+
+        token::allow(&mut policy, &cap, buy_action(), ctx);
+        token::allow(&mut policy, &cap, token::spend_action(), ctx);
+
+        // 创建并分享 GemStore
+        transfer::share_object(GemStore {
+            id: object::new(ctx),
+            gem_treasury: treasury_cap,
+            profits: balance::zero()
+        });
+
+        // 处理 TokenPolicy, CoinMetadata 和 TokenPolicyCap
+        transfer::public_freeze_object(coin_metadata);
+        transfer::public_transfer(cap, ctx.sender());
+        token::share_policy(policy);
+    }
+
+    /// 从 GemStore 购买宝石。非常简单的值匹配与模块常量...
+    public fun buy_gems(
+        self: &mut GemStore, payment: Coin<SUI>, ctx: &mut TxContext
+    ): (Token<GEM>, ActionRequest<GEM>) {
+        let amount = coin::value(&payment);
+        let purchased = if (amount == SMALL_BUNDLE) {
+            SMALL_AMOUNT
+        } else if (amount == MEDIUM_BUNDLE) {
+            MEDIUM_AMOUNT
+        } else if (amount == LARGE_BUNDLE) {
+            LARGE_AMOUNT
+        } else {
+            abort EUnknownAmount
+        };
+
+        coin::put(&mut self.profits, payment);
+
+        // 创建自定义请求并铸造一些宝石
+        let gems = token::mint(&mut self.gem_treasury, purchased, ctx);
+        let req = token::new_request(buy_action(), purchased, none(), none(), ctx);
+
+        (gems, req)
+    }
+
+    /// GemStore 中的购买操作的名称。
+    public fun buy_action(): String { string::utf8(b"buy") }
+}
+```
+
+</details>
+
+## 相关链接
+
+- [闭环代币标准](../../../standards/closed-loop-token.mdx): Sui 上创建代币的标准的详细信息
+- [源码](https://github.com/MystenLabs/sui/blob/main/examples/move/token/sources/gems.move): Github 上的实例源码
+- [忠诚代币](./loyalty-tokens.mdx): 如何创建游戏代币和使用游戏代币的实例
+- [权限限制代币和受限名单](./regulated-coin-and-deny-list.mdx): 如何在 sui 链上创建标准的权限限制代币的实例
