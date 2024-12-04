@@ -1,0 +1,162 @@
+---
+title: 权限限制代币和受限名单
+---
+
+Sui Coin 标准提供了一个 `create_regulated_currency` 函数，用于创建代币。
+这个函数与 `create_currency` 不同，它生成的代币可以阻止某些地址在交易中使用这些代币。这个能力对于像稳定币这样的资产是必需的
+
+在函数背后的逻辑中，`create_regulated_currency `使用 `create_currency `函数来创建代币，同时还生成一个` DenyCap` 对象，允许其持有者控制在`DenyList `对象中的拒绝列表。因此，使用`create_regulated_currency` 创建代币的方式与之前的示例相似，唯一的不同是将 DenyCap 对象转移给模块发布者。
+
+```move
+module examples::regcoin {
+    use sui::coin::{Self, DenyCapV2};
+    use sui::deny_list::{DenyList};
+
+    public struct REGCOIN has drop {}
+
+    fun init(witness: REGCOIN, ctx: &mut TxContext) {
+        let (treasury, deny_cap, metadata) = coin::create_regulated_currency_v2(
+            witness,
+            6,
+            b"REGCOIN",
+            b"",
+            b"",
+            option::none(),
+            false,
+            ctx,
+        );
+        transfer::public_freeze_object(metadata);
+        transfer::public_transfer(treasury, ctx.sender());
+        transfer::public_transfer(deny_cap, ctx.sender())
+    }
+
+}
+```
+
+当你使用 `sui client publish` 部署上述模块时，控制台会返回交易效果，包括创建以下对象的信息
+
+```move
+...
+
+Object Changes
+
+Created Objects:
+
+   ObjectID: <OBJECT-ID>
+   Sender: <SENDER-ADDR>
+   Owner: Immutable
+   ObjectType: 0x2::coin::CoinMetadata<<PACKAGE-ID>::regcoin::REGCOIN>
+   Version: <VERSION-NUMBER>
+   Digest: <DIGEST-HASH>
+
+   ObjectID: <OBJECT-ID>
+   Sender: <SENDER-ADDR>
+   Owner: Account Address ( <PUBLISHER-ADDRESS )
+   ObjectType: 0x2::package::UpgradeCap
+   Version: <VERSION-NUMBER>
+   Digest: <DIGEST-HASH>
+
+   ObjectID: <OBJECT-ID>
+   Sender: <SENDER-ADDR>
+   Owner: Immutable
+   ObjectType: 0x2::coin::RegulatedCoinMetadata<<PACKAGE-ID>::regcoin::REGCOIN>
+   Version: <VERSION-NUMBER>
+   Digest: <DIGEST-HASH>
+
+   ObjectID: <OBJECT-ID>
+   Sender: <SENDER-ADDR>
+   Owner: Account Address ( <PUBLISHER-ADDRESS )
+   ObjectType: 0x2::coin::DenyCap<<PACKAGE-ID>::regcoin::REGCOIN>
+   Version: <VERSION-NUMBER>
+   Digest: <DIGEST-HASH>
+
+
+   ObjectID: <OBJECT-ID>
+   Sender: <SENDER-ADDR>
+   Owner: Account Address ( <PUBLISHER-ADDRESS )
+   ObjectType: 0x2::coin::TreasuryCap<PACKAGE-ID>::regcoin::REGCOIN>
+   Version: <VERSION-NUMBER>
+   Digest: <DIGEST-HASH>
+
+...
+```
+
+可以看到，发布操作创建了一个`RegulatedCoinMetadata`对象，以及标准的`CoinMetadata`对象。你不需要显式调用 `freeze_object` 来冻结 `RegulatedCoinMetadata `对象，因为 `create_regulated_currency `会自动执行此操作 。
+
+输出还显示发布者现在拥有的三个对象：用于包升级的 `UpgradeCap`、用于铸造或销毁代币的 `TreasuryCap`，以及用于添加或移除拒绝列表地址的 `DenyCap`。
+
+## 受限名单
+
+Sui 框架提供了一个 `DenyList `单例共享对象，持有`DenyCap`的用户可以访问该对象，以指定无法使用 Sui 核心类型的地址。然而，`DenyList` 的初始用例主要集中在限制特定类型代币的访问上。
+例如，在 Sui 上创建需要能够阻止某些地址使用的受监管代币时，这非常有用。
+Sui 上的受监管代币满足任何要求，能够防止已知不良行为者访问这些代币的规定。
+
+:::info
+
+`DenyList` 对象是一个系统对象，其地址为 `0x403`。你无法自行创建它。
+
+:::
+
+### 操作权限列表
+
+为了能够操作与你的代币相关的权限列表中的地址，你需要在之前的示例的基础上添加一些函数。
+
+```move
+public fun add_addr_from_deny_list(
+    denylist: &mut DenyList,
+    denycap: &mut DenyCapV2<REGCOIN>,
+    denyaddy: address,
+    ctx: &mut TxContext,
+) {
+    coin::deny_list_v2_add(denylist, denycap, denyaddy, ctx);
+}
+
+public fun remove_addr_from_deny_list(
+    denylist: &mut DenyList,
+    denycap: &mut DenyCapV2<REGCOIN>,
+    denyaddy: address,
+    ctx: &mut TxContext,
+) {
+    coin::deny_list_v2_remove(denylist, denycap, denyaddy, ctx);
+}
+```
+
+为了使用这些函数，你需要向函数传递 `DenyList `对象（即 `0x403`）、你的 `DenyCap` 对象 ID 和你想要添加或移除的地址。
+使用 Sui CLI，你可以使用以下命令调用：
+
+:::tip
+
+从 Sui v1.24.1 版本开始，CLI 命令不再需要 --gas-budget
+
+:::
+
+```shell
+sui client call --function add_addr_from_deny_list --module regcoin --package <PACKAGE-ID> --args <DENY-LIST> <DENY-CAP> <ADDRESS-TO-DENY> --gas-budget <GAS-AMOUNT>
+Transaction Digest: <DIGEST-HASH>
+```
+
+根据控制台输出的信息来看，我们可以验证 `DenyList `是否发生了改变
+
+```move
+...
+
+MutatedObjects:
+
+  ObjectID: 0x0...403
+  Sender: <SENDER-ADDRESS>
+  Owner: Shared
+  ObjectType: 0x2::deny_list::DenyList
+  Version: <VERSION-NUMBER>
+  Digest: <DIGEST-HASH>
+
+...
+```
+
+获取所有可用的 Coin 函数，请参阅 Sui 框架的`Coin`模块文档。
+
+## 相关链接
+
+- [闭环代币标准](../../../standards/closed-loop-token.mdx): Sui 上创建代币的标准的详细信息
+- [源码](https://github.com/MystenLabs/sui/blob/main/examples/move/token/sources/regulated_token.move): Github 上的实例源码
+- [忠诚代币](./loyalty-tokens.mdx): 如何创建游戏代币和使用游戏代币的实例
+- [权限限制代币和受限名单](./regulated-coin-and-deny-list.mdx): 如何在 sui 链上创建标准的权限限制代币的实例
